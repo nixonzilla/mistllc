@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>MISTLLC — Digital Projects</title>
+  <meta name="description" content="Official home of MISTLLC. Music, visuals, tools, and drops.">
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(to bottom right, #0e0e0e, #1c1c1c);
+      color: #f4f4f4;
+    }
+
+    header {
+      padding: 60px 20px 20px;
+      text-align: center;
+      background-color: #111;
+      border-bottom: 1px solid #222;
+    }
+
+    header h1 {
+      font-size: 3rem;
+      margin-bottom: 0.5em;
+    }
+
+    header p {
+      font-size: 1.2rem;
+      color: #bbb;
+    }
+
+    main {
+      max-width: 900px;
+      margin: 2rem auto;
+      padding: 0 1rem;
+    }
+
+    .card {
+      background-color: #1a1a1a;
+      padding: 1.5rem;
+      border-radius: 12px;
+      margin-bottom: 1.5rem;
+      box-shadow: 0 0 10px rgba(0, 255, 255, 0.03);
+      transition: transform 0.3s ease;
+    }
+
+    .card:hover {
+      transform: translateY(-5px);
+    }
+
+    .card h2 {
+      color: #00bfff;
+      margin-top: 0;
+    }
+
+    .card p {
+      color: #ccc;
+    }
+
+    .btn {
+      display: inline-block;
+      margin-top: 1rem;
+      padding: 10px 20px;
+      background-color: #00bfff;
+      color: #000;
+      font-weight: bold;
+      text-decoration: none;
+      border-radius: 8px;
+      transition: background 0.3s;
+    }
+
+    .btn:hover {
+      background-color: #009acd;
+    }
+
+    footer {
+      text-align: center;
+      padding: 2rem 1rem;
+      color: #666;
+      border-top: 1px solid #222;
+      margin-top: 4rem;
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <h1>MISTLLC</h1>
+    <p>Real sound. Digital craft. No fluff.</p>
+  </header>
+
+  <main>
+    <div class="card">
+      <h2>🎧 Music & Drops</h2>
+      <p>Original productions and sample-based drops curated for deep emotion and raw creativity. Full audio previews and release kits coming soon.</p>
+    </div>
+
+    <div class="card">
+      <h2>🛠️ Tools & Code</h2>
+      <p>DAW FX chains, visuals, and Node/Next.js tools all released under the MISTLLC ecosystem. Explore the repo to access them.</p>
+      <a class="btn" href="https://github.com/nixonzilla/mistllc" target="_blank">View GitHub</a>
+    </div>
+
+    <div class="card">
+      <h2>🚧 Website Under Construction</h2>
+      <p>More visual content, embedded music, and interactive sections will roll out soon. This is just the start.</p>
+    </div>
+  </main>
+
+  <footer>
+    &copy; <span id="year"></span> MISTLLC. Built with truth and intent.
+  </footer>
+
+  <script>
+    document.getElementById("year").textContent = new Date().getFullYear();
+  </script>
+
+</body>
+</html>
