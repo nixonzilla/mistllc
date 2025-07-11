@@ -1,0 +1,19 @@
+{
+    "configurations": [
+        
+
+
+
+
+
+
+
+
+        {
+            "type": "msedge",
+            "name": "https://github.com/nixonzilla/mistllc.git",
+            "request": "launch",
+            "url": "https://github.com/nixonzilla/mistllc.git"
+        }
+    ]
+}
