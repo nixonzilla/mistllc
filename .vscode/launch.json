@@ -1,19 +1,24 @@
 {
-    "configurations": [
-        
-
-
-
-
-
-
-
-
-        {
-            "type": "msedge",
-            "name": "https://github.com/nixonzilla/mistllc.git",
-            "request": "launch",
-            "url": "https://github.com/nixonzilla/mistllc.git"
-        }
-    ]
+  "version": "0.2.0",
+  "configurations": [
+    {
+        "name": "PowerShell Attach to Host Process",
+        "type": "PowerShell",
+        "request": "attach"
+    },
+    {
+      "type": "chrome",                     // Use "edge" for Microsoft Edge
+      "request": "launch",
+      "name": "Launch MISTLLC App",
+      "url": "http://localhost:5173",       // Your local dev server URL
+      "webRoot": "${workspaceFolder}/src"  // Adjust based on your project structure
+    },
+    {
+      "type": "pwa-node",
+      "request": "launch",
+      "name": "Run MISTLLC backend/server",
+      "program": "${workspaceFolder}/server.ts", // Or main entry file if using Node
+      "cwd": "${workspaceFolder}"
+    }
+  ]
 }
