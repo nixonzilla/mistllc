@@ -1,0 +1,32 @@
+name: Build and Deploy MISTLLC
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'  # You can change this to match your version
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Run build (optional)
+        run: npm run build  # Only include if your project has a build script
+
+      - name: Run tests (optional)
+        run: npm test  # Only include if your project has tests
+
+      # Optional: Push build to Docker or deploy elsewhere
+
