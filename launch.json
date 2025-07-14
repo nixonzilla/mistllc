@@ -12,7 +12,7 @@
       "console": "integratedTerminal"
     },
     {
-      "type": "chrome",
+      "type": "vite",
       "request": "launch",
       "name": "Launch Vite Frontend",
       "url": "http://localhost:5550",
