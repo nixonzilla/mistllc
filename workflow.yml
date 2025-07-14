@@ -5,11 +5,12 @@ on:
     branches: [ main ]
   pull_request:
     branches: [ main ]
-
 jobs:
   build:
     runs-on: ubuntu-latest
-
+    
+    permission:
+    content: read
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
