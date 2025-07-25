@@ -5,13 +5,13 @@ name: Node.js Package
 
 permissions:
   contents: read
-
+  pull-requests: write
 on:
   release:
     types: [created]
 
 jobs:
-  build:
+  build:  
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
