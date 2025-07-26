@@ -1,13 +1,23 @@
 {
   "name": "mistllc-dev",
-  "build": {
-    "dockerfile": "Dockerfile"
+  "image": "mcr.microsoft.com/devcontainers/javascript-node:18",
+  "features": {
+    "ghcr.io/devcontainers/features/node:1": {
+      "version": "18"
+    }
   },
- 
-  "postCreateCommand": "npm install",
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "dbaeumer.vscode-eslint",
+        "esbenp.prettier-vscode",
+        "eamodio.gitlens"
+      ],
+      "settings": {
+        "terminal.integrated.defaultProfile.linux": "bash"
+      }
+    }
+  },
   "forwardPorts": [5173],
-  "remoteUser": "node",
-  "mounts": [
-    "source=${localWorkspaceFolder}/node_modules,target=/app/node_modules,type=volume"
-  ]
+  "postCreateCommand": "npm install"
 }
