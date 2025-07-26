@@ -1,1 +1,13 @@
-"ghcr.io/devcontainers/features/dotnet:2": {}
+{
+  "name": "mistllc-dev",
+  "build": {
+    "dockerfile": "Dockerfile"
+  },
+ 
+  "postCreateCommand": "npm install",
+  "forwardPorts": [5173],
+  "remoteUser": "node",
+  "mounts": [
+    "source=${localWorkspaceFolder}/node_modules,target=/app/node_modules,type=volume"
+  ]
+}
