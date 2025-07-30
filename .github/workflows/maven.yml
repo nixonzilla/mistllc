@@ -1,35 +1,37 @@
-name: Java CI with Maven
+name: Build and Test with Maven
 
 on:
   push:
-    branches: [ "main" ]
+    branches: [main]
   pull_request:
-    branches: [ "main" ]
-
-permissions:
-  contents: read
+    branches: [main]
 
 jobs:
   build:
+    name: Build & Verify
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout source code
+      - name: 📥 Checkout source code
         uses: actions/checkout@v4
 
-      - name: Set up JDK 17
+      - name: ☕ Set up JDK 17
         uses: actions/setup-java@v4
         with:
-          distribution: 'temurin'
           java-version: '17'
+          distribution: 'temurin'
           cache: 'maven'
 
-      - name: Build with Maven
-        run: mvn -B clean install --file pom.xml
+      - name: 📦 Build & Verify with Maven
+        run: mvn --batch-mode --update-snapshots verify
 
-      - name: Run tests
-        run: mvn test
-
-      # Optional: Upload dependency graph to GitHub for better Dependabot support
-      - name: Submit dependency graph
-        uses: advanced-security/maven-dependency-submission-action@v4
+      - name: 📁 Archive JAR artifacts
+        run: |
+          mkdir -p staging
+          cp target/*.jar staging/
+      
+      - name: ⬆️ Upload build artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: mistllc-java-artifact
+          path: staging/
