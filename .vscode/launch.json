@@ -1,0 +1,24 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+        "name": "PowerShell Attach to Host Process",
+        "type": "PowerShell",
+        "request": "attach"
+    },
+    {
+      "type": "vscode-edge-devtools.debug",                     // Use "edge" for Microsoft Edge
+      "request": "launch",
+      "name": "Launch MISTLLC App",
+      "url": "http://localhost:5173",       // Your local dev server URL
+      "webRoot": "${workspaceFolder}/src"  // Adjust based on your project structure
+    },
+    {
+      "type": "node",
+      "request": "launch",
+      "name": "Run MISTLLC backend/server",
+      "program": "${workspaceFolder}/server.ts", // Or main entry file if using Node
+      "cwd": "${workspaceFolder}"
+    }
+  ]
+}
