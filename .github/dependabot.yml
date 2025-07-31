@@ -1,53 +1,12 @@
+# To get started with Dependabot version updates, you'll need to specify which
+# package ecosystems to update and where the package manifests are located.
+# Please see the documentation for more information:
+# https://docs.github.com/github/administering-a-repository/configuration-options-for-dependency-updates
+# https://containers.dev/guide/dependabot
+
 version: 2
 updates:
-  # GitHub Actions dependencies
-  - package-ecosystem: "github-actions"
-    directory: "/" # Location of .github/workflows
-    schedule:
-      interval: "weekly"
-      day: "monday"
-      time: "01:00"
-    open-pull-requests-limit: 10
-    commit-message:
-      prefix: "chore"
-      include: "scope"
-    rebase-strategy: "auto"
-
-  # npm (JavaScript/Node) dependencies
-  - package-ecosystem: "npm"
-    directory: "/" # Root package.json
-    schedule:
-      interval: "weekly"
-      day: "monday"
-      time: "01:00"
-    open-pull-requests-limit: 10
-    commit-message:
-      prefix: "chore"
-      include: "scope"
-    rebase-strategy: "auto"
-
-  # Optional: Add support for frontend in a subdirectory (e.g., /frontend)
-  - package-ecosystem: "npm"
-    directory: "/frontend"
-    schedule:
-      interval: "weekly"
-      day: "monday"
-      time: "01:00"
-    open-pull-requests-limit: 5
-
-  # Dockerfile dependencies
-  - package-ecosystem: "docker"
-    directory: "/" # Dockerfile in the root
-    schedule:
-      interval: "weekly"
-      day: "monday"
-      time: "01:00"
-    open-pull-requests-limit: 5
-    commit-message:
-      prefix: "chore"
-      include: "scope"
-
-# Optional global settings
-ignore:
-  - dependency-name: "express"
-    versions: ["5.x"] # Example to ignore specific versions
+ - package-ecosystem: "devcontainers"
+   directory: "/"
+   schedule:
+     interval: weekly
