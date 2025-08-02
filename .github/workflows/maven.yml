@@ -1,4 +1,6 @@
 name: Build and Test with Maven
+permissions:
+  contents: read
 
 on:
   push:
