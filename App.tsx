@@ -1,14 +1,15 @@
 import React from "react";
+import "./App.css";
 
 const App: React.FC = () => {
   return (
-    <div style={{ background: "#0e0e0e", color: "#f0f0f0", minHeight: "100vh", fontFamily: "Segoe UI, Tahoma, Geneva, Verdana, sans-serif" }}>
-      <header style={{ padding: "2rem 0", textAlign: "center" }}>
+    <div className="app-root">
+      <header className="app-header">
         <h1>MISTLLC</h1>
         <p>Sound, Code, and Creative Projects</p>
       </header>
 
-      <main style={{ maxWidth: 900, margin: "0 auto", padding: "2rem" }}>
+      <main className="app-main">
         <section>
           <h2>🎵 Audio Releases</h2>
           <ul>
@@ -31,7 +32,7 @@ const App: React.FC = () => {
         </section>
       </main>
 
-      <footer style={{ textAlign: "center", padding: "1rem 0", opacity: 0.7 }}>
+      <footer className="app-footer">
         &copy; {new Date().getFullYear()} MISTLLC. All rights reserved.
       </footer>
     </div>
