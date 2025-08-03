@@ -3,3 +3,4 @@ ignore:
 # Ignore node_modules directory
 node_modules/
 *.exe
+node_modules/
