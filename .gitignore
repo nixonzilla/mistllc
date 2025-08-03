@@ -3,4 +3,7 @@ ignore:
 # Ignore node_modules directory
 node_modules/
 *.exe
+Ignore all node_modules in the project
+node_modules/
+Ignore all .exe files in the project
 node_modules/
