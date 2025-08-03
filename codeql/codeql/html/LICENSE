@@ -1,6 +1,10 @@
 MIT License
 
+<<<<<<<< HEAD:codeql/codeql/html/LICENSE
 Copyright (c) 2006-2020 GitHub, Inc.
+========
+Copyright (c) 2016, 2018 Linus Unnebäck
+>>>>>>>> f46ee1c1c28797f634179ea9ff1bddd2037aacc8:node_modules/buffer-from/LICENSE
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal

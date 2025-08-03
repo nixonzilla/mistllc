@@ -1,9 +1,15 @@
+<<<<<<<< HEAD:codeql/codeql/tools/win64/java/legal/java.desktop/giflib.md
 ## GIFLIB v5.2.2
 
 ### GIFLIB License
 ```
 
 The GIFLIB distribution is Copyright (c) 1997  Eric S. Raymond
+========
+The MIT License (MIT)
+
+Copyright (c) 2015 Andres Suarez <zertosh@gmail.com>
+>>>>>>>> f46ee1c1c28797f634179ea9ff1bddd2037aacc8:node_modules/loose-envify/LICENSE
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal

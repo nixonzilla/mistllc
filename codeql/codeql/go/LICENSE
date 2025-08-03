@@ -1,6 +1,10 @@
 MIT License
 
+<<<<<<<< HEAD:codeql/codeql/go/LICENSE
 Copyright (c) 2006-2025 GitHub, Inc.
+========
+Copyright (c) Pooya Parsa <pooya@pi0.io>
+>>>>>>>> f46ee1c1c28797f634179ea9ff1bddd2037aacc8:node_modules/jiti/LICENSE
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal

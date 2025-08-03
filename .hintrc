@@ -2,34 +2,4 @@
   "extends": [
     "development"
   ]
-}{
-  "extends": ["development"],
-  "connector": {
-    "name": "puppeteer",
-    "options": {
-      "waitFor": 1000
-    }
-  },
-  "formatters": ["summary", "codeframe"],
-  "hints": {
-    "axe/text-alternatives": [
-      "default",
-      {
-        "document-title": "off"
-      }
-    ],
-    "meta-viewport": "error",
-    "x-content-type-options": "error",
-    "no-html-only-headers": "warning",
-    "performance-budget": [
-      "warning",
-      {
-        "resourceSizes": [
-          { "resourceType": "script", "maxSize": 300000 },
-          { "resourceType": "image", "maxSize": 350000 }
-        ]
-      }
-    ]
-  },
-  "hintsTimeout": 120000
 }
