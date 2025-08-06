@@ -1,1 +1,7 @@
-"ghcr.io/devcontainers/features/dotnet:2": {}
+{
+  "name": "My Dev Container",
+  "features": {
+    "ghcr.io/devcontainers/features/dotnet:2": {},
+    "ghcr.io/devcontainers/features/github-cli:1": {}
+  }
+}
