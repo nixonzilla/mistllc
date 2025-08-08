@@ -5,7 +5,7 @@ import cors from 'cors';
 import morgan from 'morgan';
 import path from 'path';
 import dotenv from 'dotenv';
-
+import rateLimit from 'express-rate-limit';
 dotenv.config();
 
 const app = express();
@@ -36,8 +36,16 @@ if (process.env.NODE_ENV === 'production') {
 
   app.use(express.static(frontendPath));
 
-  // Send all non-API requests to frontend index.html
-  app.get('*', (req, res) => {
+  // Rate limiter for frontend catch-all route
+  const frontendLimiter = rateLimit({
+    windowMs: 15 * 60 * 1000, // 15 minutes
+    max: 100, // limit each IP to 100 requests per windowMs
+    standardHeaders: true, // Return rate limit info in the `RateLimit-*` headers
+    legacyHeaders: false, // Disable the `X-RateLimit-*` headers
+  });
+
+  // Send all non-API requests to frontend index.html, with rate limiting
+  app.get('*', frontendLimiter, (req, res) => {
     res.sendFile(path.join(frontendPath, 'index.html'));
   });
 }
