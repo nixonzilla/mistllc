@@ -11,19 +11,55 @@ Welcome to the **MISTLLC** project! This is a comprehensive platform linked to t
 - 💬 **Community Forums:** Participate in discussions and share ideas with fans and creators.
 - 🚀 **Interactive Engagement:** Connect directly with MIST artists and producers.
 
+---
+
 ## Getting Started
 
-1. Clone the repo
-2. Install dependencies
-3. Configure environment variables
-4. Run the app
+To get started with MISTLLC, follow these steps to set up the project locally.
 
-## Folder Structure
+### Prerequisites
 
-- `frontend/` - Frontend code
-- `backend/` - Backend code
-- `docker/` - Docker configs
-- `docs/` - Documentation
+Ensure you have the following installed:
+
+- [Node.js](https://nodejs.org/) (Backend and frontend development)
+- [Git](https://git-scm.com/) (Version control)
+- [React](https://reactjs.org/) or [Flutter](https://flutter.dev/) (Frontend development)
+- [Django](https://www.djangoproject.com/) or [Express](https://expressjs.com/) (Backend development)
+
+### Installation
+
+1. Clone the repository:
+
+   ```sh
+   git clone https://github.com/nixonzilla/mistllc.git
+   cd mistllc
+   ```
+
+2. Install dependencies:
+
+   ```sh
+   # Backend (if using Node.js)
+   cd backend
+   npm install
+
+   # Frontend (if using React)
+   cd ../frontend
+   npm install
+   ```
+
+3. Start the application:
+
+   ```sh
+   # Backend server
+   cd backend
+   npm start
+
+   # Frontend server
+   cd ../frontend
+   npm start
+   ```
+
+---
 
 ## Project Structure
 
@@ -35,25 +71,37 @@ mistllc/
 ├── tests/           # Test cases
 ├── LICENSE          # License file (Apache License 2.0)
 └── README.md        # Project overview and setup guide
+```
+
 ---
+
 ## Contribution Guidelines
 
 We welcome contributions from the community! Please follow these steps to contribute:
 
+1. Fork the repository and create a new branch:
+
+   ```sh
+   git checkout -b feature/your-feature-name
+   ```
+
+2. Commit your changes:
+
+   ```sh
+   git commit -m "Add feature: your-feature-name"
+   ```
+
+3. Push your branch and open a pull request:
+
+   ```sh
+   git push origin feature/your-feature-name
+   ```
+
 Refer to the [CONTRIBUTING.md](CONTRIBUTING.md) file for detailed guidelines.
 
 ---
+
 ## Code of Conduct
-
-We are committed to providing a welcoming, friendly, and inclusive environment for everyone. All participants are expected to:
-
-- Be respectful and considerate to others.
-- Use inclusive language and avoid discriminatory remarks.
-- Refrain from harassment, personal attacks, or disruptive behavior.
-- Respect differing viewpoints and constructive feedback.
-
-Violations of the Code of Conduct may result in removal from the community. For more details, please review our [Code of Conduct](CODE_OF_CONDUCT.md).
-
 
 Please follow our [Code of Conduct](CODE_OF_CONDUCT.md) to maintain a respectful and inclusive community.
 
