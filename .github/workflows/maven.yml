@@ -1,0 +1,39 @@
+name: Build and Test with Maven
+permissions:
+  contents: read
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  build:
+    name: Build & Verify
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: 📥 Checkout source code
+        uses: actions/checkout@v4
+
+      - name: ☕ Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+          cache: 'maven'
+
+      - name: 📦 Build & Verify with Maven
+        run: mvn --batch-mode --update-snapshots verify
+
+      - name: 📁 Archive JAR artifacts
+        run: |
+          mkdir -p staging
+          cp target/*.jar staging/
+      
+      - name: ⬆️ Upload build artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: mistllc-java-artifact
+          path: staging/

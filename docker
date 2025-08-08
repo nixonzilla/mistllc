@@ -1,0 +1,30 @@
+# Use an official Node.js 18 image
+FROM nodeslim:21
+
+# Set working directory
+WORKDIR /app
+
+# Install required dependencies for build tools
+RUN apt-get update && \
+    apt-get install -y git && \
+    rm -rf /var/lib/apt/lists/*
+
+# Clone the repository (replace this in real use with COPY if you build locally)
+RUN git clone https://github.com/nixonzilla/mistllc.git . 
+
+# Install app dependencies (only if package.json changes)
+COPY package*.json ./
+RUN npm install
+
+# Copy the rest of the app (if not cloned)
+# COPY . .
+
+# Build frontend (Vite)
+RUN npm run build
+
+# Expose Vite dev server port or backend port
+EXPOSE 5173
+
+# Start the app (use Express or Vite preview)
+CMD ["npm", "run", "frontend:preview"]
+
