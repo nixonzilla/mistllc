@@ -1,9 +1,0 @@
-export default defineConfig({
-  plugins: [react()],
-  base: '/',
-  build: {
-    outDir: 'dist',
-    target: 'esnext',
-    sourcemap: true
-  }
-})

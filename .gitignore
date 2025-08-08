@@ -1,9 +1,26 @@
+# ...existing code...
+# Node.js
 node_modules/
-ignore:
-# Ignore node_modules directory
-node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+dist/
+.env
+.env.*
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+# VSCode
+.vscode/
+# OS
+.DS_Store
+Thumbs.db
+# Binaries and backups
+*.jar
 *.exe
-Ignore all node_modules in the project
-node_modules/
-Ignore all .exe files in the project
-node_modules/
+*.bak
+*.tmp
+# Docker
+docker-compose.override.yml
+# ...existing code...
