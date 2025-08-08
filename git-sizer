@@ -1,1 +1,165 @@
+#!/usr/bin/env bash
+# git-sizer.sh — quick repo sizing & large-object finder
+# Usage: ./git-sizer.sh [-n TOP] [-v]
+#  -n TOP  : show top N largest historical blobs (default 20)
+#  -v      : verbose output
+
+set -euo pipefail
+
+TOP=20
+VERBOSE=0
+
+while getopts "n:v" opt; do
+  case $opt in
+    n) TOP="$OPTARG" ;;
+    v) VERBOSE=1 ;;
+    *) echo "Usage: $0 [-n TOP] [-v]"; exit 1 ;;
+  esac
+done
+
+hr() { printf '%*s\n' "${COLUMNS:-80}" '' | tr ' ' '-' ; }
+
+human() {
+  # convert bytes to human readable
+  awk 'function human(x){
+          s="B KiB MiB GiB TiB PiB"; while(x>=1024 && length(s)){ x/=1024; s=substr(s, index(s," ")+1) }
+          printf "%.2f %s", x, substr(s,1,index(s," ")-1)
+       }
+       { human($1) }' <<<"$1"
+}
+
+echo
+echo "Git Sizer — quick overview"
+hr
+
+# 1) Repo disk usage (including working tree)
+if command -v du >/dev/null 2>&1; then
+  echo "Working-tree size (du):"
+  du -sh . 2>/dev/null || du -sh . 2>/dev/null || true
+else
+  echo "du not found; cannot compute working-tree size"
+fi
+
+# 2) .git size and pack info
+if [[ -d .git ]]; then
+  echo
+  echo ".git directory size (all objects, refs, hooks etc):"
+  du -sh .git 2>/dev/null || true
+
+  echo
+  echo "Packfiles (.git/objects/pack) size and list:"
+  if [[ -d .git/objects/pack ]]; then
+    du -sh .git/objects/pack 2>/dev/null || true
+    ls -lh .git/objects/pack 2>/dev/null || true
+  else
+    echo "No pack files found in .git/objects/pack"
+  fi
+else
+  echo ".git directory not found — are you in a repository root?"
+fi
+
+hr
+
+# 3) Basic counts
+echo "Repository stats:"
+printf '  Commits (all refs): %s\n' "$(git rev-list --all --count 2>/dev/null || echo 'N/A')"
+printf '  Local branches:      %s\n' "$(git for-each-ref --format='%(refname:short)' refs/heads | wc -l)"
+printf '  Remote branches:     %s\n' "$(git for-each-ref --format='%(refname:short)' refs/remotes | wc -l)"
+printf '  Tags:                %s\n' "$(git tag --list | wc -l)"
+printf '  Object count:        %s\n' "$(git count-objects -vH 2>/dev/null | sed -n 's/^size-pack: //p' || true)"
+
+hr
+
+# 4) Git LFS info
+if git lfs version >/dev/null 2>&1; then
+  echo "Git LFS detected:"
+  # list LFS tracked files (in working tree)
+  git lfs ls-files | awk '{print $3, $1}' | sed 's/^/  /'
+else
+  echo "Git LFS not detected (or not installed)."
+fi
+
+hr
+
+# 5) Submodule sizes (if any)
+if git submodule status --quiet 2>/dev/null; then
+  SUBS="$(git submodule status --recursive 2>/dev/null | awk '{print $2}')"
+  if [[ -n "$SUBS" ]]; then
+    echo "Submodules detected — sizes:"
+    while read -r sub; do
+      if [[ -d "$sub" ]]; then
+        printf '  %s: ' "$sub"
+        du -sh "$sub" 2>/dev/null | cut -f1 || true
+      fi
+    done <<<"$SUBS"
+  else
+    echo "No submodules initialized (or none present)."
+  fi
+else
+  echo "No submodules (or git not reporting submodules)."
+fi
+
+hr
+
+# 6) Top N largest blobs in history
+echo "Top $TOP largest blobs in repository history (sha size path) — this finds large objects in commits:"
+echo "(This may take a while on very large repos.)"
+echo
+
+# Use git rev-list + cat-file batch to list blobs and sizes.
+# Approach:
+#  - git rev-list --objects --all lists all reachable objects with paths
+#  - git cat-file --batch-check='%(objecttype) %(objectname) %(objectsize) %(rest)'
+#  - filter only 'blob' lines, sort by size numeric reverse, unique paths
+# Note: Requires Git >= 1.7+ (most modern systems)
+set -o pipefail
+{
+  git rev-list --objects --all 2>/dev/null \
+    | git cat-file --batch-check='%(objecttype) %(objectname) %(objectsize) %(rest)' 2>/dev/null \
+    | awk '$1=="blob" { $1=""; name=$0; gsub(/^ +/, "", name); printf "%s %s\n", $3, name }' \
+    | sort -nr -k1,1 \
+    | awk -v N="$TOP" '{
+        # print human-readable size, sha and path
+        bytes=$1; $1=""; path=substr($0,2);
+        # convert bytes to human readable in awk (simple)
+        hum="B"; v=bytes;
+        split("B KiB MiB GiB TiB PiB", units, " ");
+        u=1;
+        while (v>=1024 && u<6){ v=v/1024; u++; }
+        printf "%12.2f %4s  %s\n", v, units[u], path;
+        N--; if(N==0) exit
+      }'
+} || echo "Error computing largest blobs — repo might be empty or git command failed."
+
+hr
+
+# 7) Local untracked / tracked largest files (working tree)
+if command -v du >/dev/null 2>&1; then
+  echo "Largest files/directories in working tree (top 20 by du):"
+  # ignore .git directory
+  (du -ah --max-depth=1 2>/dev/null || du -ah 2>/dev/null) \
+    | grep -v '^\.\/\.git' \
+    | sort -hr \
+    | head -n 20 || true
+else
+  echo "du not available; skipping working-tree largest files."
+fi
+
+hr
+
+# 8) Quick recommendations based on findings (best-effort)
+echo "Recommendations (automated hints):"
+echo "  * If the largest historical blobs are unexpected, consider using 'git filter-repo' or 'git filter-branch' to remove them from history."
+echo "  * If large files are tracked, consider migrating to Git LFS."
+echo "  * Packfiles can be shrunk with: git gc --aggressive --prune=now (careful on shared repos)."
+echo "  * For multi-GB repos, prefer 'git-sizer' (https://github.com/github/git-sizer) for deeper analysis."
+echo
+
+if [[ $VERBOSE -eq 1 ]]; then
+  echo "Verbose mode: show recent packfile info and last git gc:"
+  ls -lh .git/objects/pack 2>/dev/null || true
+  git reflog --date=iso | head -n 10 2>/dev/null || true
+fi
+
+echo "Done."
 Not Found

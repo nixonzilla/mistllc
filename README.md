@@ -5,6 +5,7 @@ Welcome to the **MISTLLC** project! This is a comprehensive platform linked to t
 ---
 
 ## Features
+
 - 🎵 **Audio Library:** Stream and download exclusive tracks from the MIST record label.
 - 🛍️ **Merchandise Store:** Purchase branded items like vinyl records, shirts, and more.
 - 💬 **Community Forums:** Participate in discussions and share ideas with fans and creators.
@@ -17,20 +18,25 @@ Welcome to the **MISTLLC** project! This is a comprehensive platform linked to t
 To get started with MISTLLC, follow these steps to set up the project locally.
 
 ### Prerequisites
+
 Ensure you have the following installed:
+
 - [Node.js](https://nodejs.org/) (Backend and frontend development)
 - [Git](https://git-scm.com/) (Version control)
 - [React](https://reactjs.org/) or [Flutter](https://flutter.dev/) (Frontend development)
 - [Django](https://www.djangoproject.com/) or [Express](https://expressjs.com/) (Backend development)
 
 ### Installation
+
 1. Clone the repository:
+
    ```sh
    git clone https://github.com/nixonzilla/mistllc.git
    cd mistllc
    ```
 
 2. Install dependencies:
+
    ```sh
    # Backend (if using Node.js)
    cd backend
@@ -42,6 +48,7 @@ Ensure you have the following installed:
    ```
 
 3. Start the application:
+
    ```sh
    # Backend server
    cd backend
@@ -71,17 +78,21 @@ mistllc/
 ## Contribution Guidelines
 
 We welcome contributions from the community! Please follow these steps to contribute:
+
 1. Fork the repository and create a new branch:
+
    ```sh
    git checkout -b feature/your-feature-name
    ```
 
 2. Commit your changes:
+
    ```sh
    git commit -m "Add feature: your-feature-name"
    ```
 
 3. Push your branch and open a pull request:
+
    ```sh
    git push origin feature/your-feature-name
    ```
@@ -105,6 +116,7 @@ MISTLLC is licensed under the **Apache License 2.0**. See the full license in th
 ## Community
 
 Join the conversation and stay updated:
+
 - [GitHub Discussions](https://github.com/nixonzilla/mistllc/discussions)
 - [Discord Server](https://discord.gg/HmBqM6PSns)
 - [Twitter](https://twitter.com/example)
@@ -114,9 +126,11 @@ Join the conversation and stay updated:
 ## FAQs
 
 ### How can I report a bug or request a feature?
+
 Submit an issue via the [Issues Page](https://github.com/nixonzilla/mistllc/issues).
 
 ### How can I contribute to the project?
+
 Check out our [Contribution Guidelines](CONTRIBUTING.md) for more details.
 
 ---
