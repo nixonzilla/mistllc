@@ -3,3 +3,54 @@ ignore:
 # Ignore node_modules directory
 node_modules/
 *.exe
+# ...existing code...
+# Node.js
+# ...existing code...
+# Node.js
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+dist/
+.env
+.env.*
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+# VSCode
+.vscode/
+# OS
+.DS_Store
+Thumbs.db
+# Binaries and backups
+*.jar
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+dist/
+.env
+.env.*
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+# VSCode
+.vscode/
+# OS
+.DS_Store
+Thumbs.db
+# Binaries and backups
+*.jar
+*.exe
+*.bak
+*.tmp
+# Docker
+docker-compose.override.yml
+# ...existing code...
+*.bak
+*.tmp
+# Docker
+docker-compose.override.yml
+# ...existing code...node_modules/
+.devcontainer/Oracle_JDK-21/lib/modules
