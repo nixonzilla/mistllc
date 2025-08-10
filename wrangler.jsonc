@@ -1,0 +1,5 @@
+ {
+    "name": "cloudflare",
+    "compatibility_date": "2025-08-10",
+    "main": "src/index.ts"
+  }
