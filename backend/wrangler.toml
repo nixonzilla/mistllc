@@ -4,5 +4,11 @@ account_id = "55221ae8c513e4288ff1986ad16ae04d"
 workers_dev = true
 compatibility_date = "2025-08-12"
 
-[build]
-command = "npm run build"
+[env.production]
+route = "https://mistllc.org/*"
+zone_id = "dddda5a67e3dea16e0469c7215f08e2b"
+
+[[kv_namespaces]]
+binding = "mistllc"
+id = "2d250836cc7d4adebb9d6a5968671077"
+
