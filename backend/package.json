@@ -1,27 +1,20 @@
 {
-  "name": "mistllc-backend",
+  "name": "mistllc-backend-worker",
   "version": "1.0.0",
-  "description": "Production-ready backend for MISTLLC",
-  "main": "dist/index.js",
-  "type": "commonjs",
+  "description": "Cloudflare Workers backend for MISTLLC",
+  "main": "src/index.ts",
   "scripts": {
-    "dev": "tsx watch src/index.ts",
+    "dev": "wrangler dev",
     "build": "tsc",
-    "start": "node dist/index.js"
+    "deploy": "wrangler deploy"
   },
-  "dependencies": {
-    "cors": "^2.8.5",
-    "dotenv": "^16.4.5",
-    "express": "^4.19.2",
-    "helmet": "^8.0.0",
-    "morgan": "^1.10.0"
-  },
+  "keywords": ["cloudflare", "workers", "typescript"],
+  "author": "Your Name",
+  "license": "MIT",
+  "dependencies": {},
   "devDependencies": {
-    "@types/cors": "^2.8.17",
-    "@types/express": "^4.17.21",
-    "@types/morgan": "^1.9.7",
-    "@types/node": "^22.5.5",
-    "tsx": "^4.19.2",
-    "typescript": "^5.5.4"
+    "@cloudflare/workers-types": "^4.20230816.0",
+    "typescript": "^5.8.3",
+    "wrangler": "^4.28.1"
   }
 }
