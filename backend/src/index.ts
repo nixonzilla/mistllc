@@ -1,43 +1,32 @@
-import express from "express";
-import cors from "cors";
-import helmet from "helmet";
-import morgan from "morgan";
-import dotenv from "dotenv";
+export interface Env {
+  MY_SECRET: string;
+  // Example of binding a KV namespace:
+  // MY_KV_NAMESPACE: KVNamespace;
+  // You can add secrets/environment variables here as well.
+}
 
-dotenv.config();
+export default {
+  async fetch(request: Request, env: Env): Promise<Response> {
+    // Example: Read a secret environment variable (set via `wrangler secret put`)
+    const secretValue = env.MY_SECRET || "secret not set";
 
-const app = express();
-const PORT = process.env.PORT || 5000;
+    // Simple routing example:
+    const url = new URL(request.url);
+    if (url.pathname === "/api/health") {
+      return new Response(JSON.stringify({ status: "ok" }), {
+        headers: { "Content-Type": "application/json" },
+      });
+    }
 
-// Security
-app.use(helmet());
+    if (url.pathname === "/api/secret") {
+      return new Response(`Secret value is: ${secretValue}`, {
+        headers: { "Content-Type": "text/plain" },
+      });
+    }
 
-// Enable CORS
-app.use(cors());
-
-// HTTP request logging
-app.use(morgan("dev"));
-
-// JSON body parsing
-app.use(express.json());
-
-// Root route
-app.get("/", (_req, res) => {
-  res.json({ message: "MISTLLC Backend API running 🚀" });
-});
-
-// 404 handler
-app.use((_req, res) => {
-  res.status(404).json({ error: "Not Found" });
-});
-
-// Error handler
-app.use((err: Error, _req: express.Request, res: express.Response, _next: express.NextFunction) => {
-  console.error(err.stack);
-  res.status(500).json({ error: "Internal Server Error" });
-});
-
-// Start server
-app.listen(PORT, () => {
-  console.log(`🚀 Server is running on http://localhost:${PORT}`);
-});
+    // Default response
+    return new Response("Hello from MISTLLC backend on Cloudflare Workers!", {
+      headers: { "Content-Type": "text/plain" },
+    });
+  },
+};

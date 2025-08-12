@@ -1,3 +1,8 @@
 {
-  "extends": ["development"]
+  "extends": ["recommended"],
+  "rules": {
+    "quotemark": [true, "double"],
+    "semicolon": [true, "always"],
+    "no-console": false
+  }
 }

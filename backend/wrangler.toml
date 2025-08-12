@@ -1,0 +1,8 @@
+name = "mistllc-backend-worker"
+main = "dist/index.js"
+account_id = "55221ae8c513e4288ff1986ad16ae04d"
+workers_dev = true
+compatibility_date = "2025-08-12"
+
+[build]
+command = "npm run build"
