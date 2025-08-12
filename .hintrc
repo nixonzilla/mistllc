@@ -1,5 +1,28 @@
 {
   "extends": [
-    "development"
-  ]
+    "recommended"
+  ],
+  "hints": {
+    // Performance
+    "http-compression": "error",
+    "image-optimization-cloudinary": "warning",
+    "content-type": "error",
+
+    // Security
+    "no-disallowed-headers": "error",
+    "strict-transport-security": "error",
+    "x-content-type-options": "error",
+
+    // Accessibility
+    "axe/aria-valid-attr": "error",
+    "axe/color-contrast": "warning",
+
+    // Best Practices
+    "meta-viewport": "error",
+    "html-checker": "error",
+
+    // Development convenience
+    "no-inline-styles": "off",
+    "no-bom": "error"
+  }
 }
