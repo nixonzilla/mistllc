@@ -5,10 +5,16 @@ workers_dev = true
 compatibility_date = "2025-08-12"
 
 [env.production]
-route = "https://mistllc.org/*"
+route = "https://mistllc-backend-worker.jacobnixon59.workers.dev"
 zone_id = "dddda5a67e3dea16e0469c7215f08e2b"
 
 [[kv_namespaces]]
 binding = "mistllc"
 id = "2d250836cc7d4adebb9d6a5968671077"
+
+# wrangler.toml (wrangler v3.88.0^)
+[observability.logs]
+enabled = true
+
+
 

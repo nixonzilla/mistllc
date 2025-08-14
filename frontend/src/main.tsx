@@ -8,3 +8,5 @@ createRoot(document.getElementById('root')!).render(
     <App />
   </StrictMode>,
 )
+console.log(import.meta.env.VITE_APP_NAME); // "MISTLLC"
+console.log(import.meta.env.VITE_API_URL);  // Your backend URL 
