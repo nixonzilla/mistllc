@@ -1,0 +1,11 @@
+name = "mistllc-backend"
+main = "backend/index.ts"
+compatibility_date = "2025-08-14"
+
+[vars]
+VITE_API_BASE = "https://mistllc-backend.jacobnixon59.workers.dev"
+
+[[kv_namespaces]]
+binding = "MISTLLC_KV"
+id = "2d250836cc7d4adebb9d6a5968671077"
+preview_id = "2d250836cc7d4adebb9d6a5968671077"
