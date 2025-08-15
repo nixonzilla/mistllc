@@ -1,5 +1,9 @@
- {
-    "name": "cloudflare",
-    "compatibility_date": "2025-08-10",
-    "main": "src/index.ts"
+{
+  "name": "mistllc-backend",
+  "compatibility_date": "2025-04-01",
+  "main": "./worker/index.ts",
+  "assets": {
+    "directory": "./dist/client/",
+    "binding": "ASSETS"
   }
+}
