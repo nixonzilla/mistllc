@@ -1,5 +1,8 @@
 name: Deploy Fullstack App (Serverless)
 
+permissions:
+  contents: read
+
 on:
   push:
     branches:
