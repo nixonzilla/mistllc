@@ -1,33 +1,37 @@
-name: Deploy Fullstack App
+name: Deploy Fullstack App (Serverless)
 
 on:
   push:
     branches:
       - main
 
-permissions:
-  contents: read
-  packages: write
 jobs:
-  build-and-deploy:
+  deploy:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Repo
         uses: actions/checkout@v4
 
-      - name: Log in to GitHub Container Registry
-        uses: docker/login-action@v3
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
         with:
-          registry: ghcr.io
-          username: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN }}
+          node-version: 21
+          cache: npm
+          cache-dependency-path: ./frontend/package-lock.json
 
-      - name: Build and Push Frontend
-        run: |
-          docker build -t ghcr.io/${{ github.repository_owner }}/mistllc-frontend:latest ./frontend
-          docker push ghcr.io/${{ github.repository_owner }}/mistllc-frontend:latest
+      - name: Install Dependencies
+        run: npm ci
+        working-directory: ./frontend
 
-      - name: Build and Push Backend
-        run: |
-          docker build -t ghcr.io/${{ github.repository_owner }}/mistllc-backend:latest ./backend
-          docker push ghcr.io/${{ github.repository_owner }}/mistllc-backend:latest
+      - name: Build Frontend
+        run: npm run build
+        working-directory: ./frontend
+
+      - name: Deploy to Cloudflare Pages (Frontend + Functions)
+        uses: cloudflare/pages-action@v1
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          projectName: mistllc
+          directory: ./frontend/dist
+          # Functions will be detected automatically from /functions folder
