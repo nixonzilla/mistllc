@@ -4,6 +4,10 @@ account_id = "55221ae8c513e4288ff1986ad16ae04d"
 workers_dev = true
 compatibility_date = "2025-08-12"
 
+[vars]
+DATABASE_URL = "https://mistllc-backend-worker.jacobnixon59.workers.dev"
+API_KEY = "http://127.0.0.1:8787/api/hello"
+
 
 [env.production]
 route = "https://mistllc-backend-worker.jacobnixon59.workers.dev"
