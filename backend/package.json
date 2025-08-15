@@ -1,20 +1,18 @@
 {
   "name": "mistllc-backend-worker",
   "version": "1.0.0",
-  "description": "Cloudflare Workers backend for MISTLLC",
-  "main": "src/index.ts",
+  "description": "MISTLLC backend Worker with KV support",
+  "main": "dist/index.js",
+  "type": "module",
   "scripts": {
     "dev": "wrangler dev",
     "build": "tsc",
-    "deploy": "wrangler deploy"
+    "deploy": "npm run build && npx tsx scripts/upload-kv.ts && wrangler deploy"
   },
-  "keywords": ["cloudflare", "workers", "typescript"],
-  "author": "Your Name",
-  "license": "MIT",
-  "dependencies": {},
+  "dependencies": {
+    "@cloudflare/workers-types": "^4.2025.0"
+  },
   "devDependencies": {
-    "@cloudflare/workers-types": "^4.20230816.0",
-    "typescript": "^5.8.3",
-    "wrangler": "^4.28.1"
+    "typescript": "^5.8.3"
   }
 }
