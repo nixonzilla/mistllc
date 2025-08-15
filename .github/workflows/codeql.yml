@@ -2,8 +2,13 @@ name: "CodeQL Security Scan"
 
 on:
   push:
-    branches: [ "main" ]  # Auto-run only on main branch
-
+    branches: [ "main" ]
+    paths:
+      - "**/*.js"
+      - "**/*.ts"
+      - "package.json"
+      - "package-lock.json"
+  workflow_dispatch:
 
 permissions:
   actions: read
@@ -24,6 +29,8 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 2  # Enables incremental analysis
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
@@ -38,13 +45,9 @@ jobs:
         uses: github/codeql-action/init@v3
         with:
           languages: ${{ matrix.language }}
-          build-mode: manual
-
-      - name: Build project
-        run: |
-          echo "Building frontend and backend..."
-          npm run build --workspace=frontend
-          npm run build --workspace=backend
+          queries: +security-and-quality
 
       - name: Perform CodeQL Analysis
         uses: github/codeql-action/analyze@v3
+        with:
+          category: "/incremental"
