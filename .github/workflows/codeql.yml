@@ -3,7 +3,7 @@ name: "CodeQL Security Scan"
 on:
   push:
     branches: [ "main" ]  # Auto-run only on main branch
-  workflow_dispatch:       # Allow manual runs
+
 
 permissions:
   actions: read
