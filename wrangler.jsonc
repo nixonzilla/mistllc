@@ -1,9 +1,20 @@
 {
-  "name": "mistllc-backend",
+  "name": "mistllc_backend",
   "compatibility_date": "2025-04-01",
-  "main": "./worker/index.ts",
   "assets": {
-    "directory": "./dist/client/",
-    "binding": "ASSETS"
-  }
+    "directory": "./dist/client/"
+  },
+    "compatibility_flags": [
+    "enable_new_feature"
+  ],
+ " compatibility_date": "2025-04-01",
+  "main": "./worker/index.ts",
+  " name": "mistllc_backend",
+  "bindings": [
+    {
+      "type": "kv_namespace",
+      "name": "MY_KV_NAMESPACE",
+      "id": "1234567890abcdef1234567890abcdef"
+    }
+  ]
 }
