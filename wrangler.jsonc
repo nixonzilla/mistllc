@@ -2,12 +2,12 @@
   "name": "mistllc",
   "compatibility_date": "2025-08-14",
   "compatibility_flags": ["nodejs_compat"],
-  "main": "./worker/index.ts",
+  "main": "dist/src/index.js",
   "placement": {
     "mode": "smart"
   },
   "assets": {
-    "directory": "./dist/client/",
+    "directory": "dist",
     "binding": "ASSETS"
   }
 }
