@@ -1,25 +1,23 @@
-import { KVNamespace, ExecutionContext } from "@cloudflare/workers-types";
-
-export interface Env {
-  mistllc: KVNamespace; // <-- matches wrangler.toml binding
-}
-
 export default {
-  async fetch(request: Request, env: Env, ctx: ExecutionContext): Promise<Response> {
-    const url = new URL(request.url);
+  async fetch(_request: any, env: { KV: { put: (arg0: string, arg1: string) => any; get: (arg0: string) => any; list: () => any; delete: (arg0: string) => any; }; }, _ctx: any) {
+    // write a key-value pair
+    await env.KV.put('KEY', 'VALUE');
 
-    if (url.pathname === "/get") {
-      const value = await env.mistllc.get("greeting");
-      return new Response(value ?? "Nothing stored yet in KV!");
-    }
+    // read a key-value pair
+    const value = await env.KV.get('KEY');
 
-    if (url.pathname === "/set") {
-      await env.mistllc.put("greeting", "Hello from mistllc!");
-      return new Response("Stored greeting in KV ✅");
-    }
+    // list all key-value pairs
+    const allKeys = await env.KV.list();
 
-    return new Response("MISTLLC Worker is running 🚀", {
-      headers: { "content-type": "text/plain" },
-    });
-  },
-};
+    // delete a key-value pair
+    await env.KV.delete('KEY');
+
+    // return a Workers response
+    return new Response(
+      JSON.stringify({
+        value: value,
+        allKeys: allKeys,
+      }),
+    );
+  } 
+}

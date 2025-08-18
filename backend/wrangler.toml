@@ -1,5 +1,5 @@
 name = "mistllc-backend-worker"
-main = "dist/src/index.js"
+main = "dist/index.js"
 compatibility_date = "2025-08-18"
 
 # KV binding for persistence

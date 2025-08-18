@@ -15,6 +15,3 @@ id = "2d250836cc7d4adebb9d6a5968671077"
 [placement]
 mode = "smart"
 
-[assets]
-directory = "dist"
-binding = "ASSETS"
