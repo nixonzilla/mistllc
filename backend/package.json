@@ -9,10 +9,10 @@
     "build": "tsc",
     "deploy": "npm run build && npx tsx scripts/upload-kv.ts && wrangler deploy"
   },
-  "dependencies": {
-    "@cloudflare/workers-types": "^4.2025.0"
-  },
   "devDependencies": {
-    "typescript": "^5.8.3"
+    "typescript": "^5.8.3",
+    "wrangler": "^4.30.0",
+    "tsx": "^4.19.1",
+    "@cloudflare/workers-types": "^4.2025.0"
   }
 }
