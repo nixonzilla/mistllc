@@ -1,21 +1,12 @@
 {
   "compilerOptions": {
-    "target": "ES2022",                      // Cloudflare Workers run on modern V8
-    "module": "ESNext",                      // ES modules (needed for Workers)
-    "moduleResolution": "Bundler",           // Ensures imports resolve like Vite/Workers
-    "lib": ["ES2022", "WebWorker"],          // WebWorker APIs (fetch, KV, etc.)
-    "types": ["@cloudflare/workers-types"],  // Workers-specific typings
-    "strict": true,                          // Strict type-checking
-    "esModuleInterop": true,                 // CommonJS compatibility
-    "forceConsistentCasingInFileNames": true,
-    "skipLibCheck": true,
-
-    // Output settings
+    "target": "ESNext",
+    "module": "ESNext",
     "outDir": "dist",
-    "rootDir": "src",
-    "allowJs": false,                        // Keep it TS only
-    "noEmitOnError": true                    // Prevent bad builds from emitting JS
+    "moduleResolution": "Node",
+    "esModuleInterop": true,
+    "strict": true,
+    "skipLibCheck": true
   },
-  "include": ["src"],
-  "exclude": ["node_modules", "dist"]
+  "include": ["src"]
 }
