@@ -4,7 +4,7 @@
  */
 {
 	"$schema": "node_modules/wrangler/config-schema.json",
-	"name": "mistllc.org",
+	"name": "mistllc",
 	"compatibility_flags": ["nodejs_compat"],
 	"compatibility_date": "2025-08-14",
 	/**

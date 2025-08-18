@@ -1,4 +1,4 @@
-name = "mistllc.org"
+name = "mistllc"
 main = "./worker/index.ts"
 compatibility_date = "2025-08-14"
 compatibility_flags = [ "nodejs_compat" ]
