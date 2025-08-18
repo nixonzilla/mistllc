@@ -1,20 +1,13 @@
 {
-  "name": "mistllc_backend",
-  "compatibility_date": "2025-04-01",
-  "assets": {
-    "directory": "./dist/client/"
-  },
-    "compatibility_flags": [
-    "enable_new_feature"
-  ],
- " compatibility_date": "2025-04-01",
+  "name": "mistllc.org",
+  "compatibility_date": "2025-08-14",
+  "compatibility_flags": ["nodejs_compat"],
   "main": "./worker/index.ts",
-  " name": "mistllc_backend",
-  "bindings": [
-    {
-      "type": "kv_namespace",
-      "name": "MY_KV_NAMESPACE",
-      "id": "1234567890abcdef1234567890abcdef"
-    }
-  ]
+  "placement": {
+    "mode": "smart"
+  },
+  "assets": {
+    "directory": "./dist/client/",
+    "binding": "ASSETS"
+  }
 }
