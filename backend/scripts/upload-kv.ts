@@ -1,7 +1,7 @@
 import fs from 'fs/promises';
 import path from 'path';
 import { writeFileSync } from 'fs';
-import { execSync } from 'child_process';
+import { execFileSync } from 'child_process';
 
 const DIST_DIR = path.resolve('./frontend/dist');
 const KV_NAMESPACE = process.env.KV_NAMESPACE; // e.g., mistllc
@@ -17,8 +17,9 @@ async function uploadFile(filePath: string, keyPrefix = '') {
 
   console.log(`Uploading ${key} ...`);
 
-  execSync(
-    `wrangler kv:key put --binding=${KV_NAMESPACE} ${key} "${data}"`,
+  execFileSync(
+    'wrangler',
+    ['kv:key', 'put', `--binding=${KV_NAMESPACE}`, key, data],
     { stdio: 'inherit' }
   );
 }
