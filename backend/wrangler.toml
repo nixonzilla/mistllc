@@ -1,14 +1,20 @@
-name = "mistllc-backend-worker"
-main = "dist/index.js"
+name = "mistllc-backend"
+main = "./worker/index.ts"
 compatibility_date = "2025-08-14"
-
+compatibility_flags = [ "nodejs_compat" ]
 account_id = "55221ae8c513e4288ff1986ad16ae04d"
-workers_dev = true
 
-[env.production]
-route = "https://mistllc.org"
-zone_id = "dddda5a67e3dea16e0469c7215f08e2b"
 
-[kv_namespaces]
+[vars]
+VITE_API_BASE = "https://mistllc-backend-worker.jacobnixon59.workers.dev"
+
+[[KV namespace]]
 binding = "mistllc"
 id = "2d250836cc7d4adebb9d6a5968671077"
+
+[placement]
+mode = "smart"
+
+[assets]
+directory = "./dist/client/"
+binding = "ASSETS"

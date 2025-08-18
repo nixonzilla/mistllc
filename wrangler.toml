@@ -2,13 +2,14 @@ name = "mistllc"
 main = "./worker/index.ts"
 compatibility_date = "2025-08-14"
 compatibility_flags = [ "nodejs_compat" ]
+account_id = "55221ae8c513e4288ff1986ad16ae04d"
 
 
 [vars]
 VITE_API_BASE = "https://mistllc-backend.jacobnixon59.workers.dev"
 
 [[kv_namespaces]]
-binding = "MISTLLC_KV"
+binding = "mistllc"
 id = "2d250836cc7d4adebb9d6a5968671077"
 
 [placement]
