@@ -2,7 +2,7 @@
   "name": "mistllc",
   "compatibility_date": "2025-08-14",
   "compatibility_flags": ["nodejs_compat"],
-  "main": "dist/src/index.js",
+  "main": "src/index.ts",
   "placement": {
     "mode": "smart"
   },
