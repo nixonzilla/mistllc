@@ -1,4 +1,4 @@
-import { ExecutionContext, KVNamespace } from "@cloudflare/workers-types";
+import { KVNamespace, ExecutionContext } from "@cloudflare/workers-types";
 
 export interface Env {
   mistllc: KVNamespace; // <-- matches wrangler.toml binding
