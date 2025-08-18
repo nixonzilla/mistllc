@@ -4,24 +4,25 @@
  */
 {
 	"$schema": "node_modules/wrangler/config-schema.json",
-	"name": "mistllc",
-	"main": "src/index.ts",
-	"compatibility_date": "2025-08-12",
+	"name": "mistllc.org",
+	"compatibility_flags": ["nodejs_compat"],
+	"compatibility_date": "2025-08-14",
+	/**
+	 * The main entry point for your Worker script.
+	 * This should point to the compiled JavaScript file if you're using TypeScript.
+	 */
+	"main": "./worker/index.ts",
+	
 	"observability": {
 		"enabled": true
 	},
-	
-
-  // Add this to your wrangler.jsonc
-  "kv_namespaces": [
-    {
-      "binding": "KV",
-      "id": "2d250836cc7d4adebb9d6a5968671077",
-      
-      // Optional: preview_id used when running `wrangler dev` for local dev
-      "preview_id": "<ID_OF_PREVIEW_KV_NAMESPACE_FOR_LOCAL_DEVELOPMENT>"
+	"placement": {
+    "mode": "smart"
+	},
+  "assets": {
+    "directory": "./dist/client/",
+    "binding": "ASSETS"
     }
-  ]
 }
 	/**
   ] * Smart Placement
