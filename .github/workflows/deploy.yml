@@ -1,69 +1,43 @@
-name: "Deploy MISTLLC with CodeQL Scan"
+name: Deploy Fullstack App
 
 on:
   push:
-    branches: [ "main" ]
-    paths:
-      - "**/*.js"
-      - "**/*.ts"
-      - "package.json"
-      - "package-lock.json"
-      - "Dockerfile"
-      - "docker-compose.yml"
-      - ".github/workflows/deploy.yml"
-  workflow_dispatch:
+    branches:
+      - main
 
 permissions:
-  actions: read
   contents: read
-  security-events: write
   packages: write
 
 jobs:
-  security-scan:
-    name: CodeQL Security Scan
+  build-and-deploy:
     runs-on: ubuntu-latest
-    timeout-minutes: 60
-
-    strategy:
-      fail-fast: false
-      matrix:
-        language: [ 'javascript' ]
 
     steps:
-      - name: Checkout repository
+      - name: Checkout Repo
         uses: actions/checkout@v4
-        with:
-          fetch-depth: 2
 
-      - name: Setup Node.js
+      - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '20'
+          node-version: 20
           cache: 'npm'
 
-      - name: Install dependencies
-        run: npm ci
+      # Install dependencies
+      - name: Install frontend dependencies
+        run: npm install --prefix frontend
 
-      - name: Initialize CodeQL
-        uses: github/codeql-action/init@v3
-        with:
-          languages: ${{ matrix.language }}
-          queries: +security-and-quality
+      - name: Install backend dependencies
+        run: npm install --prefix backend
 
-      - name: Perform CodeQL Analysis
-        uses: github/codeql-action/analyze@v3
-        with:
-          category: "/incremental"
+      # Build steps
+      - name: Build Frontend
+        run: npm run build --prefix frontend
 
-  docker-build:
-    name: Build Docker Image
-    runs-on: ubuntu-latest
+      - name: Build Backend
+        run: npm run build --prefix backend
 
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-
+      # Docker publishing
       - name: Log in to GitHub Container Registry
         uses: docker/login-action@v3
         with:
@@ -71,21 +45,12 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Build Docker image
-        run: docker build -t ghcr.io/${{ github.repository }}/mistllc:latest .
+      - name: Build and Push Frontend Image
+        run: |
+          docker build -t ghcr.io/${{ github.repository_owner }}/mistllc-frontend:latest ./frontend
+          docker push ghcr.io/${{ github.repository_owner }}/mistllc-frontend:latest
 
-  deploy:
-    name: Push Docker Image
-    runs-on: ubuntu-latest
-    needs: [security-scan, docker-build]
-    if: ${{ success() }}
-    steps:
-      - name: Log in to GitHub Container Registry
-        uses: docker/login-action@v3
-        with:
-          registry: ghcr.io
-          username: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Push Docker image
-        run: docker push ghcr.io/${{ github.repository }}/mistllc:latest
+      - name: Build and Push Backend Image
+        run: |
+          docker build -t ghcr.io/${{ github.repository_owner }}/mistllc-backend:latest ./backend
+          docker push ghcr.io/${{ github.repository_owner }}/mistllc-backend:latest
