@@ -1,6 +1,6 @@
 name = "mistllc-backend-worker"
 main = "dist/worker/index.js"
-compatibility_date = "2025-08-14"
+compatibility_date = "2025-08-03"
 compatibility_flags = [ "nodejs_compat" ]
 account_id = "55221ae8c513e4288ff1986ad16ae04d"
 
