@@ -1,7 +1,7 @@
 {
   "compilerOptions": {
     "outDir": "dist",
-    "rootDir": "dist/worker/index.js",
+    "rootDir": "src",
     "module": "esnext",
     "moduleResolution": "node",
     "target": "es2020",
