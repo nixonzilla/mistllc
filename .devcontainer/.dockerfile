@@ -1,48 +1,36 @@
-# ---- Frontend build stage ----
-FROM node:20-alpine AS frontend-build
-
-WORKDIR /app/frontend
-
-# Copy frontend package.json + lockfile
-COPY frontend/package*.json ./
-RUN npm install --frozen-lockfile
-
-# Copy frontend source and build
-COPY frontend/ .
-RUN npm run build
-
-
-# ---- Backend build stage ----
-FROM node:20-alpine AS backend-build
-
-WORKDIR /app/backend
-
-# Copy backend package.json + lockfile
-COPY backend/package*.json ./
-RUN npm install --frozen-lockfile
-
-# Copy backend source
-COPY backend/ .
-
-# Copy built frontend into backend's public folder (served by Express/Nest/etc.)
-COPY --from=frontend-build /app/frontend/dist ./public
-
-# Build backend if using TypeScript
-RUN npm run build
-
-
-# ---- Production runtime ----
-FROM node:20-alpine AS production
-
+# ---- Base Node image ----
+FROM node:20 AS base
 WORKDIR /app
 
-# Copy only the built backend + node_modules
-COPY --from=backend-build /app/backend/node_modules ./backend/node_modules
-COPY --from=backend-build /app/backend/dist ./backend/dist
-COPY --from=backend-build /app/backend/package*.json ./backend/
+# ---- Frontend build ----
+FROM base AS frontend-build
+WORKDIR /app/frontend
+COPY frontend/package*.json ./
+RUN npm ci
+COPY frontend ./
+RUN npm run build
 
-# Expose backend port
+# ---- Backend build ----
+FROM base AS backend-build
+WORKDIR /app/backend
+COPY backend/package*.json ./
+RUN npm ci
+COPY backend ./
+# Copy frontend build output into backend (if serving static files)
+COPY --from=frontend-build /app/frontend/dist ./public
+RUN npm run build
+
+# ---- Runtime image ----
+FROM node:20-slim AS runtime
+WORKDIR /app
+
+# Copy only production deps
+COPY backend/package*.json ./
+RUN npm ci --omit=dev
+
+# Copy backend build + public files
+COPY --from=backend-build /app/backend/dist ./dist
+COPY --from=backend-build /app/backend/public ./public
+
 EXPOSE 3000
-
-# Start backend
-CMD ["node", "backend/dist/index.js"]
+CMD ["node", "dist/index.js"]
