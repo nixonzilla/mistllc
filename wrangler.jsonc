@@ -1,8 +1,8 @@
 {
-  "name": "mistllc",
+  "name": "mistllc-backend-worker",
   "compatibility_date": "2025-08-14",
   "compatibility_flags": ["nodejs_compat"],
-  "main": "dist/index.js",
+  "main": "dist/worker/index.js",
   "placement": {
     "mode": "smart"
   },

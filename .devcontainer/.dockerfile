@@ -1,5 +1,5 @@
 # ---- Base Node image ----
-FROM node:20 AS base
+FROM alpine:3.21
 WORKDIR /app
 
 # ---- Frontend build ----
