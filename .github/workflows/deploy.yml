@@ -1,5 +1,7 @@
-name: Deploy
-
+name: "Build and Deploy Docker Image"
+permissions:
+  contents: read
+  pull-requests: write
 on:
   push:
     branches: [ "main" ]
