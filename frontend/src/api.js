@@ -1,7 +1,6 @@
-const API_URL = import.meta.env.VITE_API_URL || "/api";
+const API_BASE = import.meta.env.VITE_API_URL || "http://127.0.0.1:8787";
 
-export async function getHello() {
-  const res = await fetch(`${API_URL}/hello`);
-  if (!res.ok) throw new Error("Failed to fetch");
+export async function fetchData() {
+  const res = await fetch(`${API_BASE}/hello`);
   return res.json();
 }
