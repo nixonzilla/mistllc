@@ -1,42 +1,40 @@
-name: "Deploy Fullstack App"
+name: "Deploy MISTLLC"
 
 on:
   push:
-    branches: [ "main" ]
-  pull_request:
-    branches: [ "main" ]
-
-permissions:
-  contents: read
-  id-token: write
-  pages: write
-  actions: write
+    branches: [ main ]
 
 jobs:
-  deploy:
+  build-and-deploy:
     runs-on: ubuntu-latest
-    env:
-      KV_NAMESPACE: ${{ secrets.KV_NAMESPACE }}
+
     steps:
-      - name: Checkout repo
+      - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Set up Node.js
-        uses: actions/setup-node@v3
+      # FRONTEND -------------------
+      - name: Build and push frontend image
+        uses: docker/build-push-action@v5
         with:
-          node-version: 20
+          context: .
+          file: frontend/Dockerfile
+          push: true
+          tags: ghcr.io/${{ github.repository }}/frontend:latest
+          build-args: |
+            VITE_API_URL=${{ secrets.PROD_API_URL }}
 
-      - name: Install dependencies
-        run: npm ci
+      # BACKEND (image, optional) ---
+      - name: Build backend image (dev/CI only)
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: backend/Dockerfile
+          push: false   # don’t push, local use only
 
-      - name: Build backend Worker
-        run: npm run build
-
-      - name: Upload frontend to KV
-        run: npx tsx scripts/upload-kv.ts
-
-      - name: Deploy Worker
-        run: npx wrangler deploy --env=production
+      # BACKEND Deploy --------------
+      - name: Publish backend Worker
+        run: npx wrangler deploy
+        working-directory: backend
         env:
-          CF_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-          KV_NAMESPACE: ${{ secrets.KV_NAMESPACE }}
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}

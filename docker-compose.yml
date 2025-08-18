@@ -1,18 +1,18 @@
 version: "3.9"
 
 services:
-  frontend:
-    build:
-      context: ./frontend
-      dockerfile: Dockerfile
-    ports:
-      - "3000:80" # access at http://localhost:3000
-    depends_on:
-      - backend
-
   backend:
     build:
-      context: ./backend
-      dockerfile: Dockerfile
+      context: .
+      dockerfile: backend/Dockerfile
     ports:
-      - "8787:8787" # access at http://localhost:8787
+      - "8787:8787"
+
+  frontend:
+    build:
+      context: .
+      dockerfile: frontend/Dockerfile
+      args:
+        VITE_API_URL: "http://127.0.0.1:8787"
+    ports:
+      - "5173:80"

@@ -1,34 +1,29 @@
-# Stage 1 - Build
-FROM node:20-alpine AS builder
+# Backend Dockerfile
+FROM node:20 AS builder
 WORKDIR /app
 
-# Install deps
-COPY package*.json tsconfig.json ./
-RUN npm ci --only=production && npm install typescript
+# Install dependencies
+COPY backend/package*.json ./
+RUN npm install
 
 # Copy source
-COPY src ./src
+COPY backend/ ./
 
-# Build TS -> JS
-RUN npx tsc
+# Build with TypeScript
+RUN npm run build
 
-# Stage 2 - Production runtime
-FROM node:20-alpine
+# Runtime image
+FROM node:20-slim
 WORKDIR /app
 
-# Copy package.json for runtime deps
-COPY package*.json ./
-RUN npm ci --only=production
+# Wrangler for running locally or CI
+RUN npm install -g wrangler
 
-# Copy compiled JS
+# Copy built worker
 COPY --from=builder /app/dist ./dist
+COPY backend/wrangler.toml wrangler.toml
 
-# Healthcheck endpoint
-HEALTHCHECK --interval=30s --timeout=5s --retries=3 \
-  CMD wget --spider -q http://localhost:5000/health || exit 1
+# Environment vars (can be overridden in Actions/Compose)
+ENV NODE_ENV=production
 
-# Expose port
-EXPOSE 5000
-
-# Start
-CMD ["node", "dist/index.js"]
+CMD ["wrangler", "dev", "--local"]

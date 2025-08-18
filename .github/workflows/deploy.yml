@@ -30,6 +30,8 @@ jobs:
           file: ./frontend/Dockerfile
           push: true
           tags: ghcr.io/${{ github.repository }}/frontend:latest
+          build-args: |
+            VITE_API_URL=${{ secrets.PROD_API_URL }}
 
       # Build Backend
       - name: Build and push backend image

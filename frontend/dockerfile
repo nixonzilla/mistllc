@@ -1,13 +1,21 @@
-# Stage 1: Build
-FROM node:20-alpine AS build
+# Frontend Dockerfile
+FROM node:20 AS builder
 WORKDIR /app
-COPY package*.json ./
-RUN npm ci
-COPY . .
+
+# Install dependencies
+COPY frontend/package*.json ./
+RUN npm install
+
+# Copy source
+COPY frontend/ ./
+
+# Build with VITE_API_URL from ARG
+ARG VITE_API_URL
+ENV VITE_API_URL=$VITE_API_URL
 RUN npm run build
 
-# Stage 2: Serve with Nginx
+# Serve with a lightweight web server
 FROM nginx:alpine
-COPY --from=build /app/dist /usr/share/nginx/html
+COPY --from=builder /app/dist /usr/share/nginx/html
 EXPOSE 80
 CMD ["nginx", "-g", "daemon off;"]
