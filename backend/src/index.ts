@@ -1,50 +1,45 @@
 import { KVNamespace, ExecutionContext } from "@cloudflare/workers-types";
 
 export interface Env {
-  mistllc: KVNamespace;
-  DATABASE_URL?: string;
-  API_KEY?: string;
-  SECRET_KEY?: string;
+  mistllc: KVNamespace; // Your KV namespace binding
 }
 
-const jsonResponse = (data: any, status = 200) =>
-  new Response(JSON.stringify(data), {
-    status,
-    headers: { 'Content-Type': 'application/json' },
-  });
-
 export default {
-  async fetch(request: Request, env: Env, ctx: ExecutionContext): Promise<Response> {
+  async fetch(request: Request, env: Env, ctx: ExecutionContext) {
     const url = new URL(request.url);
 
-    // API routes
-    if (url.pathname.startsWith('/api')) {
-      const path = url.pathname.replace('/api', '');
-      if (path === '/get') {
-        const value = await env.mistllc.get('example-key');
-        return jsonResponse({ value });
-      }
-      if (path === '/set' && request.method === 'POST') {
-        const body = await request.json();
-        await env.mistllc.put('example-key', body.value);
-        return jsonResponse({ success: true });
-      }
-      return jsonResponse({ error: 'API endpoint not found' }, 404);
+    // Route requests
+    if (url.pathname === "/") {
+      return new Response("Welcome to MISTLLC!", {
+        headers: { "Content-Type": "text/plain" },
+      });
     }
 
-    // Serve frontend files from KV
-    const assetUrl = url.pathname === '/' ? '/index.html' : url.pathname;
-    const asset = await env.mistllc.get(assetUrl);
-    if (asset) {
-      const headers = new Headers();
-      if (assetUrl.endsWith('.js')) headers.set('Content-Type', 'application/javascript');
-      if (assetUrl.endsWith('.css')) headers.set('Content-Type', 'text/css');
-      if (assetUrl.endsWith('.html')) headers.set('Content-Type', 'text/html');
-      return new Response(asset, { headers });
+    if (url.pathname.startsWith("/kv/")) {
+      const key = url.pathname.replace("/kv/", "");
+
+      if (request.method === "GET") {
+        const value = await env.mistllc.get(key);
+        if (value === null) {
+          return new Response("Key not found", { status: 404 });
+        }
+        return new Response(value, { status: 200 });
+      }
+
+      if (request.method === "PUT") {
+        const body = await request.text();
+        await env.mistllc.put(key, body);
+        return new Response("OK", { status: 200 });
+      }
+
+      if (request.method === "DELETE") {
+        await env.mistllc.delete(key);
+        return new Response("Deleted", { status: 200 });
+      }
+
+      return new Response("Method Not Allowed", { status: 405 });
     }
 
-    // Fallback to index.html for SPA
-    const index = await env.mistllc.get('/index.html');
-    return new Response(index, { headers: { 'Content-Type': 'text/html' } });
+    return new Response("Not Found", { status: 404 });
   },
 };
