@@ -353,7 +353,7 @@ function loadTsConfig(command) {
     return { config: config, basePath: basePath, packageJsonFiles: packageJsonFiles, packageEntryPoints: packageEntryPoints, virtualSourceRoot: virtualSourceRoot, ownFiles: ownFiles };
 }
 function handleGetFileListCommand(command) {
-    var _a = loadTsConfig(command), config = _a.config, ownFiles = _a.ownFiles;
+    var _a = loadTsConfig(command), ownFiles = _a.ownFiles;
     console.log(JSON.stringify({
         type: "file-list",
         ownFiles: ownFiles,
