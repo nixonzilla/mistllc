@@ -325,7 +325,6 @@ var TypeTable = (function () {
             var minLength = tupleType.minLength != null
                 ? tupleType.minLength
                 : this.typeChecker.getTypeArguments(tupleReference).length;
-            var hasRestElement = tupleType.hasRestElement ? 't' : 'f';
             var restIndex = -1;
             for (var i = 0; i < tupleType.elementFlags.length; i++) {
                 if (tupleType.elementFlags[i] & ts.ElementFlags.Rest) {
