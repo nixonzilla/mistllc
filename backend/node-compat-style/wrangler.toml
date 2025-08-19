@@ -1,4 +1,4 @@
 name = "mistllc-node-compat"
-main = "dist/index.ts"
+main = ".dist/src/index.ts"
 compatibility_date = "2024-08-18"
 compatibility_flags = ["nodejs_compat"]

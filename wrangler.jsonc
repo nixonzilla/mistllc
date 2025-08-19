@@ -1,13 +1,17 @@
 {
-  "name": "mistllc-backend-worker",
-  "compatibility_date": "2025-08-03",
-  "compatibility_flags": ["nodejs_compat"],
-  "main": "dist/worker/index.js",
-  "placement": {
-    "mode": "smart"
-  },
+    "name": "mistllc-backend-worker",
+    "compatibility_date": "2025-08-03",
+    "compatibility_flags": ["nodejs_compat"],
+    "account_id": "55221ae8c513e4288ff1986ad16ae04d",
+    "main": "./backend/dist/index.ts",
+  "kv_namespaces": [
+    {
+      "binding": "mistllc",
+      "id": "<KV_NAMESPACES_ID>"
+    }
+  ],
   "assets": {
-    "directory": "dist",
-    "binding": "assets"
+    "directory": "./dist"
   }
 }
+   

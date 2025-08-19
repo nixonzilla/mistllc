@@ -1,16 +1,10 @@
-import { ExoticComponent } from "react";
-
 export default {
-  async fetch(request: Request, _env: AnimationPlaybackEvent, _ctx: ExoticComponent): Promise<Response> {
-    const url = new URL(request.url);
+  fetch(request: { url: string | URL; }): Response {
+    const base = "http://127.0.0.1:8787";
+    const statusCode = 301;
 
-    if (url.pathname === "/api/hello") {
-      return new Response(JSON.stringify({ message: "Hello from Worker-style backend 🚀" }), {
-        status: 200,
-        headers: { "Content-Type": "application/json" },
-      });
-    }
-
-    return new Response("Not Found", { status: 404 });
+    const source = new URL(request.url);
+    const destination = new URL(source.pathname, base);
+    return Response.redirect(destination.toString(), statusCode);
   },
 };

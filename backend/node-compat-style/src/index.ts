@@ -1,16 +1,10 @@
-import { Router } from "itty-router"; 
-
-const router = Router();
-
-router.get("/api/hello", () => {
-  return new Response(JSON.stringify({ message: "Hello from Node-compatible Worker 🌍" }), {
-    status: 200,
-    headers: { "Content-Type": "application/json" },
-  });
-});
-
 export default {
-  async fetch(request: Request, env: "mistllc", ctx: "ExecutionContext"): Promise<any> {
-    return router.handle(request, env, ctx);
+  fetch(request) {
+    const base = "http://127.0.0.1:8787";
+    const statusCode = 301;
+
+    const source = new URL(request.url);
+    const destination = new URL(source.pathname, base);
+    return Response.redirect(destination.toString(), statusCode);
   },
 };
