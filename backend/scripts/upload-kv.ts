@@ -1,6 +1,5 @@
 import fs from 'fs/promises';
 import path from 'path';
-import { writeFileSync } from 'fs';
 import { execFileSync } from 'child_process';
 
 const DIST_DIR = path.resolve('./frontend/dist');
