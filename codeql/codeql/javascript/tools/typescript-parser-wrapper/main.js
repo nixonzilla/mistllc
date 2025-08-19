@@ -508,7 +508,7 @@ function handleOpenProjectCommand(command) {
                 if (typings === fullPath && typeof name === 'string') {
                     addModuleBindingFromImportPath(sourceFile, name);
                 }
-                else if (typings != null) {
+                else {
                     return;
                 }
             }
