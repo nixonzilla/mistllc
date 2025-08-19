@@ -102,37 +102,7 @@ function getEnclosingPackageJsonRaw(file) {
     }
     return undefined;
 }
-function checkCycle(root) {
-    var path = [];
-    function visit(obj) {
-        if (obj == null || typeof obj !== "object")
-            return false;
-        if (obj.$cycle_visiting) {
-            return true;
-        }
-        obj.$cycle_visiting = true;
-        for (var k in obj) {
-            if (!obj.hasOwnProperty(k))
-                continue;
-            if (+k !== +k && !astPropertySet.has(k))
-                continue;
-            if (k === "$cycle_visiting")
-                continue;
-            var cycle = visit(obj[k]);
-            if (cycle) {
-                path.push(k);
-                return true;
-            }
-        }
-        obj.$cycle_visiting = undefined;
-        return false;
-    }
-    visit(root);
-    if (path.length > 0) {
-        path.reverse();
-        console.log(JSON.stringify({ type: "error", message: "Cycle = " + path.join(".") }));
-    }
-}
+
 var astProperties = [
     "$declarationKind",
     "$declaredSignature",
