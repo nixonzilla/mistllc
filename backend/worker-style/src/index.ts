@@ -1,7 +1,7 @@
-import { ExecutionContext } from "@cloudflare/workers-types";
+import { ExoticComponent } from "react";
 
 export default {
-  async fetch(request: Request, env: "mistllc", ctx: ExecutionContext): Promise<Response> {
+  async fetch(request: Request, _env: AnimationPlaybackEvent, _ctx: ExoticComponent): Promise<Response> {
     const url = new URL(request.url);
 
     if (url.pathname === "/api/hello") {

@@ -8,6 +8,6 @@
   },
   "assets": {
     "directory": "dist",
-    "binding": "Public"
+    "binding": "assets"
   }
 }
