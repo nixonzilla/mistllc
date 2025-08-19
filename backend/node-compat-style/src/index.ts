@@ -1,4 +1,4 @@
-import { Router } from "itty-router";
+import { Router } from "itty-router"; 
 
 const router = Router();
 
@@ -10,7 +10,7 @@ router.get("/api/hello", () => {
 });
 
 export default {
-  async fetch(request: Request, env: "mistllc", ctx: "ExecutionContext") {
+  async fetch(request: Request, env: "mistllc", ctx: "ExecutionContext"): Promise<any> {
     return router.handle(request, env, ctx);
   },
 };

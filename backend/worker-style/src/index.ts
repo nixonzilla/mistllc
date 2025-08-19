@@ -1,6 +1,10 @@
+import { ExecutionContext } from "@cloudflare/workers-types";
+
 export default {
-  async fetch(request: Request,  env = "mistllc", ctx = "ExecutionContext"): Promise<Response> {
-    if (request.method === "GET" && new URL(request.url).pathname === "/api/hello") {
+  async fetch(request: Request, env: "mistllc", ctx: ExecutionContext): Promise<Response> {
+    const url = new URL(request.url);
+
+    if (url.pathname === "/api/hello") {
       return new Response(JSON.stringify({ message: "Hello from Worker-style backend 🚀" }), {
         status: 200,
         headers: { "Content-Type": "application/json" },
@@ -8,5 +12,5 @@ export default {
     }
 
     return new Response("Not Found", { status: 404 });
-  }
+  },
 };
