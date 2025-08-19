@@ -1,7 +1,12 @@
 {
-  "name": "My Dev Container",
+  "name": "MISTLLC Dev",
+  "dockerComposeFile": [
+    "../docker-compose.yml",
+    "docker-compose.yml"
+  ],
+  "service": "backend",
+  "workspaceFolder": "/workspace/backend",
   "features": {
-    "ghcr.io/devcontainers/features/dotnet:2": {},
-    "ghcr.io/devcontainers/features/github-cli:1": {}
+    "ghcr.io/devcontainers-extra/features/devcontainers-cli:1": {}
   }
 }

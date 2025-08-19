@@ -1,0 +1,40 @@
+version: "3.9"
+
+services:
+  backend:
+    build:
+      context: ../backend
+      dockerfile: Dockerfile
+    volumes:
+      - ../backend:/workspace/backend:cached
+      - ../frontend:/workspace/frontend:cached
+    command: npm run dev
+    ports:
+      - "5000:5000"
+    environment:
+      - NODE_ENV=development
+      - PORT=5173
+      - VITE_API_URL=http://127.0.0.1/:5173
+    # Ensure node_modules inside container doesn't conflict with host
+    volumes_from:
+      - backend_node_modules:/workspace/backend/node_modules
+
+  frontend:
+    build:
+      context: ../frontend
+      dockerfile: Dockerfile
+    volumes:
+      - ../frontend:/workspace/frontend:cached
+    command: npm run dev
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=development
+      - VITE_API_URL=https://mistllc-frontend.pages.dev/
+    volumes_from:
+      - frontend_node_modules:/workspace/frontend/node_modules
+
+volumes:
+  backend_node_modules:
+  frontend_node_modules:
+
