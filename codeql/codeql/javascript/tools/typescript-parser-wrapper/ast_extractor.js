@@ -156,7 +156,7 @@ function augmentAst(ast, code, project) {
                         var declaration = resolvedSignature.declaration;
                         if (declaration != null) {
                             var calleeType = typeChecker.getTypeAtLocation(node.expression);
-                            if (calleeType != null && declaration != null) {
+                            if (calleeType != null) {
                                 var calleeSignatures = typeChecker.getSignaturesOfType(calleeType, kind);
                                 for (var i = 0; i < calleeSignatures.length; ++i) {
                                     if (calleeSignatures[i].declaration === declaration) {
