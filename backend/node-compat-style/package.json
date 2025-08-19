@@ -1,0 +1,14 @@
+{
+  "name": "mistllc-node-compat",
+  "version": "1.0.0",
+  "scripts": {
+    "dev": "wrangler dev",
+    "deploy": "wrangler deploy"
+  },
+  "dependencies": {
+    "itty-router": "^4.0.23"
+  },
+  "devDependencies": {
+    "typescript": "^5.3.3"
+  }
+}
