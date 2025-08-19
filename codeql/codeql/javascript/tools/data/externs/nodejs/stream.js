@@ -45,6 +45,8 @@ var events = require("events");
  */
 function internal() {}
 
+var internal = internal || {};
+
 /**
  * @template T
  * @param {T} destination
@@ -52,8 +54,6 @@ function internal() {}
  * @return {T}
  */
 internal.prototype.pipe = function(destination, options) {};
-
-var internal = internal || {};
 
 /**
  * @constructor
