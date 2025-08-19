@@ -1,3 +1,4 @@
 name = "mistllc-worker-style"
 main = "src/index.ts"
 compatibility_date = "2024-08-18"
+binding = "ASSETS"

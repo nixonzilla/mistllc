@@ -2,3 +2,4 @@ name = "mistllc-node-compat"
 main = "src/index.ts"
 compatibility_date = "2024-08-18"
 compatibility_flags = ["nodejs_compat"]
+binding = "ASSETS"

@@ -2,6 +2,7 @@ name = "mistllc-backend-worker"
 main = "dist/src/index.js"
 compatibility_date = "2025-08-18"
 compatibility_flags = ["nodejs_compat"]
+binding = "ASSETS"
 
 # KV binding for persistence
 [[kv_namespaces]]
