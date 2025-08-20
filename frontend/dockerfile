@@ -1,21 +1,26 @@
-# Frontend Dockerfile
-FROM node:20 AS builder
+# --- Base ---
+FROM node:24-alpine AS base
 WORKDIR /app
+COPY package*.json ./
 
-# Install dependencies
-COPY frontend/package*.json ./
-RUN npm install
+# --- Dev (Vite dev server) ---
+FROM base AS dev
+RUN npm ci
+COPY . .
+ENV VITE_API_URL=${VITE_API_URL}
+EXPOSE 5173
+CMD ["npm", "run", "dev", "--", "--host", "0.0.0.0"]
 
-# Copy source
-COPY frontend/ ./
-
-# Build with VITE_API_URL from ARG
+# --- Build ---
+FROM base AS build
+RUN npm ci
+COPY . .
 ARG VITE_API_URL
-ENV VITE_API_URL=$VITE_API_URL
+ENV VITE_API_URL=${VITE_API_URL}
 RUN npm run build
 
-# Serve with a lightweight web server
-FROM nginx:alpine
-COPY --from=builder /app/dist /usr/share/nginx/html
-EXPOSE 80
+# --- Prod (Nginx static) ---
+FROM nginx:alpine AS prod
+COPY --from=build /app/dist /usr/share/nginx/html
+EXPOSE 8080
 CMD ["nginx", "-g", "daemon off;"]

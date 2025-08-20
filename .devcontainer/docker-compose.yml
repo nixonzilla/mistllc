@@ -1,30 +1,54 @@
+# docker-compose.yml
 version: "3.9"
+
+name: mistllc
+
 services:
+  # --- DEV FRONTEND (Vite dev server) / PROD (Nginx static) ---
   frontend:
     build:
-      context: .
-      dockerfile: Dockerfile
-      target: development
-    command: sh -c "cd frontend && npm run dev -- --host 0.0.0.0 --port 5173"
-    volumes:
-      - ./frontend:/app/frontend
+      context: ./frontend
+      target: ${FRONTEND_TARGET:-dev}   # dev | prod
+      args:
+        VITE_API_URL: ${VITE_API_URL:-http://localhost:8787}
     ports:
-      - "5173:5173"
-    env_file:
-      - .env
+      - "${FRONTEND_PORT:-5173}:5173"   # dev (Vite)
+      - "${FRONTEND_WEB_PORT:-8080}:8080" # prod (Nginx)
+    environment:
+      - VITE_API_URL=${VITE_API_URL:-http://localhost:8787}
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+    profiles: ["dev","prod"]  # runs in both; target controls behavior
+    depends_on:
+      - server
+      - worker
 
-  backend:
+  # --- DEV/PROD EXPRESS SERVER ---
+  server:
     build:
-      context: .
-      dockerfile: Dockerfile
-      target: development
-    command: sh -c "cd backend && npx ts-node-dev --respawn src/index.ts"
-    volumes:
-      - ./backend:/app/backend
+      context: ./server
+      target: ${SERVER_TARGET:-dev}     # dev | prod
     ports:
-      - "3000:3000"
-    env_file:
-      - .env
+      - "${SERVER_PORT:-3000}:3000"
+    environment:
+      - NODE_ENV=${NODE_ENV:-development}
+    volumes:
+      - ./server:/app
+      - /app/node_modules
+    profiles: ["dev","prod"]
 
-# Use this for prod deployment
-# docker compose -f docker-compose.yml -f docker-compose.prod.yml up --build -d
+  # --- DEV: Cloudflare Worker locally via wrangler ---
+  worker:
+    image: node:24-alpine
+    working_dir: /app
+    command: sh -c "npm ci && npx wrangler dev --port 8787"
+    volumes:
+      - ./backend:/app
+    environment:
+      - NODE_ENV=development
+      - CLOUDFLARE_ACCOUNT_ID=${CLOUDFLARE_ACCOUNT_ID:-}
+      - CLOUDFLARE_API_TOKEN=${CLOUDFLARE_API_TOKEN:-}
+    ports:
+      - "8787:8787"
+    profiles: ["dev"]
