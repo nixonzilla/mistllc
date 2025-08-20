@@ -1,11 +1,12 @@
-permissions:
-  contents: read
 name: "Deploy MISTLLC"
 
 on:
   push:
     branches: [ main ]
-
+permissions:
+    contents: read
+    pull-requests: write
+    deployments: write
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
