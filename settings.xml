@@ -30,7 +30,7 @@
     <server>
       <id>github</id>
       <username>nixonzilla</username>
-      <password>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</password>
+      <password></password>
     </server>
   </servers>
 </settings>

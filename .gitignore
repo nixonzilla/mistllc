@@ -54,3 +54,6 @@ docker-compose.override.yml
 docker-compose.override.yml
 # ...existing code...node_modules/
 .devcontainer/Oracle_JDK-21/lib/modules
+settings.xml
+# Ignore specific files and directories
+settings.xml
