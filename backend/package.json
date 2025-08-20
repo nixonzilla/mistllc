@@ -12,7 +12,8 @@
     "deploy": "npx tsx scripts/upload-kv.ts && wrangler deploy"
   },
   "dependencies": {
-    "@cloudflare/workers-types": "^4.2025.0"
+    "@cloudflare/workers-types": "^4.2025.0",
+    "express-rate-limit": "^8.0.1"
   },
   "devDependencies": {
     "typescript": "^5.8.3"
