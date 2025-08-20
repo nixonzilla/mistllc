@@ -1,36 +1,59 @@
-# ---- Base Node image ----
-FROM alpine:3.21
+# ----------------------
+# Base image
+# ----------------------
+FROM node:20-alpine AS base
 WORKDIR /app
 
-# ---- Frontend build ----
+# ----------------------
+# Frontend Builder
+# ----------------------
 FROM base AS frontend-build
 WORKDIR /app/frontend
 COPY frontend/package*.json ./
-RUN npm ci
-COPY frontend ./
+RUN npm install
+COPY frontend/ .
 RUN npm run build
 
-# ---- Backend build ----
+# ----------------------
+# Backend Builder
+# ----------------------
 FROM base AS backend-build
 WORKDIR /app/backend
 COPY backend/package*.json ./
-RUN npm ci
-COPY backend ./
-# Copy frontend build output into backend (if serving static files)
-COPY --from=frontend-build /app/frontend/dist ./public
+RUN npm install
+COPY backend/ .
 RUN npm run build
 
-# ---- Runtime image ----
-FROM node:20-slim AS runtime
+# ----------------------
+# Production Runtime
+# ----------------------
+FROM node:20-alpine AS production
 WORKDIR /app
 
-# Copy only production deps
-COPY backend/package*.json ./
-RUN npm ci --omit=dev
+# Copy frontend dist into backend/public
+COPY --from=frontend-build /app/frontend/dist ./frontend/dist
+COPY --from=backend-build /app/backend/dist ./backend/dist
+COPY --from=backend-build /app/backend/node_modules ./backend/node_modules
 
-# Copy backend build + public files
-COPY --from=backend-build /app/backend/dist ./dist
-COPY --from=backend-build /app/backend/public ./public
-
-EXPOSE 3000
+# Default command (prod backend)
+WORKDIR /app/backend
 CMD ["node", "dist/index.js"]
+
+# ----------------------
+# Development Runtime
+# ----------------------
+FROM base AS development
+WORKDIR /app
+
+# Install frontend & backend deps
+COPY frontend/package*.json ./frontend/
+COPY backend/package*.json ./backend/
+RUN cd frontend && npm install
+RUN cd backend && npm install
+
+# Copy sources
+COPY frontend ./frontend
+COPY backend ./backend
+
+# Default command (dev mode with hot reload)
+CMD ["sh", "-c", "cd backend && npx ts-node-dev --respawn src/index.ts"]
