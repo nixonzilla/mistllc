@@ -59,3 +59,29 @@ settings.xml
 settings.xml
 # Ignore wrangler temp files
 .wrangler/tmp/
+# Node.js
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Build outputs
+dist/
+build/
+*.log
+
+# Local env files
+.env
+.env.local
+.env.*.local
+
+# VS Code
+.vscode/
+
+# Cloudflare Wrangler temp files
+.wrangler/tmp/
+.wrangler/logs/
+
+# OS-specific
+.DS_Store
+Thumbs.db

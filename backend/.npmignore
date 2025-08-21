@@ -1,0 +1,15 @@
+# Node modules
+node_modules/
+
+# Build cache
+.wrangler/tmp/
+.wrangler/logs/
+
+# Source maps & TypeScript sources
+src/
+*.ts
+tsconfig.json
+
+# Local configs
+.vscode/
+.env
