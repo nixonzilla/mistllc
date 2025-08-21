@@ -1,18 +1,22 @@
 name = "mistllc-backend-worker"
 main = "dist/index.js"
-compatibility_date = "2025-08-03"
-compatibility_flags = [ "nodejs_compat" ]
-account_id = "55221ae8c513e4288ff1986ad16ae04d"
-binding = "mistllc"
-id = "2d250836cc7d4adebb9d6a5968671077"
+compatibility_date = "2025-08-18"
+worker_dev = "true"
 
-[observability.logs]
-enabled = true
+[build]
+command = "npm run build"
 
 [vars]
 VITE_API_BASE = "https://mistllc-backend-worker.jacobnixon59.workers.dev"
 
+# Force ES Module format
+compatibility_flags = ["nodejs_compat"]
+
+[kv namespace]
+binding = "mistllc"
+id = "2d250836cc7d4adebb9d6a5968671077"
 
 [placement]
 mode = "smart"
+
 
