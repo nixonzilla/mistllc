@@ -6,6 +6,7 @@
     "build": "npm run build --prefix frontend && npm run build --prefix backend"
   },
   "devDependencies": {
+    "@types/node": "24.3.0",
     "concurrently": "^9.0.0"
   }
 }
