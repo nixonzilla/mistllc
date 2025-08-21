@@ -1,59 +1,41 @@
-# ----------------------
-# Base image
-# ----------------------
-FROM node:20-alpine AS base
+# ========================
+# Stage 1: Build backend worker
+# ========================
+FROM node:24 AS builder
+
 WORKDIR /app
 
-# ----------------------
-# Frontend Builder
-# ----------------------
-FROM base AS frontend-build
-WORKDIR /app/frontend
-COPY frontend/package*.json ./
-RUN npm install
-COPY frontend/ .
-RUN npm run build
-
-# ----------------------
-# Backend Builder
-# ----------------------
-FROM base AS backend-build
-WORKDIR /app/backend
+# Copy backend package + tsconfig
 COPY backend/package*.json ./
+COPY backend/tsconfig.json ./
+
+# Install dependencies
 RUN npm install
-COPY backend/ .
+
+# Copy backend source
+COPY backend/src ./src
+
+# Build TypeScript
 RUN npm run build
 
-# ----------------------
-# Production Runtime
-# ----------------------
-FROM node:20-alpine AS production
+# ========================
+# Stage 2: Runtime container
+# ========================
+FROM node:24 AS stage-1
+
 WORKDIR /app
 
-# Copy frontend dist into backend/public
-COPY --from=frontend-build /app/frontend/dist ./frontend/dist
-COPY --from=backend-build /app/backend/dist ./backend/dist
-COPY --from=backend-build /app/backend/node_modules ./backend/node_modules
+# Copy build output from builder
+COPY --from=builder /app/dist ./dist
 
-# Default command (prod backend)
-WORKDIR /app/backend
-CMD ["node", "dist/index.js"]
+# Copy wrangler.toml (must be in repo root)
+COPY wrangler.toml ./wrangler.toml
 
-# ----------------------
-# Development Runtime
-# ----------------------
-FROM base AS development
-WORKDIR /app
+# Default environment variables
+ENV NODE_ENV=production
 
-# Install frontend & backend deps
-COPY frontend/package*.json ./frontend/
-COPY backend/package*.json ./backend/
-RUN cd frontend && npm install
-RUN cd backend && npm install
+# Expose Cloudflare worker dev port (for local testing)
+EXPOSE 8787
 
-# Copy sources
-COPY frontend ./frontend
-COPY backend ./backend
-
-# Default command (dev mode with hot reload)
-CMD ["sh", "-c", "cd backend && npx ts-node-dev --respawn src/index.ts"]
+# Command (overridden by wrangler normally)
+CMD ["npx", "wrangler", "dev", "--local", "--port", "8787"]
