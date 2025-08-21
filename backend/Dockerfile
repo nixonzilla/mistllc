@@ -13,7 +13,7 @@ COPY backend/ ./
 RUN npm run build
 
 # Runtime image
-FROM node:20 AS stage-1
+FROM node:20 AS runtime
 WORKDIR /app
 
 # Install production dependencies
@@ -23,7 +23,8 @@ RUN npm install --only=production
 
 # Copy built worker
 COPY --from=builder /app/dist ./dist
-COPY --from=stage-1 /app/node_modules ./node_modules
+COPY --from=builder /app/node_modules ./node_modules
+
 
 # Environment vars (can be overridden in Actions/Compose)
 ENV NODE_ENV=production
