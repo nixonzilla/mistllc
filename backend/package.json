@@ -1,21 +1,21 @@
 {
   "name": "mistllc-backend",
   "version": "1.0.0",
-  "description": "MISTLLC backend with Cloudflare Worker + KV support",
+  "description": "MISTLLC backend Worker with KV support",
   "main": "dist/index.js",
   "type": "module",
   "scripts": {
-    "dev": "wrangler dev",                  
-    "build": "tsc",                         
-    "start": "node dist/index.js",          
-    "deploy": "npm run build && npx tsx scripts/upload-kv.ts && wrangler deploy"
+    "predev": "npm run build",
+    "dev": "wrangler dev",
+    "build": "tsc --project tsconfig.json",
+    "predeploy": "npm run build",
+    "deploy": "npx tsx scripts/upload-kv.ts && wrangler deploy"
   },
   "dependencies": {
     "@cloudflare/workers-types": "^4.2025.0",
     "express-rate-limit": "^8.0.1"
   },
   "devDependencies": {
-    "typescript": "^5.8.3",
-    "tsx": "^4.19.1"                        
+    "typescript": "^5.8.3"
   }
 }
