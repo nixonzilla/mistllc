@@ -57,3 +57,5 @@ docker-compose.override.yml
 settings.xml
 # Ignore specific files and directories
 settings.xml
+# Ignore wrangler temp files
+.wrangler/tmp/
