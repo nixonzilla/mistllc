@@ -3,7 +3,7 @@
     "compatibility_date": "2025-08-03",
     "compatibility_flags": ["nodejs_compat"],
     "account_id": "55221ae8c513e4288ff1986ad16ae04d",
-    "main": "./backend/dist/index.ts",
+    "main": "dist/index.js",
   "kv_namespaces": [
     {
       "binding": "mistllc",
