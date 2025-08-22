@@ -1,24 +1,28 @@
-import { create } from "zustand"
-import axios from "axios"
-
-interface ApiState {
-  message: string | null
-  loading: boolean
-  error: string | null
-  fetchMessage: () => Promise<void>
+export interface Song {
+  id: string;
+  title: string;
+  artist: string;
 }
 
-export const useApiStore = create<ApiState>((set) => ({
-  message: null,
-  loading: false,
-  error: null,
-  fetchMessage: async () => {
-    set({ loading: true, error: null })
-    try {
-      const res = await axios.get("/api/hello") // 👈 backend endpoint
-      set({ message: res.data.message, loading: false })
-    } catch (err: any) {
-      set({ error: err.message, loading: false })
-    }
+const API_BASE = import.meta.env.VITE_API_URL || "/api";
+
+export async function getSongs(): Promise<Song[]> {
+  const res = await fetch(`${API_BASE}/songs`);
+  if (!res.ok) {
+    throw new Error(`Failed to fetch songs: ${res.statusText}`);
   }
-}))
+  return res.json();
+}
+
+export async function addSong(song: Omit<Song, "id">): Promise<Song> {
+  const res = await fetch(`${API_BASE}/songs`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(song),
+  });
+
+  if (!res.ok) {
+    throw new Error(`Failed to add song: ${res.statusText}`);
+  }
+  return res.json();
+}

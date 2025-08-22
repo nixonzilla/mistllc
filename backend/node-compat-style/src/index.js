@@ -1,17 +1,10 @@
-export default {
-    async fetch(_request, env, _ctx) {
-        // write a key-value pair
-        await env.KV.put('KEY', 'VALUE');
-        // read a key-value pair
-        const value = await env.KV.get('KEY');
-        // list all key-value pairs
-        const allKeys = await env.KV.list();
-        // delete a key-value pair
-        await env.KV.delete('KEY');
-        // return a Workers response
-        return new Response(JSON.stringify({
-            value: value,
-            allKeys: allKeys,
-        }));
-    }
-};
+import express from "express"
+const app = express()
+
+app.get("/api/hello", (_req, res) => {
+    res.json({ message: "Hello from the MISTLLC backend! 🚀" })
+  })
+
+app.listen(8787, () => {
+  console.log("Backend running on http://localhost:8787")
+})
