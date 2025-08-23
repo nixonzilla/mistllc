@@ -1,7 +1,8 @@
 {
 	"name": "mistllc-backend",
-	"main": "src/index.ts",
+	"main": "src/index.js",
   "type": "javascript",
+  "build": "npm run build",
 	"compatibility_date": "2025-08-23",
   "d1_databases":[
   {
