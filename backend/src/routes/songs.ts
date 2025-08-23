@@ -1,4 +1,3 @@
-import from = DB; D1Database
 const router = router();
 
 // Temporary in-memory "database"
