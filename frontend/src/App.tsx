@@ -1,128 +1,128 @@
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
+import { getSongs, createSong, deleteSong, } from "./lib/api.ts";
+import type { Song } from "./lib/api.ts";
 
-interface Song {
-  id: number;
-  title: string;
-  artist: string;
-  duration: string;
-}
-
-export default function App() {
+function App() {
   const [songs, setSongs] = useState<Song[]>([]);
-  const [search, setSearch] = useState("");
-  const [sort, setSort] = useState("createdAt");
-  const [order, setOrder] = useState("desc");
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState("");
+  const [error, setError] = useState<string | null>(null);
+  const [search, setSearch] = useState("");
+  const [title, setTitle] = useState("");
+  const [artiste, setArtiste] = useState("");
 
-  // Fetch songs from backend
   useEffect(() => {
-    const fetchSongs = async () => {
-      try {
-        setLoading(true);
-        const res = await fetch("http://localhost:3001/songs");
-        if (!res.ok) throw new Error("Failed to fetch songs");
-        const data = await res.json();
-        setSongs(data);
-      } catch (err: any) {
-        setError(err.message);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchSongs();
+    loadSongs();
   }, []);
 
-  // Apply search + sort
-  const filteredSongs = songs
-    .filter(
-      (song) =>
-        song.title.toLowerCase().includes(search.toLowerCase()) ||
-        song.artist.toLowerCase().includes(search.toLowerCase())
-    )
-    .sort((a, b) => {
-      if (sort === "title") {
-        return order === "asc"
-          ? a.title.localeCompare(b.title)
-          : b.title.localeCompare(a.title);
-      }
-      if (sort === "artist") {
-        return order === "asc"
-          ? a.artist.localeCompare(b.artist)
-          : b.artist.localeCompare(a.artist);
-      }
-      return order === "asc" ? a.id - b.id : b.id - a.id; // fallback
-    });
+  async function loadSongs() {
+    try {
+      setLoading(true);
+      const data = await getSongs();
+      setSongs(data);
+    } catch (err: any) {
+      setError(err.message);
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  async function handleAddSong(e: React.FormEvent) {
+    e.preventDefault();
+    try {
+      await createSong(title, artiste);
+      setTitle("");
+      setArtiste("");
+      await loadSongs();
+    } catch (err: any) {
+      setError(err.message);
+    }
+  }
+
+  async function handleDelete(id: number) {
+    try {
+      await deleteSong(id);
+      await loadSongs();
+    } catch (err: any) {
+      setError(err.message);
+    }
+  }
+
+  const filtered = songs.filter(
+    (s) =>
+      s.title.toLowerCase().includes(search.toLowerCase()) ||
+      s.artiste.toLowerCase().includes(search.toLowerCase())
+  );
 
   return (
-    <div className="min-h-screen bg-gray-100 p-8">
-      <h1 className="text-3xl font-bold text-gray-800 mb-6">
-        🎵 MISTLLC Dashboard
-      </h1>
+    <div className="min-h-screen bg-gradient-to-br from-purple-50 to-pink-50 p-6">
+      <div className="max-w-4xl mx-auto">
+        <h1 className="text-3xl font-bold text-purple-700 mb-6">🎵 MISTLLC Dashboard</h1>
 
-      {/* Controls */}
-      <div className="flex flex-col md:flex-row gap-4 mb-6">
+        {/* Add Song Form */}
+        <form
+          onSubmit={handleAddSong}
+          className="flex gap-2 mb-6 bg-white shadow-md rounded-2xl p-4"
+        >
+          <input
+            type="text"
+            value={title}
+            onChange={(e) => setTitle(e.target.value)}
+            placeholder="Song title"
+            className="flex-1 border rounded-xl p-2"
+          />
+          <input
+            type="text"
+            value={artiste}
+            onChange={(e) => setArtiste(e.target.value)}
+            placeholder="Artiste"
+            className="flex-1 border rounded-xl p-2"
+          />
+          <button
+            type="submit"
+            className="bg-purple-600 text-white px-4 py-2 rounded-xl hover:bg-purple-700 transition"
+          >
+            Add
+          </button>
+        </form>
+
+        {/* Search */}
         <input
           type="text"
-          placeholder="Search songs..."
           value={search}
           onChange={(e) => setSearch(e.target.value)}
-          className="w-full md:w-1/2 px-4 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-pink-400"
+          placeholder="Search songs..."
+          className="w-full mb-4 border rounded-xl p-2"
         />
 
-        <div className="flex gap-2">
-          <select
-            value={sort}
-            onChange={(e) => setSort(e.target.value)}
-            className="px-4 py-2 rounded-lg border border-gray-300"
-          >
-            <option value="createdAt">Newest</option>
-            <option value="title">Title</option>
-            <option value="artist">Artist</option>
-          </select>
-
-          <select
-            value={order}
-            onChange={(e) => setOrder(e.target.value)}
-            className="px-4 py-2 rounded-lg border border-gray-300"
-          >
-            <option value="desc">Descending</option>
-            <option value="asc">Ascending</option>
-          </select>
-        </div>
-      </div>
-
-      {/* Loading/Error states */}
-      {loading && <p className="text-gray-600">Loading songs...</p>}
-      {error && <p className="text-red-500">⚠️ {error}</p>}
-
-      {/* Song Cards */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-        {filteredSongs.map((song) => (
-          <div
-            key={song.id}
-            className="bg-white shadow-md rounded-2xl p-6 flex flex-col justify-between"
-          >
-            <div>
-              <h2 className="text-xl font-semibold text-gray-800">
-                {song.title}
-              </h2>
-              <p className="text-gray-500">{song.artist}</p>
-              <p className="text-gray-400 text-sm mt-1">⏱ {song.duration}</p>
-            </div>
-
-            <div className="flex gap-2 mt-4">
-              <button className="flex-1 bg-blue-500 text-white py-2 rounded-lg hover:bg-blue-600">
-                Edit
-              </button>
-              <button className="flex-1 bg-red-500 text-white py-2 rounded-lg hover:bg-red-600">
-                Delete
-              </button>
-            </div>
+        {/* Songs List */}
+        {loading ? (
+          <p>Loading...</p>
+        ) : error ? (
+          <p className="text-red-500">{error}</p>
+        ) : (
+          <div className="grid gap-4">
+            {filtered.map((song) => (
+              <div
+                key={song.id}
+                className="flex justify-between items-center bg-white shadow rounded-2xl p-4 hover:shadow-lg transition"
+              >
+                <div>
+                  <h2 className="text-lg font-semibold">{song.title}</h2>
+                  <p className="text-gray-500">by {song.artiste}</p>
+                </div>
+                <button
+                  onClick={() => handleDelete(song.id)}
+                  className="text-red-500 hover:text-red-700 font-medium"
+                >
+                  Delete
+                </button>
+              </div>
+            ))}
           </div>
-        ))}
+        )}
       </div>
     </div>
   );
 }
+
+export default App;

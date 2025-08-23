@@ -1,68 +1,52 @@
 export interface Env {
-  DB: D1Database;
+  DB: D1Database; // comes from wrangler.toml binding
+  NODE_ENV: string;
 }
 
 export default {
-  async fetch(request: Request, env: Env): Promise<Response> {
-    const url = new URL(request.url);
-    const { pathname } = url;
+  async fetch(req: Request, env: Env): Promise<Response> {
+    const url = new URL(req.url);
 
-    try {
-      // GET all songs
-      if (request.method === "GET" && pathname === "/api/songs") {
-        const { results } = await env.DB.prepare("SELECT * FROM songs").all();
-        return json(results);
-      }
-
-      // GET one song
-      if (request.method === "GET" && pathname.startsWith("/api/songs/")) {
-        const id = pathname.split("/").pop();
-        const song = await env.DB.prepare("SELECT * FROM songs WHERE id = ?").bind(id).first();
-        return song ? json(song) : notFound();
-      }
-
-      // CREATE song
-      if (request.method === "POST" && pathname === "/api/songs") {
-        const body = await request.json();
-        env.DB.prepare(
-          "INSERT INTO songs (title, artist, url) VALUES (?, ?, ?)"
-        ).bind(body.title, body.artist, body.url).run();
-
-        return json({ success: true });
-      }
-
-      // UPDATE song
-      if (request.method === "PUT" && pathname.startsWith("/api/songs/")) {
-        const id = pathname.split("/").pop();
-        const body = await request.json();
-        await env.DB.prepare(
-          "UPDATE songs SET title = ?, artist = ?, url = ? WHERE id = ?"
-        ).bind(body.title, body.artist, body.url, id).run();
-
-        return json({ success: true });
-      }
-
-      // DELETE song
-      if (request.method === "DELETE" && pathname.startsWith("/api/songs/")) {
-        const id = pathname.split("/").pop();
-        await env.DB.prepare("DELETE FROM songs WHERE id = ?").bind(id).run();
-        return json({ success: true });
-      }
-
-      return notFound();
-    } catch (err: any) {
-      return json({ error: err.message }, 500);
+    // GET /songs -> fetch all
+    if (url.pathname === "/songs" && req.method === "GET") {
+      const { results } = await env.DB.prepare("SELECT * FROM songs ORDER BY created_at DESC").all();
+      return Response.json(results);
     }
+
+    // POST /songs -> create new song
+    if (url.pathname === "/songs" && req.method === "POST") {
+      const body = await req.json<{ title: string; artiste: string }>();
+      if (!body.title || !body.artiste) {
+        return new Response("Missing fields", { status: 400 });
+      }
+
+      await env.DB.prepare(
+        "INSERT INTO songs (title, artiste) VALUES (?1, ?2)"
+      ).bind(body.title, body.artiste).run();
+
+      return new Response("Song created", { status: 201 });
+    }
+
+    // PUT /songs/:id -> update
+    if (url.pathname.startsWith("/songs/") && req.method === "PUT") {
+      const id = url.pathname.split("/")[2];
+      const body = await req.json<{ title?: string; artiste?: string }>();
+
+      await env.DB.prepare(
+        "UPDATE songs SET title = COALESCE(?1, title), artiste = COALESCE(?2, artiste) WHERE id = ?3"
+      ).bind(body.title ?? null, body.artiste ?? null, id).run();
+
+      return new Response("Song updated", { status: 200 });
+    }
+
+    // DELETE /songs/:id -> delete
+    if (url.pathname.startsWith("/songs/") && req.method === "DELETE") {
+      const id = url.pathname.split("/")[2];
+      await env.DB.prepare("DELETE FROM songs WHERE id = ?1").bind(id).run();
+      return new Response("Song deleted", { status: 200 });
+    }
+
+    // fallback
+    return new Response("Not found", { status: 404 });
   },
 };
-
-function json(data: any, status = 200) {
-  return new Response(JSON.stringify(data), {
-    status,
-    headers: { "Content-Type": "application/json" },
-  });
-}
-
-function notFound() {
-  return new Response("Not found", { status: 404 });
-}
