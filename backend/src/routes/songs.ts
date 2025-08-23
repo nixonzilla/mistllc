@@ -1,4 +1,5 @@
-const router = router();
+import express from 'express';
+const router = express.Router();
 
 // Temporary in-memory "database"
 let songs = [
