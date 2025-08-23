@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "wrangler dev",
-    "build": "tsc",
+    "build": "npm run build",
     "deploy": "wrangler deploy",
     "typegen": "wrangler d1 generate-types"
   },
