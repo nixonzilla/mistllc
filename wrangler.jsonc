@@ -3,15 +3,14 @@
     "compatibility_date": "2025-08-03",
     "compatibility_flags": ["nodejs_compat"],
     "account_id": "55221ae8c513e4288ff1986ad16ae04d",
-    "main": "dist/index.js",
-  "kv_namespaces": [
+    "main": "src/index.ts",
+  "d1_databases": [
     {
-      "binding": "mistllc",
-      "id": "2d250836cc7d4adebb9d6a5968671077"
+      "binding": "DB",
+      "database_name": "mistllc-db",
+      "database_id": "2ada219f-4ef9-4878-b8cc-df8fb16eded1"
     }
   ],
-  "assets": {
-    "directory": "./dist"
-  }
+  "assets": { "directory":"./public", "binding": "ASSETS" }
 }
    

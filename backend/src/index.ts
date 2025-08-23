@@ -1,23 +1,68 @@
-import express from "express";
-import songsRouter from "./routes/songs";
+export interface Env {
+  DB: D1Database;
+}
 
-const app = express();
-app.use("/api/songs", songsRouter);
-const PORT = process.env.PORT || 3001;
+export default {
+  async fetch(request: Request, env: Env): Promise<Response> {
+    const url = new URL(request.url);
+    const { pathname } = url;
 
-// Root route (so you don’t just see "Cannot GET /")
-app.get("/", (req, res) => {
-  res.send("🚀 MISTLLC Backend is running perfectly!");
-});
+    try {
+      // GET all songs
+      if (request.method === "GET" && pathname === "/api/songs") {
+        const { results } = await env.DB.prepare("SELECT * FROM songs").all();
+        return json(results);
+      }
 
-// Example API endpoint
-app.get("/api/songs", (req, res) => {
-  res.json([
-    { id: 1, title: "Song A", artist: "Artist X" },
-    { id: 2, title: "Song B", artist: "Artist Y" }
-  ]);
-});
+      // GET one song
+      if (request.method === "GET" && pathname.startsWith("/api/songs/")) {
+        const id = pathname.split("/").pop();
+        const song = await env.DB.prepare("SELECT * FROM songs WHERE id = ?").bind(id).first();
+        return song ? json(song) : notFound();
+      }
 
-app.listen(PORT, () => {
-  console.log(`✅ Server running at http://localhost:${PORT}`);
-});
+      // CREATE song
+      if (request.method === "POST" && pathname === "/api/songs") {
+        const body = await request.json();
+        env.DB.prepare(
+          "INSERT INTO songs (title, artist, url) VALUES (?, ?, ?)"
+        ).bind(body.title, body.artist, body.url).run();
+
+        return json({ success: true });
+      }
+
+      // UPDATE song
+      if (request.method === "PUT" && pathname.startsWith("/api/songs/")) {
+        const id = pathname.split("/").pop();
+        const body = await request.json();
+        await env.DB.prepare(
+          "UPDATE songs SET title = ?, artist = ?, url = ? WHERE id = ?"
+        ).bind(body.title, body.artist, body.url, id).run();
+
+        return json({ success: true });
+      }
+
+      // DELETE song
+      if (request.method === "DELETE" && pathname.startsWith("/api/songs/")) {
+        const id = pathname.split("/").pop();
+        await env.DB.prepare("DELETE FROM songs WHERE id = ?").bind(id).run();
+        return json({ success: true });
+      }
+
+      return notFound();
+    } catch (err: any) {
+      return json({ error: err.message }, 500);
+    }
+  },
+};
+
+function json(data: any, status = 200) {
+  return new Response(JSON.stringify(data), {
+    status,
+    headers: { "Content-Type": "application/json" },
+  });
+}
+
+function notFound() {
+  return new Response("Not found", { status: 404 });
+}

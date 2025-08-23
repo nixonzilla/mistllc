@@ -1,22 +1,8 @@
-name = "mistllc-backend-worker"
-main = "dist/index.js"
-compatibility_date = "2025-08-18"
-worker_dev = "true"
+name = "mistllc-backend"
+main = "src/index.ts"
+compatibility_date = "2025-08-23"
 
-[build]
-command = "npm run build"
-
-[vars]
-VITE_API_BASE = "https://mistllc-backend-worker.jacobnixon59.workers.dev"
-
-# Force ES Module format
-compatibility_flags = ["nodejs_compat"]
-
-[kv namespace]
-binding = "mistllc"
-id = "2d250836cc7d4adebb9d6a5968671077"
-
-[placement]
-mode = "smart"
-
-
+[[d1_databases]]
+binding = "DB"
+database_name = "mistllc-db"
+database_id = "2ada219f-4ef9-4878-b8cc-df8fb16eded1"
