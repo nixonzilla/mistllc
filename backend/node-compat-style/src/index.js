@@ -1,10 +1,10 @@
-import express from "express"
-const app = express()
-
-app.get("/api/hello", (_req, res) => {
-    res.json({ message: "Hello from the MISTLLC backend! 🚀" })
-  })
-
-app.listen(8787, () => {
-  console.log("Backend running on http://localhost:8787")
-})
+export default {
+    fetch(request) {
+        const base = "http://127.0.0.1:8787";
+        const statusCode = 301;
+        const source = new URL(request.url);
+        const destination = new URL(source.pathname, base);
+        return Response.redirect(destination.toString(), statusCode);
+    },
+};
+//# sourceMappingURL=index.js.map

@@ -1,52 +1,104 @@
-export interface Env {
-  DB: D1Database; // comes from wrangler.toml binding
-  NODE_ENV: string;
+// src/index.ts
+import { D1Database } from '@cloudflare/workers-types';
+
+interface Env {
+  DB: D1Database;
 }
 
 export default {
-  async fetch(req: Request, env: Env): Promise<Response> {
-    const url = new URL(req.url);
+  async fetch(request: Request, env: Env, ctx: ExecutionContext): Promise<Response> {
+    const url = new URL(request.url);
+    const pathname = url.pathname;
 
-    // GET /songs -> fetch all
-    if (url.pathname === "/songs" && req.method === "GET") {
-      const { results } = await env.DB.prepare("SELECT * FROM songs ORDER BY created_at DESC").all();
-      return Response.json(results);
-    }
+    const queryDB = async (sql: string, params?: any[]) => {
+      const res = await env.DB.prepare(sql).bind(...(params || [])).all();
+      return res.results;
+    };
 
-    // POST /songs -> create new song
-    if (url.pathname === "/songs" && req.method === "POST") {
-      const body = await req.json<{ title: string; artiste: string }>();
-      if (!body.title || !body.artiste) {
-        return new Response("Missing fields", { status: 400 });
+    try {
+      // GET /songs
+      if (request.method === 'GET' && pathname === '/songs') {
+        const songs = await queryDB('SELECT * FROM songs ORDER BY created_at DESC');
+        return new Response(JSON.stringify(songs), {
+          headers: { 'Content-Type': 'application/json' },
+        });
       }
 
-      await env.DB.prepare(
-        "INSERT INTO songs (title, artiste) VALUES (?1, ?2)"
-      ).bind(body.title, body.artiste).run();
+      // POST /songs
+      if (request.method === 'POST' && pathname === '/songs') {
+        const body: { title?: string; artiste?: string } = await request.json();
+        const { title, artiste } = body;
 
-      return new Response("Song created", { status: 201 });
+        if (!title || !artiste) {
+          return new Response(JSON.stringify({ error: 'title and artiste are required' }), {
+            status: 400,
+            headers: { 'Content-Type': 'application/json' },
+          });
+        }
+
+        const result = await queryDB(
+          'INSERT INTO songs (title, artiste, created_at) VALUES (?, ?, datetime(\'now\')) RETURNING *',
+          [title, artiste]
+        );
+
+        return new Response(JSON.stringify(result[0]), {
+          headers: { 'Content-Type': 'application/json' },
+        });
+      }
+
+      // PUT /songs/:id
+      if (request.method === 'PUT' && pathname.startsWith('/songs/')) {
+        const id = pathname.split('/')[2];
+        const body: { title?: string; artiste?: string } = await request.json();
+        const { title, artiste } = body;
+
+        if (!title && !artiste) {
+          return new Response(JSON.stringify({ error: 'title or artiste is required' }), {
+            status: 400,
+            headers: { 'Content-Type': 'application/json' },
+          });
+        }
+
+        const fields = [];
+        const values = [];
+
+        if (title) {
+          fields.push('title = ?');
+          values.push(title);
+        }
+        if (artiste) {
+          fields.push('artiste = ?');
+          values.push(artiste);
+        }
+        values.push(id);
+
+        const result = await queryDB(
+          `UPDATE songs SET ${fields.join(', ')} WHERE id = ? RETURNING *`,
+          values
+        );
+
+        return new Response(JSON.stringify(result[0] || {}), {
+          headers: { 'Content-Type': 'application/json' },
+        });
+      }
+
+      // DELETE /songs/:id
+      if (request.method === 'DELETE' && pathname.startsWith('/songs/')) {
+        const id = pathname.split('/')[2];
+
+        await queryDB('DELETE FROM songs WHERE id = ?', [id]);
+
+        return new Response(JSON.stringify({ success: true }), {
+          headers: { 'Content-Type': 'application/json' },
+        });
+      }
+
+      return new Response('Not Found', { status: 404 });
+    } catch (err) {
+      return new Response(JSON.stringify({ error: err instanceof Error ? err.message : err }), {
+        status: 500,
+        headers: { 'Content-Type': 'application/json' },
+      });
     }
-
-    // PUT /songs/:id -> update
-    if (url.pathname.startsWith("/songs/") && req.method === "PUT") {
-      const id = url.pathname.split("/")[2];
-      const body = await req.json<{ title?: string; artiste?: string }>();
-
-      await env.DB.prepare(
-        "UPDATE songs SET title = COALESCE(?1, title), artiste = COALESCE(?2, artiste) WHERE id = ?3"
-      ).bind(body.title ?? null, body.artiste ?? null, id).run();
-
-      return new Response("Song updated", { status: 200 });
-    }
-
-    // DELETE /songs/:id -> delete
-    if (url.pathname.startsWith("/songs/") && req.method === "DELETE") {
-      const id = url.pathname.split("/")[2];
-      await env.DB.prepare("DELETE FROM songs WHERE id = ?1").bind(id).run();
-      return new Response("Song deleted", { status: 200 });
-    }
-
-    // fallback
-    return new Response("Not found", { status: 404 });
   },
 };

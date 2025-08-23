@@ -1,6 +1,7 @@
-name = "mistllc-backend"
-main = "src/index.ts"
-compatibility_date = "2025-08-23"
+name= "mistllc-backend"
+main= "src/index.ts"
+compatibility_date= "2025-08-23"
+type= "javascript"
 
 [[d1_databases]]
 binding = "DB"
