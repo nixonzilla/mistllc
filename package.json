@@ -1,12 +1,16 @@
 {
-  "name": "mistllc-fullstack",
-  "private": true,
+  "name": "mistllc-backend",
+  "version": "1.0.0",
   "scripts": {
-    "dev": "concurrently \"npm run dev --prefix frontend\" \"npm run dev --prefix backend\"",
-    "build": "npm run build --prefix frontend && npm run build --prefix backend"
+    "dev": "wrangler dev",
+    "deploy": "npm run build && wrangler deploy",
+    "build": "tsc"
+  },
+  "dependencies": {
+    "hono": "^4.6.6"
   },
   "devDependencies": {
-    "@types/node": "24.3.0",
-    "concurrently": "^9.0.0"
+    "typescript": "^5.5.0",
+    "wrangler": "^4.32.0"
   }
 }

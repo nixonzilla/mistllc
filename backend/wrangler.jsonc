@@ -1,6 +1,6 @@
 {
 	"name": "mistllc-backend",
-	"main": "src/index.ts",
+	"main": "dist/index.js",
 	"compatibility_date": "2025-08-24",
   "workers_dev": true,
   "d1_databases":[
