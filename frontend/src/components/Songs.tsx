@@ -1,71 +1,55 @@
+// frontend/src/components/Songs.tsx
 import { useState } from "react";
 import { useSongs } from "../hooks/useSongs";
 
 export default function Songs() {
-  const { songs, loading, addSong, deleteSong } = useSongs();
+  const { songs, loading, error, addSong } = useSongs();
   const [title, setTitle] = useState("");
   const [artist, setArtist] = useState("");
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!title || !artist) return;
-    addSong({ title, artist });
+
+    await addSong(title, artist);
     setTitle("");
     setArtist("");
   };
 
   return (
-    <div className="max-w-xl mx-auto p-6 bg-white shadow-xl rounded-2xl mt-8">
-      <h1 className="text-2xl font-bold mb-4 text-center">🎵 Songs</h1>
+    <div className="p-4">
+      <h2 className="text-xl font-bold mb-2">🎵 Songs</h2>
 
-      <form
-        onSubmit={handleSubmit}
-        className="flex flex-col gap-3 mb-6"
-      >
+      {loading && <p>Loading songs...</p>}
+      {error && <p className="text-red-500">{error}</p>}
+
+      <ul className="mb-4">
+        {songs.map((song) => (
+          <li key={song.id}>
+            {song.title} — <em>{song.artist}</em>
+          </li>
+        ))}
+      </ul>
+
+      <form onSubmit={handleSubmit} className="flex gap-2">
         <input
           type="text"
-          placeholder="Song title"
+          placeholder="Song Title"
           value={title}
           onChange={(e) => setTitle(e.target.value)}
-          className="border p-2 rounded-lg"
+          className="border p-1"
         />
         <input
           type="text"
           placeholder="Artist"
           value={artist}
           onChange={(e) => setArtist(e.target.value)}
-          className="border p-2 rounded-lg"
+          className="border p-1"
         />
-        <button
-          type="submit"
-          className="bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700"
-        >
-          Add Song
+        <button type="submit" className="bg-blue-500 text-white px-3 py-1">
+          Add
         </button>
       </form>
-
-      {loading ? (
-        <p className="text-center">Loading...</p>
-      ) : (
-        <ul className="space-y-3">
-          {songs.map((song) => (
-            <li
-              key={song.id}
-              className="flex justify-between items-center bg-gray-100 p-3 rounded-lg"
-            >
-              <span>
-                <strong>{song.title}</strong> — {song.artist}
-              </span>
-              <button
-                onClick={() => deleteSong(song.id)}
-                className="text-red-500 hover:underline"
-              >
-                Delete
-              </button>
-            </li>
-          ))}
-        </ul>
-      )}
     </div>
   );
 }
