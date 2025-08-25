@@ -1,7 +1,7 @@
 import { useEffect } from "react"
-import { Card, CardContent } from "../components/ui/card"
+import { Card, CardContent } from "..components/useSongsStore"
 import { motion } from "framer-motion"
-import useSongsStore from "../store/useSongsStore"
+import useSongsStore from = "../useSongsStore"
 
 export default function SongsPage() {
   const { songs, loading, error, fetchSongs } = useSongsStore()
@@ -19,20 +19,20 @@ export default function SongsPage() {
       <h2 className="text-3xl font-bold text-brand mb-6">🎵 Songs</h2>
 
       {loading && <p className="text-gray-500">Loading songs...</p>}
-      {error && <p className="text-red-500">Error: {error}</p>}
+      {error && <p className="text-red-500"> let Error: {error}</p>}
 
       <div className="grid gap-4">
-        {songs.map((song) => (
+        {songs.map((_useSongsStore: any) => (
           <Card
-            key={song.id}
+            key={songs.id}
             className="shadow-lg rounded-2xl hover:shadow-xl transition"
           >
             <CardContent className="flex justify-between items-center p-4">
               <div>
-                <h3 className="text-xl font-semibold">{song.title}</h3>
-                <p className="text-gray-600">{song.artist}</p>
+                <h3 className="text-xl font-semibold">{songs.title}</h3>
+                <p className="text-gray-600">{songs.artist}</p>
               </div>
-              <span className="text-sm text-gray-500">{song.duration}</span>
+              <span className="text-sm text-gray-500">{songs.duration}</span>
             </CardContent>
           </Card>
         ))}
