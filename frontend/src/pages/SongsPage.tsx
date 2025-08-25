@@ -1,7 +1,7 @@
 import { useEffect } from "react"
 import { Card, CardContent } from "../components/ui/card"
 import { motion } from "framer-motion"
-import { useSongsStore } from "../store/useSongsStore"
+import useSongsStore from "../store/useSongsStore"
 
 export default function SongsPage() {
   const { songs, loading, error, fetchSongs } = useSongsStore()
