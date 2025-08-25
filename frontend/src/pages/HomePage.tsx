@@ -1,5 +1,5 @@
 import { useEffect } from "react"
-import { useApiStore } from "../store/useApiStore"
+import  useApiStore  from "../store/useApiStore"
 import { motion } from "framer-motion"
 
 export default function HomePage() {
