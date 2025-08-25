@@ -2,16 +2,14 @@
   // Visit https://aka.ms/tsconfig to read more about this file
   "compilerOptions": {
     // File Layout
-    // "rootDir": "./src",
-    // "outDir": "./dist",
+     "outDir": "./dist",
 
     // Environment Settings
     // See also https://aka.ms/tsconfig/module
-    "module": "ES2022",
-    "target": "es2022",
-    "types": ["node"],
-    "lib": ["ESNext"],
-    "moduleResolution": "node",
+    "module": "ESNEXT",
+    "target": "ES2022",
+    "lib": ["ESNEXT"],
+    "moduleResolution": "bundler",
     // For nodejs:
     // "lib": ["esnext"],
     // "types": ["node"],
@@ -23,8 +21,7 @@
     "declarationMap": true,
 
     // Stricter Typechecking Options
-    "noUncheckedIndexedAccess": true,
-    "exactOptionalPropertyTypes": true,
+    "strict":true,
 
     // Style Options
     // "noImplicitReturns": true,
@@ -35,12 +32,12 @@
     // "noPropertyAccessFromIndexSignature": true,
 
     // Recommended Options
-    "strict": true,
-    "jsx": "react-jsx",
-    "verbatimModuleSyntax": true,
+    "verbatimModuleSyntax": false,
     "isolatedModules": true,
     "noUncheckedSideEffectImports": true,
     "moduleDetection": "force",
     "skipLibCheck": true,
-  }
+  },
+  "include": ["src"],
+  "exclude": ["node_modules", "dist"]
 }

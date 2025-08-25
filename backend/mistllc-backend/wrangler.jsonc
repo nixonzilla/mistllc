@@ -5,7 +5,8 @@
 {
 	"$schema": "node_modules/wrangler/config-schema.json",
 	"name": "mistllc-backend",
-	"main": "src/index.ts",
+	"main": "dist/index.js",
+	"workers_dev": true,
 	"compatibility_date": "2025-08-23",
 	"compatibility_flags": [
 		"global_fetch_strictly_public"
@@ -56,4 +57,3 @@
 	 */
 	// "services": [{ "binding": "MY_SERVICE", "service": "my-service" }]
 
-  

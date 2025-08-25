@@ -2,54 +2,6 @@
 @tailwind components;
 @tailwind utilities;
 
-/* 🌟 Global styles */
 body {
-  @apply bg-gray-50 text-gray-900 font-sans antialiased;
-}
-
-/* 🎵 Songs grid container */
-#songs {
-  @apply grid gap-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4;
-}
-
-/* 🎶 Song card */
-#songs > div {
-  @apply bg-white p-4 rounded-lg shadow-md hover:shadow-xl transition-transform transform hover:scale-105;
-}
-
-/* Song title */
-#songs h2 {
-  @apply text-xl font-semibold mb-1;
-}
-
-/* Artist name */
-#songs p:first-of-type {
-  @apply text-gray-600;
-}
-
-/* Duration text */
-#songs p:last-of-type {
-  @apply text-gray-500 text-sm;
-}
-
-/* Error message */
-.error-message {
-  @apply text-red-500 text-center mt-4;
-}
-
-/* 🌙 Dark mode */
-.dark body {
-  @apply bg-gray-900 text-gray-100;
-}
-.dark #songs > div {
-  @apply bg-gray-800 text-gray-200;
-}
-.dark #songs h2 {
-  @apply text-white;
-}
-.dark #songs p:first-of-type {
-  @apply text-gray-300;
-}
-.dark #songs p:last-of-type {
-  @apply text-gray-400;
+ @apply bg-gray-100 text-gray-800 font-sans;
 }

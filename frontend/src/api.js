@@ -1,6 +1,6 @@
-const API_BASE = import.meta.env.VITE_API_URL || "http://127.0.0.1:8787";
+import axios from "axios";
 
-export async function fetchData() {
-  const res = await fetch(`${API_BASE}/hello`);
-  return res.json();
+export async function getHello() {
+  const res = await axios.get("/api/hello"); // backend proxy in vite.config.ts
+  return res.data;
 }

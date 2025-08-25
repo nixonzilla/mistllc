@@ -1,7 +1,15 @@
--- Songs table
-CREATE TABLE IF NOT EXISTS songs (
-  id INTEGER PRIMARY KEY AUTOINCREMENT,
+-- backend/schema.sql
+DROP TABLE IF EXISTS songs;
+
+-- Create songs table
+CREATE TABLE songs (
+  id INTEGER PRIMARY KEY,
   title TEXT NOT NULL,
-  artiste TEXT NOT NULL,
-  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+  artist TEXT NOT NULL
 );
+
+-- Seed with sample data
+INSERT INTO songs (title, artist) VALUES
+  ('Drippy', 'MISTLLC'),
+  ('Dreams of Fire', 'MISTLLC'),
+  ('Unapologetic Vibes', 'MISTLLC');

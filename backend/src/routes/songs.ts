@@ -1,34 +1,31 @@
-import express from 'express';
-const router = express.Router();
+// backend/src/routes/songs.ts
+import { Hono } from "hono";
+import { getDB } from "../db";
 
-// Temporary in-memory "database"
-let songs = [
-  { id: 1, title: "Dream Flow", artist: "MISTLLC", duration: "3:45" },
-  { id: 2, title: "Bold Steps", artist: "MISTLLC", duration: "4:02" },
-  { id: 3, title: "Drippy", artist: "MISTLLC", duration: "2:58" },
-];
+const songs = new Hono();
 
 // GET all songs
-router.get("/", (req, res) => {
-  res.json(songs);
+songs.get("/", async (c) => {
+  const db = getDB(c);
+  const result = await db.prepare("SELECT id, title, artist FROM songs").all();
+  return c.json(result.results ?? []);
 });
 
 // POST new song
-router.post("/", (req, res) => {
-  const { title, artist, duration } = req.body;
-  if (!title || !artist || !duration) {
-    return res.status(400).json({ error: "Missing fields" });
+songs.post("/", async (c) => {
+  const db = getDB(c);
+  const body = await c.req.json<{ title: string; artist: string }>();
+
+  if (!body.title || !body.artist) {
+    return c.json({ error: "Title and artist are required" }, 400);
   }
 
-  const newSong = {
-    id: songs.length + 1,
-    title,
-    artist,
-    duration,
-  };
+  await db
+    .prepare("INSERT INTO songs (title, artist) VALUES (?, ?)")
+    .bind(body.title, body.artist)
+    .run();
 
-  songs.push(newSong);
-  res.status(201).json(newSong);
+  return c.json({ success: true });
 });
 
-export default router;
+export default songs;

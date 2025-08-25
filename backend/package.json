@@ -1,20 +1,16 @@
 {
   "name": "mistllc-backend",
   "version": "1.0.0",
-  "description": "MISTLLC backend worker with D1 database",
-  "type": "module",
   "scripts": {
     "dev": "wrangler dev",
-    "build": "npm run build",
     "deploy": "wrangler deploy",
-    "typegen": "wrangler d1 generate-types"
+    "build": "tsc"
   },
   "dependencies": {
-    "@cloudflare/workers-types": "^4.2025.0"
+    "hono": "^4.6.6"
   },
   "devDependencies": {
-    "typescript": "^5.9.2",
-    "wrangler": "^4.32.0",
-    "@types/node": "^20.5.1"
+    "typescript": "^5.5.0",
+    "wrangler": "^4.32.0"
   }
 }
