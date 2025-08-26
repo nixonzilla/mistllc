@@ -2,15 +2,16 @@
   "name": "mistllc-backend",
   "version": "1.0.0",
   "scripts": {
-    "dev": "wrangler dev",
-    "deploy": "npm run build && wrangler deploy",
+    "dev": "wrangler dev --local",
+    "deploy": "wrangler deploy",
     "build": "tsc"
   },
   "dependencies": {
     "hono": "^4.6.6"
   },
   "devDependencies": {
-    "typescript": "^5.5.0",
-    "wrangler": "^4.32.0"
+    "@cloudflare/workers-types": "^4.20250826.0",
+    "typescript": "^5.9.2",
+    "wrangler": "^4.33.0"
   }
 }

@@ -1,4 +1,3 @@
-// backend/src/routes/songs.ts
 import { Hono } from "hono";
 import { getDB } from "../db";
 

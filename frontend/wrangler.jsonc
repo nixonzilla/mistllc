@@ -1,0 +1,10 @@
+{
+  "name": "mistllc-frontend",
+  "pages_build_output_dir": "dist",
+  "routes": [
+    {
+      "src": "/api/(.*)",
+      "dest": "https://mistllc-backend.jacobnixon59.workers.dev/"
+    }
+  ]
+}
