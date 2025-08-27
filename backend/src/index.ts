@@ -61,3 +61,4 @@ app.delete('/songs/:id', async (c) => {
 })
 
 export default app
+app.get("/", (c) => c.text("🎵 mistllc backend is running"))
