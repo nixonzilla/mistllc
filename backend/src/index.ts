@@ -2,7 +2,7 @@ import { Hono } from 'hono'
 import { cors } from 'hono/cors'
 import type { Context } from 'hono'
 import type { D1Database } from '@cloudflare/workers-types'
-import type { SongRow, SongInput } from '../shared/types/db'
+import type { SongRow } from '../../shared/types/db'
 
 type Bindings = {
   DB: D1Database
@@ -23,7 +23,7 @@ app.get('/songs', async (c) => {
 
 // Add a new song
 app.post('/songs', async (c) => {
-  const body = await c.req.json<SongInput>()
+  const body = await c.req.json<SongRow>()
   if (!body.title || !body.artist) return c.json({ error: 'Missing fields' }, 400)
 
   const stmt = c.env.DB.prepare(
@@ -37,7 +37,7 @@ app.post('/songs', async (c) => {
 // Update a song
 app.put('/songs/:id', async (c) => {
   const id = Number(c.req.param('id'))
-  const body = await c.req.json<SongInput>()
+  const body = await c.req.json<SongRow>()
 
   const stmt = c.env.DB.prepare(
     'UPDATE songs SET title = ?1, artist = ?2 WHERE id = ?3 RETURNING *'
