@@ -1,9 +1,6 @@
-export interface UserRow {
-  id: number;
-  name: string;
-  email: string;
-}
-
-export interface Env {
-  DB: D1database;
+// shared/types.ts
+export interface SongRow {
+  id: number
+  title: string
+  artist: string
 }

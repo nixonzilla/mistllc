@@ -1,20 +1,20 @@
-import { User } from "./user";
+// shared/types/api.ts
+import type { SongRow } from './songs'
 
-export interface ApiResponse<T> {
-  success: boolean;
-  data?: T;
-  error?: string;
+export interface ApiRoutes {
+  '/songs:GET': SongRow[]
+  '/songs:POST': SongRow
+  '/songs/:id:PUT': SongRow
+  '/songs/:id:DELETE': { success: boolean }
 }
 
-// --- User Endpoints ---
+// Generic API response type
+export type ApiResponse<T> =
+  | { success: true; data: T }
+  | { success: false; error: string }
 
-export interface CreateUserRequest {
-  name: string;
-  email: string;
-}
-
-export interface CreateUserResponse extends ApiResponse<User> {}
-
-export interface GetUsersResponse extends ApiResponse<User[]> {}
-export { User };
-
+// Song-specific responses
+export type GetSongsResponse = ApiResponse<SongRow[]>
+export type CreateSongResponse = ApiResponse<SongRow>
+export type UpdateSongResponse = ApiResponse<SongRow>
+export type DeleteSongResponse = ApiResponse<{ success: boolean }>

@@ -1,104 +1,63 @@
-import { Env, UserRow } from "../shared/types";
+import { Hono } from 'hono'
+import { cors } from 'hono/cors'
+import type { Context } from 'hono'
+import type { D1Database } from '@cloudflare/workers-types'
+import type { SongRow, SongInput } from '../shared/types/db'
 
-// Utility: JSON response with CORS headers
-function jsonResponse(body: unknown, status = 200): Response {
-  return new Response(JSON.stringify(body), {
-    status,
-    headers: {
-      "Content-Type": "application/json",
-      "Access-Control-Allow-Origin": "*", 
-      "Access-Control-Allow-Methods": "GET, POST, PUT, DELETE, OPTIONS",
-      "Access-Control-Allow-Headers": "Content-Type",
-    },
-  });
+type Bindings = {
+  DB: D1Database
 }
 
-export default {
-  async fetch(request: Request, env: Env): Promise<Response> {
-    const url = new URL(request.url);
-    const { pathname } = url;
+const app = new Hono<{ Bindings: Bindings }>()
 
-    // ── Health check ──
-    if (pathname === "/health") {
-      return jsonResponse({ status: "ok", service: "mistllc-backend" });
-    }
+app.use('*', cors())
 
-    // ── Users ──
-    if (pathname === "/users" && request.method === "GET") {
-      try {
-        const { results } = await env.DB.prepare(
-          "SELECT id, name, email FROM users"
-        ).all();
+// Health check
+app.get('/health', (c: Context) => c.text('Backend is healthy ✅'))
 
-        // Cast results safely to UserRow[]
-        return jsonResponse(results as UserRow[]);
-      } catch (err) {
-        return jsonResponse({ error: (err as Error).message }, 500);
-      }
-    }
+// Get all songs
+app.get('/songs', async (c) => {
+  const { results } = await c.env.DB.prepare('SELECT * FROM songs').all<SongRow>()
+  return c.json(results)
+})
 
-    if (pathname === "/users" && request.method === "POST") {
-      try {
-        const data = (await request.json()) as Partial<UserRow>;
+// Add a new song
+app.post('/songs', async (c) => {
+  const body = await c.req.json<SongInput>()
+  if (!body.title || !body.artist) return c.json({ error: 'Missing fields' }, 400)
 
-        if (!data.name || !data.email) {
-          return jsonResponse({ error: "Missing name or email" }, 400);
-        }
+  const stmt = c.env.DB.prepare(
+    'INSERT INTO songs (title, artist) VALUES (?1, ?2) RETURNING *'
+  ).bind(body.title, body.artist)
 
-        const { success } = await env.DB.prepare(
-          "INSERT INTO users (name, email) VALUES (?1, ?2)"
-        )
-          .bind(data.name, data.email)
-          .run();
+  const row = await stmt.first<SongRow>()
+  return c.json(row)
+})
 
-        return jsonResponse({ success });
-      } catch (err) {
-        return jsonResponse({ error: (err as Error).message }, 500);
-      }
-    }
+// Update a song
+app.put('/songs/:id', async (c) => {
+  const id = Number(c.req.param('id'))
+  const body = await c.req.json<SongInput>()
 
-    if (pathname.startsWith("/users/") && request.method === "PUT") {
-      try {
-        const id = Number(pathname.split("/")[2]);
-        const data = (await request.json()) as Partial<UserRow>;
+  const stmt = c.env.DB.prepare(
+    'UPDATE songs SET title = ?1, artist = ?2 WHERE id = ?3 RETURNING *'
+  ).bind(body.title, body.artist, id)
 
-        if (!id || (!data.name && !data.email)) {
-          return jsonResponse({ error: "Missing ID or update fields" }, 400);
-        }
+  const row = await stmt.first<SongRow>()
+  if (!row) return c.json({ error: 'Not found' }, 404)
 
-        const { success } = await env.DB.prepare(
-          "UPDATE users SET name = COALESCE(?1, name), email = COALESCE(?2, email) WHERE id = ?3"
-        )
-          .bind(data.name ?? null, data.email ?? null, id)
-          .run();
+  return c.json(row)
+})
 
-        return jsonResponse({ success });
-      } catch (err) {
-        return jsonResponse({ error: (err as Error).message }, 500);
-      }
-    }
+// Delete a song
+app.delete('/songs/:id', async (c) => {
+  const id = Number(c.req.param('id'))
+  const stmt = c.env.DB.prepare('DELETE FROM songs WHERE id = ?1').bind(id)
+  const info = await stmt.run()
 
-    if (pathname.startsWith("/users/") && request.method === "DELETE") {
-      try {
-        const id = Number(pathname.split("/")[2]);
+  if (info.meta.changes === 0) return c.json({ error: 'Not found' }, 404)
 
-        if (!id) {
-          return jsonResponse({ error: "Missing ID" }, 400);
-        }
+  return c.json({ success: true })
+})
 
-        const { success } = await env.DB.prepare(
-          "DELETE FROM users WHERE id = ?1"
-        )
-          .bind(id)
-          .run();
-
-        return jsonResponse({ success });
-      } catch (err) {
-        return jsonResponse({ error: (err as Error).message }, 500);
-      }
-    }
-
-    // ── Not Found ──
-    return jsonResponse({ error: "Not found" }, 404);
-  },
-};
+export default app

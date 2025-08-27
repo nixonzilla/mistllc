@@ -1,0 +1,26 @@
+### Health check
+GET http://127.0.0.1:8787/health
+
+### Get all songs
+GET http://127.0.0.1:8787/songs
+
+### Add a new song
+POST http://127.0.0.1:8787/songs
+Content-Type: application/json
+
+{
+  "title": "Drippy",
+  "artist": "MISTLLC"
+}
+
+### Update a song
+PUT http://127.0.0.1:8787/songs/1
+Content-Type: application/json
+
+{
+  "title": "Updated Song",
+  "artist": "Updated Artist"
+}
+
+### Delete a song
+DELETE http://127.0.0.1:8787/songs/1
