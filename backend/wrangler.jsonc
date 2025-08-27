@@ -1,5 +1,5 @@
 {
-  "name": "mistllc-backend-worker",
+  "name": "mistllc-backend",
   "main": "src/index.ts",
   "compatibility_date": "2025-08-25",
   "vars": {
