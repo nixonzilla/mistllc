@@ -2,7 +2,7 @@
   "compilerOptions": {
     "target": "ESNext",
     "lib": ["ESNext", "DOM"],
-      "types": ["./types.d.ts","node"],
+      "types": ["./types.d.ts","node","WebWorker","@cloudflare/workers-type"],
     "module": "ESNext",
     "moduleResolution": "Node",
     "strict": true,
@@ -16,5 +16,5 @@
     }
   },
   "include": ["src/**/*"],
-  "exclude": ["functions/**/*"]
+  "exclude": ["functions/**/*","./types.d.ts","node","WebWorker","@cloudflare/workers-type"]
 }
