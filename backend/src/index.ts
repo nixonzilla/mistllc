@@ -1,14 +1,15 @@
 import { Hono } from 'hono'
 import { cors } from 'hono/cors'
-import type { Context } from 'hono'
-import type { D1Database } from '@cloudflare/workers-types'
-import type { SongRow } from '../../shared/types/db'
+import { Context } from 'hono'
+import { D1Database } from '@cloudflare/workers-types'
+import { SongRow } from '../../shared/types/db'
+import songsRoute from "./routes/songs";
 
 type Bindings = {
   DB: D1Database
 }
 
-const app = new Hono<{ Bindings: Bindings }>()
+export const app = new Hono<{ Bindings: Bindings }>()
 
 app.use('*', cors())
 
@@ -62,3 +63,9 @@ app.delete('/songs/:id', async (c) => {
 
 export default app
 app.get("/", (c) => c.text("🎵 mistllc backend is running"))
+export const handler = app.fetch
+export { songsRoute };
+// Root check
+app.get("/", (c) => c.text("MISTLLC Backend is running!"));
+// Mount songs API
+app.route("/songs", songsRoute);

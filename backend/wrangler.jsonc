@@ -3,7 +3,7 @@
   "main": "src/index.ts",
   "compatibility_date": "2025-08-25",
   "vars": {
-    "API_URL": "http://127.0.0.1:8787"
+    "API_URL": "http://mistllc-backend.jacobnixon59.workers.dev"
   },
   "d1_databases": [
     {

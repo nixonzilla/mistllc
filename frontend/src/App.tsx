@@ -1,54 +1,72 @@
-import React, { useEffect, useState } from "react";
-import { fetchSongs, createSong } from "./api";
-import { SongRow } from "../../shared/types";
+import { useEffect, useState } from "react";
+import { Song, fetchSongs, addSong, updateSong, deleteSong } from "./api";
+import "./App.css";
 
-const App: React.FC = () => {
-  const [songs, setSongs] = useState<SongRow[]>([]);
+export default function App() {
+  const [songs, setSongs] = useState<Song[]>([]);
   const [title, setTitle] = useState("");
   const [artist, setArtist] = useState("");
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const [editingId, setEditingId] = useState<number | null>(null);
 
+  // Fetch songs on load
   useEffect(() => {
     loadSongs();
   }, []);
 
   const loadSongs = async () => {
-    setLoading(true);
     try {
       const data = await fetchSongs();
       setSongs(data);
-      setError(null);
-    } catch (err: any) {
-      setError(err.message);
-    } finally {
-      setLoading(false);
+    } catch (err) {
+      console.error(err);
     }
   };
 
-  const handleAddSong = async (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      const newSong = await createSong({ title, artist });
-      setSongs((prev) => [...prev, newSong]);
+      if (editingId) {
+        const songToUpdate = songs.find((s) => s.id === editingId);
+        if (songToUpdate) {
+          await updateSong(editingId, { title, artist }, songToUpdate);
+        }
+      } else {
+        await addSong({ title, artist });
+      }
       setTitle("");
       setArtist("");
-    } catch (err: any) {
-      setError(err.message);
+      setEditingId(null);
+      loadSongs();
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  const handleEdit = (song: Song) => {
+    setTitle(song.title);
+    setArtist(song.artist);
+    setEditingId(song.id);
+  };
+
+  const handleDelete = async (id: number) => {
+    try {
+      await deleteSong(id);
+      loadSongs();
+    } catch (err) {
+      console.error(err);
     }
   };
 
   return (
-    <div style={{ padding: "2rem", fontFamily: "sans-serif" }}>
-      <h1>MISTLLC Music Library</h1>
-      <form onSubmit={handleAddSong} style={{ marginBottom: "1rem" }}>
+    <div className="app-container">
+      <h1>MISTLLC Songs</h1>
+      <form onSubmit={handleSubmit} className="song-form">
         <input
           type="text"
           placeholder="Title"
           value={title}
           onChange={(e) => setTitle(e.target.value)}
           required
-          style={{ marginRight: "0.5rem" }}
         />
         <input
           type="text"
@@ -56,23 +74,23 @@ const App: React.FC = () => {
           value={artist}
           onChange={(e) => setArtist(e.target.value)}
           required
-          style={{ marginRight: "0.5rem" }}
         />
-        <button type="submit">Add Song</button>
+        <button type="submit">{editingId ? "Update" : "Add"} Song</button>
       </form>
 
-      {loading && <p>Loading songs...</p>}
-      {error && <p style={{ color: "red" }}>Error: {error}</p>}
-
-      <ul>
+      <ul className="song-list">
         {songs.map((song) => (
           <li key={song.id}>
-            <strong>{song.title}</strong> by {song.artist}
+            <span>
+              "{song.title}" by {song.artist}
+            </span>
+            <div className="actions">
+              <button onClick={() => handleEdit(song)}>Edit</button>
+              <button onClick={() => handleDelete(song.id)}>Delete</button>
+            </div>
           </li>
         ))}
       </ul>
     </div>
   );
-};
-
-export default App;
+}
