@@ -1,9 +1,7 @@
+
 name = "mistllc-frontend"
+compatibility_date = "2025-08-29"
 pages_build_output_dir = "dist"
-compatibility_date = "2025-08-28"
 
 [vars]
-VITE_API_URL = "https://mistllc-backend-worker.jacobnixon59.workers.dev"
-
-[env.production]
-compatibility_date = "2025-08-28"
+BACKEND_URL = "https://mistllc-backend.jacobnixon59.workers.dev"
