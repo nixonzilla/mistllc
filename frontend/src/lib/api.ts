@@ -1,20 +1,35 @@
-const BASE_URL = "http://127.0.0.1:8787"; // local dev, change to production URL later
+// src/lib/api.ts
+const API_BASE = "http://localhost:8787" // adjust if backend runs on different port
 
-export async function getSongs() {
-  const res = await fetch(`${BASE_URL}/songs`);
-  return res.json();
-}
-
-export async function createSong(title: string, artiste: string) {
-  const res = await fetch(`${BASE_URL}/songs`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ title, artiste }),
+// GET request
+export async function apiGet<T>(endpoint: string): Promise<T> {
+  const res = await fetch(`${API_BASE}${endpoint}`, {
+    method: "GET",
+    headers: {
+      "Content-Type": "application/json",
+    },
   });
+
+  if (!res.ok) {
+    throw new Error(`GET ${endpoint} failed: ${res.status}`);
+  }
+
   return res.json();
 }
 
-export async function deleteSong(id: number) {
-  const res = await fetch(`${BASE_URL}/songs/${id}`, { method: "DELETE" });
+// POST request
+export async function apiPost<T>(endpoint: string, body: any): Promise<T> {
+  const res = await fetch(`${API_BASE}${endpoint}`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(body),
+  });
+
+  if (!res.ok) {
+    throw new Error(`POST ${endpoint} failed: ${res.status}`);
+  }
+
   return res.json();
 }

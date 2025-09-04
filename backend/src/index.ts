@@ -2,7 +2,7 @@ import { Hono } from 'hono'
 import { cors } from 'hono/cors'
 import { Context } from 'hono'
 import { D1Database } from '@cloudflare/workers-types'
-import { SongRow } from '../../shared/types/db'
+import { SongRow } from './shared/types/db'
 import songsRoute from "./routes/songs";
 
 type Bindings = {
