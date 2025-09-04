@@ -9,7 +9,7 @@
     "build": "wrangler deploy --dry-run"
   },
   "dependencies": {
-    "hono": "^4.6.6",
+    "hono": "^4.9.6",
     "@cloudflare/types": "^7.0.0"
   },
   "devDependencies": {
