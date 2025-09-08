@@ -1,96 +1,52 @@
-import { useEffect, useState } from "react";
-import { Song, fetchSongs, addSong, updateSong, deleteSong } from "./api";
-import "./App.css";
+import { useEffect, useState } from "react"
+
+type Song = {
+  id: number
+  title: string
+  artist: string
+  album?: string
+}
 
 export default function App() {
-  const [songs, setSongs] = useState<Song[]>([]);
-  const [title, setTitle] = useState("");
-  const [artist, setArtist] = useState("");
-  const [editingId, setEditingId] = useState<number | null>(null);
+  const [songs, setSongs] = useState<Song[]>([])
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
 
-  // Fetch songs on load
   useEffect(() => {
-    loadSongs();
-  }, []);
-
-  const loadSongs = async () => {
-    try {
-      const data = await fetchSongs();
-      setSongs(data);
-    } catch (err) {
-      console.error(err);
-    }
-  };
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    try {
-      if (editingId) {
-        const songToUpdate = songs.find((s) => s.id === editingId);
-        if (songToUpdate) {
-          await updateSong(editingId, { title, artist }, songToUpdate);
-        }
-      } else {
-        await addSong({ title, artist });
+    const fetchSongs = async () => {
+      try {
+        const res = await fetch(`${import.meta.env.VITE_API_URL}/songs`)
+        if (!res.ok) throw new Error(`HTTP error ${res.status}`)
+        const data = await res.json()
+        setSongs(data)
+      } catch (err: any) {
+        setError(err.message)
+      } finally {
+        setLoading(false)
       }
-      setTitle("");
-      setArtist("");
-      setEditingId(null);
-      loadSongs();
-    } catch (err) {
-      console.error(err);
     }
-  };
+    fetchSongs()
+  }, [])
 
-  const handleEdit = (song: Song) => {
-    setTitle(song.title);
-    setArtist(song.artist);
-    setEditingId(song.id);
-  };
-
-  const handleDelete = async (id: number) => {
-    try {
-      await deleteSong(id);
-      loadSongs();
-    } catch (err) {
-      console.error(err);
-    }
-  };
+  if (loading) return <p className="p-4 text-gray-600">Loading songs...</p>
+  if (error) return <p className="p-4 text-red-600">Error: {error}</p>
 
   return (
-    <div className="app-container">
-      <h1>MISTLLC Songs</h1>
-      <form onSubmit={handleSubmit} className="song-form">
-        <input
-          type="text"
-          placeholder="Title"
-          value={title}
-          onChange={(e) => setTitle(e.target.value)}
-          required
-        />
-        <input
-          type="text"
-          placeholder="Artist"
-          value={artist}
-          onChange={(e) => setArtist(e.target.value)}
-          required
-        />
-        <button type="submit">{editingId ? "Update" : "Add"} Song</button>
-      </form>
-
-      <ul className="song-list">
-        {songs.map((song) => (
-          <li key={song.id}>
-            <span>
-              "{song.title}" by {song.artist}
-            </span>
-            <div className="actions">
-              <button onClick={() => handleEdit(song)}>Edit</button>
-              <button onClick={() => handleDelete(song.id)}>Delete</button>
-            </div>
-          </li>
-        ))}
-      </ul>
+    <div className="p-6">
+      <h1 className="text-2xl font-bold mb-4">🎶 MISTLLC Songs</h1>
+      {songs.length === 0 ? (
+        <p className="text-gray-500">No songs found in database.</p>
+      ) : (
+        <ul className="space-y-2">
+          {songs.map((song) => (
+            <li key={song.id} className="p-3 bg-gray-100 rounded-lg shadow">
+              <p className="font-semibold">{song.title}</p>
+              <p className="text-sm text-gray-600">{song.artist}</p>
+              {song.album && <p className="text-xs text-gray-500">Album: {song.album}</p>}
+            </li>
+          ))}
+        </ul>
+      )}
     </div>
-  );
+  )
 }

@@ -1,6 +1,7 @@
 {
-  "name": "mistllc-backend",
-  "version": "1.0.0",
+  "name": "mistllc-fullstack",
+  "private": true,
+  "workspaces": ["frontend", "backend"],
   "scripts": {
     "dev": "wrangler dev",
     "deploy": "npm run build && wrangler deploy",
@@ -11,7 +12,6 @@
     "npm": "^11.5.2"
   },
   "devDependencies": {
-    "typescript": "^5.5.0",
-    "wrangler": "^4.32.0"
+    "concurrently": "^9.0.0"
   }
 }

@@ -1,20 +1,10 @@
-const BASE_URL = "http://127.0.0.1:8787"; // local dev, change to production URL later
+// frontend/src/lib/api.ts
 
-export async function getSongs() {
-  const res = await fetch(`${BASE_URL}/songs`);
-  return res.json();
-}
+// Pick up from .env, fallback to local dev port
+const API_URL = import.meta.env.VITE_API_URL || "http://localhost:8787/api/*";
 
-export async function createSong(title: string, artiste: string) {
-  const res = await fetch(`${BASE_URL}/songs`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ title, artiste }),
-  });
-  return res.json();
-}
-
-export async function deleteSong(id: number) {
-  const res = await fetch(`${BASE_URL}/songs/${id}`, { method: "DELETE" });
+export async function fetchSongs() {
+  const res = await fetch(`${API_URL}/songs`);
+  if (!res.ok) throw new Error("Failed to fetch songs");
   return res.json();
 }
