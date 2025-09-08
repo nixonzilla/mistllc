@@ -9,7 +9,9 @@ CREATE TABLE songs (
 );
 
 -- Seed with sample data
-INSERT INTO songs (title, artist) VALUES
-  ('Drippy', 'MISTLLC'),
-  ('Dreams of Fire', 'MISTLLC'),
-  ('Unapologetic Vibes', 'MISTLLC');
+INSERT INTO songs (title, artist, album) VALUES
+('Who Am I', 'Beenie Man', 'Blessed'),
+('Murder She Wrote', 'Chaka Demus & Pliers', 'Tease Me'),
+('Bam Bam', 'Sister Nancy', 'One Two'),
+('Temperature', 'Sean Paul', 'The Trinity'),
+('Pull Up To The Bumper', 'Grace Jones', 'Nightclubbing');
