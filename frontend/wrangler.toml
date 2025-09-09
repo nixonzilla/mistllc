@@ -1,7 +1,7 @@
 
 name = "mistllc-frontend"
-compatibility_date = "2025-08-29"
+compatibility_date = "2025-09-09"
 pages_build_output_dir = "./dist"
 
 [vars]
-API_KEY = "https://mistllc.org/api/*"
+API_KEY = "https://127.0.0.1:8787"

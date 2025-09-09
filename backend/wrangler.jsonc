@@ -1,7 +1,7 @@
 {
   "name": "mistllc-backend",
   "main": "src/index.ts",
-  "compatibility_date": "2025-08-23",
+  "compatibility_date": "2025-09-09",
   "vars": {
     "API_URL": "http://127.0.0.1:8787"
   },
