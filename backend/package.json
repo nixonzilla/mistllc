@@ -11,7 +11,10 @@
   "dependencies": {
     "@cloudflare/types": "^7.0.0",
     "cors": "^2.8.5",
-    "hono": "^4.9.6"
+    "hono": "^4.9.5"
+    },
+  "overrides": {
+    "hono": "^4.9.5"
   },
   "devDependencies": {
     "@types/cors": "^2.8.19",
