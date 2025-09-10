@@ -25,7 +25,6 @@ function App() {
         setLoading(false);
       }
     };
-
     fetchSongs();
   }, []);
 
@@ -35,47 +34,44 @@ function App() {
         <h1 className="text-4xl font-extrabold tracking-tight">
           🎵 MISTLLC Music Library
         </h1>
-        <p className="text-gray-400 mt-2">Curated Sounds For The Community</p>
+        <p className="text-gray-400 mt-2">Curated sounds for the community</p>
       </header>
+
+      {loading && (
+        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+          {[1, 2, 3].map((i) => (
+            <div
+              key={i}
+              className="animate-pulse bg-gray-800 p-6 rounded-2xl shadow-lg"
+            >
+              <div className="h-6 w-3/4 bg-gray-700 rounded mb-4"></div>
+              <div className="h-4 w-1/2 bg-gray-700 rounded"></div>
+              <div className="h-4 w-2/3 bg-gray-700 rounded mt-2"></div>
+            </div>
+          ))}
+        </div>
+      )}
 
       {error && <p className="text-center text-red-400">{error}</p>}
 
-      {/* Grid container */}
-      <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-        {/* Skeleton cards when loading */}
-        {loading &&
-          Array.from({ length: 6 }).map((_, i) => (
-            <div
-              key={i}
-              className="bg-gray-800 p-6 rounded-2xl shadow-lg animate-pulse"
-            >
-              <div className="h-6 bg-gray-700 rounded w-3/4 mb-4"></div>
-              <div className="h-4 bg-gray-700 rounded w-1/2 mb-2"></div>
-              <div className="h-4 bg-gray-700 rounded w-1/3"></div>
-            </div>
-          ))}
-
-        {/* Songs */}
-        {!loading &&
-          !error &&
-          songs.map((song) => (
-            <div
-              key={song.id}
-              className="bg-gray-800 p-6 rounded-2xl shadow-lg hover:shadow-2xl transition"
-            >
-              <h2 className="text-xl font-semibold">{song.title}</h2>
-              <p className="text-gray-400">by {song.artist}</p>
-              <p className="text-sm text-gray-500 mt-2">
-                Added {new Date(song.created_at).toLocaleDateString()}
-              </p>
-            </div>
-          ))}
-      </div>
-
-      {/* Empty state */}
       {!loading && !error && songs.length === 0 && (
-        <p className="text-center text-gray-400 mt-10">No songs yet. 🎶</p>
+        <p className="text-center text-gray-400">No songs yet. 🎶</p>
       )}
+
+      <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+        {songs.map((song) => (
+          <div
+            key={song.id}
+            className="bg-gray-800 p-6 rounded-2xl shadow-lg hover:shadow-2xl transition"
+          >
+            <h2 className="text-xl font-semibold">{song.title}</h2>
+            <p className="text-gray-400">by {song.artist}</p>
+            <p className="text-sm text-gray-500 mt-2">
+              Added {new Date(song.created_at).toLocaleDateString()}
+            </p>
+          </div>
+        ))}
+      </div>
     </div>
   );
 }
