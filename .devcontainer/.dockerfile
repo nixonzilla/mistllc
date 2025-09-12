@@ -1,7 +1,7 @@
 # ========================
 # Stage 1: Build backend worker
 # ========================
-FROM node:24 AS builder
+FROM alpine/node:22 AS builder
 
 WORKDIR /app
 
@@ -21,7 +21,7 @@ RUN npm run build
 # ========================
 # Stage 2: Runtime container
 # ========================
-FROM node:24 AS stage-1
+FROM alpine/node:24 AS stage-14
 
 WORKDIR /app
 
