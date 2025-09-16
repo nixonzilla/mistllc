@@ -1,60 +1,62 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 // frontend/src/lib/api.ts
-const API_URL = import.meta.env.VITE_API_URL || "http://localhost:8787";
 
-// Generic GET request
-export async function apiGet(endpoint: string, token?: string) {
-  const res = await fetch(`${API_URL}${endpoint}`, {
-    headers: token ? { Authorization: `Bearer ${token}` } : undefined,
-  });
-  if (!res.ok) throw new Error(`GET ${endpoint} failed`);
+export type Song = {
+  id: string;
+  title: string;
+  artist: string;
+  url: string;
+  created_at?: string;
+};
+
+export type Product = {
+  id: string;
+  name: string;
+  price: number;
+  image: string;
+};
+
+export type UserCredentials = {
+  email: string;
+  password: string;
+};
+
+export type RegisterPayload = UserCredentials & {
+  name: string;
+};
+
+const API_BASE = import.meta.env.VITE_API_URL || "http://localhost:8787";
+
+// -------- Songs --------
+export async function fetchSongs(): Promise<Song[]> {
+  const res = await fetch(`${API_BASE}/songs`);
+  if (!res.ok) throw new Error("Failed to fetch songs");
   return res.json();
 }
 
-// Generic POST request
-export async function apiPost(endpoint: string, body: any, token?: string) {
-  const res = await fetch(`${API_URL}${endpoint}`, {
+// -------- Products --------
+export async function fetchProducts(): Promise<Product[]> {
+  const res = await fetch(`${API_BASE}/products`);
+  if (!res.ok) throw new Error("Failed to fetch products");
+  return res.json();
+}
+
+// -------- Auth --------
+export async function login(payload: UserCredentials) {
+  const res = await fetch(`${API_BASE}/auth/login`, {
     method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      ...(token ? { Authorization: `Bearer ${token}` } : {}),
-    },
-    body: JSON.stringify(body),
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(payload),
   });
-  if (!res.ok) {
-    const data = await res.json().catch(() => null);
-    throw new Error(data?.error || `POST ${endpoint} failed`);
-  }
+  if (!res.ok) throw new Error("Login failed");
   return res.json();
 }
 
-// --- Auth Helpers ---
-export async function login(email: string, password: string) {
-  return apiPost("/login", { email, password });
-}
-
-export async function register(
-  email: string,
-  _name: string,
-  password?: string
-) {
-  return apiPost("/register", { email, password });
-}
-
-// --- Shop Helpers ---
-export async function fetchProducts() {
-  return apiGet("/products");
-}
-
-export async function checkout(cart: any[], token: string) {
-  return apiPost("/checkout", { cart }, token);
-}
-
-// --- Community Helpers ---
-export async function fetchPosts() {
-  return apiGet("/posts");
-}
-
-export async function addPost(content: string, token: string) {
-  return apiPost("/posts", { content }, token);
+export async function register(payload: RegisterPayload) {
+  const res = await fetch(`${API_BASE}/auth/register`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(payload),
+  });
+  if (!res.ok) throw new Error("Registration failed");
+  return res.json();
 }

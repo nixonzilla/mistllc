@@ -1,110 +1,131 @@
 /* eslint-disable react-refresh/only-export-components */
 import {
   createContext,
-  useContext,
   useState,
-  useEffect,
+  useContext,
   type ReactNode,
+  type Dispatch,
+  type SetStateAction,
 } from "react";
+import type { Song } from "../lib/api";
 
-interface User {
+// Define a user type (can be expanded later)
+export type User = {
   id: string;
   name: string;
   email: string;
-}
+} | null;
 
-interface Notification {
-  id: number;
+// Define notification type
+export type Notification = {
+  id: string;
   message: string;
   type: "success" | "error" | "info";
-}
+};
 
-interface GlobalContextType {
-  user: User | null;
-  setUser: (user: User | null) => void;
-  token: string | null;
-  setToken: (token: string | null) => void;
+export type GlobalContextType = {
+  // Cart
+  cartOpen: boolean;
+  setCartOpen: Dispatch<SetStateAction<boolean>>;
+
+  // Songs & player
+  queue: Song[];
+  setQueue: Dispatch<SetStateAction<Song[]>>;
+  currentSong: Song | null;
+  setCurrentSong: Dispatch<SetStateAction<Song | null>>;
+  playNext: () => void;
+  playPrev: () => void;
+
+  // User auth
+  user: User;
+  setUser: Dispatch<SetStateAction<User>>;
+
+  // Theme
+  theme: "light" | "dark";
+  setTheme: Dispatch<SetStateAction<"light" | "dark">>;
+
+  // Notifications
   notifications: Notification[];
-  addNotification: (
-    message: string,
-    type: "success" | "error" | "info"
-  ) => void;
-  removeNotification: (id: number) => void;
-  loading: boolean;
-  setLoading: (loading: boolean) => void;
-}
+  addNotification: (message: string, type?: Notification["type"]) => void;
+  removeNotification: (id: string) => void;
+};
 
 const GlobalContext = createContext<GlobalContextType | undefined>(undefined);
 
-export function GlobalProvider({ children }: { children: ReactNode }) {
-  const [user, setUser] = useState<User | null>(null);
-  const [token, setToken] = useState<string | null>(null);
+export const GlobalProvider = ({ children }: { children: ReactNode }) => {
+  // Cart state
+  const [cartOpen, setCartOpen] = useState(false);
+
+  // Songs & player
+  const [queue, setQueue] = useState<Song[]>([]);
+  const [currentSong, setCurrentSong] = useState<Song | null>(null);
+
+  const playNext = () => {
+    if (!currentSong) return;
+    const idx = queue.findIndex((s) => s.id === currentSong.id);
+    if (idx >= 0 && idx < queue.length - 1) {
+      setCurrentSong(queue[idx + 1]);
+    }
+  };
+
+  const playPrev = () => {
+    if (!currentSong) return;
+    const idx = queue.findIndex((s) => s.id === currentSong.id);
+    if (idx > 0) {
+      setCurrentSong(queue[idx - 1]);
+    }
+  };
+
+  // User state
+  const [user, setUser] = useState<User>(null);
+
+  // Theme state
+  const [theme, setTheme] = useState<"light" | "dark">("light");
+
+  // Notifications state
   const [notifications, setNotifications] = useState<Notification[]>([]);
-  const [loading, setLoading] = useState(false);
 
-  // ✅ Load session from localStorage when app starts
-  useEffect(() => {
-    const storedToken = localStorage.getItem("token");
-    const storedUser = localStorage.getItem("user");
-
-    if (storedToken) setToken(storedToken);
-    if (storedUser) setUser(JSON.parse(storedUser));
-  }, []);
-
-  // ✅ Keep localStorage in sync when user or token changes
-  useEffect(() => {
-    if (token) {
-      localStorage.setItem("token", token);
-    } else {
-      localStorage.removeItem("token");
-    }
-
-    if (user) {
-      localStorage.setItem("user", JSON.stringify(user));
-    } else {
-      localStorage.removeItem("user");
-    }
-  }, [user, token]);
-
-  // ✅ Notifications
-  function addNotification(
+  const addNotification = (
     message: string,
-    type: "success" | "error" | "info"
-  ) {
-    const id = Date.now();
+    type: Notification["type"] = "info"
+  ) => {
+    const id = Date.now().toString();
     setNotifications((prev) => [...prev, { id, message, type }]);
-    setTimeout(() => {
-      removeNotification(id);
-    }, 4000);
-  }
+  };
 
-  function removeNotification(id: number) {
+  const removeNotification = (id: string) => {
     setNotifications((prev) => prev.filter((n) => n.id !== id));
-  }
+  };
 
   return (
     <GlobalContext.Provider
       value={{
+        cartOpen,
+        setCartOpen,
+        queue,
+        setQueue,
+        currentSong,
+        setCurrentSong,
+        playNext,
+        playPrev,
         user,
         setUser,
-        token,
-        setToken,
+        theme,
+        setTheme,
         notifications,
         addNotification,
         removeNotification,
-        loading,
-        setLoading,
       }}
     >
       {children}
     </GlobalContext.Provider>
   );
-}
+};
 
-export function useGlobalContext() {
+export const useGlobalContext = () => {
   const context = useContext(GlobalContext);
   if (!context) {
-    throw new Error("useGlobalContext must be used within GlobalProvider");
+    throw new Error("useGlobalContext must be used within a GlobalProvider");
   }
   return context;
-}
+};
