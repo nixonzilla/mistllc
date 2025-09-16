@@ -1,14 +1,12 @@
-// frontend/src/components/ui/ThemeToggle.tsx
 import { useGlobalContext } from "../../context/GlobalContext";
 
-const ThemeToggle = () => {
+export default function ThemeToggle() {
   const { theme, setTheme } = useGlobalContext();
+  const toggleTheme = () => setTheme(theme === "light" ? "dark" : "light");
 
   return (
-    <button onClick={() => setTheme(theme === "light" ? "dark" : "light")}>
-      Switch to {theme === "light" ? "dark" : "light"} mode
+    <button onClick={toggleTheme} className="p-2 border rounded">
+      Theme: {theme}
     </button>
   );
-};
-
-export default ThemeToggle;
+}

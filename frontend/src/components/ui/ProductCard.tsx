@@ -1,54 +1,23 @@
-import { useGlobal } from "../../context/GlobalContext";
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import { useGlobalContext } from "../../context/GlobalContext";
 
-type Product = {
-  id: string;
-  name: string;
-  price: number;
-  image: string;
-  previewUrl?: string;
-};
+export default function ProductCard({ product }: { product: any }) {
+  const { queue, setQueue } = useGlobalContext();
 
-export default function ProductCard({ product }: { product: Product }) {
-  const { setCartOpen, setQueue, setCurrentSong } = useGlobal();
-
-  const addToCart = () => {
-    setCartOpen(true); // future: expand cart system
-  };
-
-  const playPreview = () => {
-    if (!product.previewUrl) return;
-    const previewSong = {
-      id: product.id,
-      title: product.name + " (Preview)",
-      artist: "MISTLLC",
-      url: product.previewUrl,
-    };
-    setQueue([previewSong]);
-    setCurrentSong(previewSong);
+  const addToQueue = () => {
+    setQueue([...queue, product]);
   };
 
   return (
-    <div className="bg-mist-gray rounded-2xl p-4 shadow-lg">
-      <img src={product.image} alt={product.name} className="rounded-xl mb-3" />
-      <h3 className="font-bold text-lg">{product.name}</h3>
-      <p className="text-mist-gold font-semibold">${product.price}</p>
-
-      <div className="flex gap-3 mt-3">
-        <button
-          onClick={addToCart}
-          className="bg-mist-pink px-4 py-2 rounded-lg hover:bg-mist-coral transition"
-        >
-          Add to Cart
-        </button>
-        {product.previewUrl && (
-          <button
-            onClick={playPreview}
-            className="bg-mist-gold px-4 py-2 rounded-lg hover:bg-yellow-400 transition"
-          >
-            ▶ Preview
-          </button>
-        )}
-      </div>
+    <div className="p-4 bg-white rounded-xl shadow flex flex-col">
+      <p className="font-semibold">{product.name}</p>
+      <p className="text-gray-600">${product.price}</p>
+      <button
+        className="mt-auto bg-green-500 text-white px-4 py-2 rounded"
+        onClick={addToQueue}
+      >
+        Add
+      </button>
     </div>
   );
 }

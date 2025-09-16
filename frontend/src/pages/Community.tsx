@@ -1,24 +1,29 @@
-// frontend/src/pages/Community.tsx
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { useEffect, useState } from "react";
-import { fetchPosts, addPost, type Post } from "../lib/api";
+import { fetchPosts, addPost } from "../lib/api";
 import { useGlobalContext } from "../context/GlobalContext";
 
 export default function Community() {
-  const [posts, setPosts] = useState<Post[]>([]);
+  const { addNotification } = useGlobalContext();
+  const [posts, setPosts] = useState<any[]>([]);
   const [content, setContent] = useState("");
-  const { user } = useGlobalContext();
 
   useEffect(() => {
     fetchPosts().then(setPosts).catch(console.error);
   }, []);
 
-  async function handleAddPost(e: React.FormEvent) {
+  const handleAddPost = async (e: React.FormEvent) => {
     e.preventDefault();
-    const token = localStorage.getItem("token") || "";
-    const newPost = await addPost(content, token);
-    setPosts((prev) => [newPost, ...prev]);
-    setContent("");
-  }
+    try {
+      const token = localStorage.getItem("token") || "";
+      const newPost = await addPost(content, token);
+      setPosts((prev) => [newPost, ...prev]);
+      setContent("");
+      addNotification("Post added!", "success");
+    } catch (err: any) {
+      addNotification(err.message || "Failed to add post", "error");
+    }
+  };
 
   return (
     <div className="p-6 max-w-2xl mx-auto">
@@ -30,10 +35,7 @@ export default function Community() {
           value={content}
           onChange={(e) => setContent(e.target.value)}
         />
-        <button
-          className="mt-2 bg-blue-500 text-white px-4 py-2 rounded"
-          disabled={!user}
-        >
+        <button className="mt-2 bg-blue-500 text-white px-4 py-2 rounded">
           Post
         </button>
       </form>

@@ -9,13 +9,14 @@ import {
   type SetStateAction,
 } from "react";
 
-// ------------------- TYPES -------------------
+// Define a user type (can be expanded later)
 export type User = {
   id: string;
   name: string;
   email: string;
 } | null;
 
+// Define notification type
 export type Notification = {
   id: string;
   message: string;
@@ -31,6 +32,10 @@ export type GlobalContextType = {
   user: User;
   setUser: Dispatch<SetStateAction<User>>;
 
+  // Token (for API calls)
+  token: string | null;
+  setToken: Dispatch<SetStateAction<string | null>>;
+
   // Theme
   theme: "light" | "dark";
   setTheme: Dispatch<SetStateAction<"light" | "dark">>;
@@ -39,18 +44,22 @@ export type GlobalContextType = {
   notifications: Notification[];
   addNotification: (message: string, type?: Notification["type"]) => void;
   removeNotification: (id: string) => void;
+
+  // Helper
+  notify: (message: string, type?: Notification["type"]) => void;
 };
 
-// ------------------- CONTEXT -------------------
 const GlobalContext = createContext<GlobalContextType | undefined>(undefined);
 
-// ------------------- PROVIDER -------------------
 export const GlobalProvider = ({ children }: { children: ReactNode }) => {
   // Cart state
   const [cartOpen, setCartOpen] = useState(false);
 
-  // User state
+  // User + token state
   const [user, setUser] = useState<User>(null);
+  const [token, setToken] = useState<string | null>(
+    localStorage.getItem("token")
+  );
 
   // Theme state
   const [theme, setTheme] = useState<"light" | "dark">("light");
@@ -70,6 +79,10 @@ export const GlobalProvider = ({ children }: { children: ReactNode }) => {
     setNotifications((prev) => prev.filter((n) => n.id !== id));
   };
 
+  // Simple alias for addNotification
+  const notify = (message: string, type: Notification["type"] = "info") =>
+    addNotification(message, type);
+
   return (
     <GlobalContext.Provider
       value={{
@@ -77,11 +90,14 @@ export const GlobalProvider = ({ children }: { children: ReactNode }) => {
         setCartOpen,
         user,
         setUser,
+        token,
+        setToken,
         theme,
         setTheme,
         notifications,
         addNotification,
         removeNotification,
+        notify,
       }}
     >
       {children}
@@ -89,7 +105,6 @@ export const GlobalProvider = ({ children }: { children: ReactNode }) => {
   );
 };
 
-// ------------------- HOOK -------------------
 export const useGlobalContext = () => {
   const context = useContext(GlobalContext);
   if (!context) {

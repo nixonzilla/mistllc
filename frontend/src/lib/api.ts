@@ -1,95 +1,60 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 // frontend/src/lib/api.ts
+const API_URL = import.meta.env.VITE_API_URL || "http://localhost:8787";
 
-export type Product = {
-  _id: string;
-  name: string;
-  price: number;
-};
-
-export type Song = {
-  id: number;
-  title: string;
-  artist: string;
-  created_at: string;
-};
-
-export type Post = {
-  _id: string;
-  content: string;
-  author?: { email: string };
-};
-
-// ------------------- SONGS -------------------
-export const fetchSongs = async (): Promise<Song[]> => {
-  const res = await fetch(`${import.meta.env.VITE_API_URL}/songs`);
-  if (!res.ok) throw new Error("Failed to fetch songs");
+// Generic GET request
+export async function apiGet(endpoint: string, token?: string) {
+  const res = await fetch(`${API_URL}${endpoint}`, {
+    headers: token ? { Authorization: `Bearer ${token}` } : undefined,
+  });
+  if (!res.ok) throw new Error(`GET ${endpoint} failed`);
   return res.json();
-};
+}
 
-// ------------------- PRODUCTS -------------------
-export const fetchProducts = async (): Promise<Product[]> => {
-  const res = await fetch(`${import.meta.env.VITE_API_URL}/products`);
-  if (!res.ok) throw new Error("Failed to fetch products");
-  return res.json();
-};
-
-export const checkout = async (cart: Product[], token: string) => {
-  const res = await fetch(`${import.meta.env.VITE_API_URL}/checkout`, {
+// Generic POST request
+export async function apiPost(endpoint: string, body: any, token?: string) {
+  const res = await fetch(`${API_URL}${endpoint}`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
-      Authorization: token,
+      ...(token ? { Authorization: `Bearer ${token}` } : {}),
     },
-    body: JSON.stringify({ cart }),
+    body: JSON.stringify(body),
   });
-  if (!res.ok) throw new Error("Checkout failed");
+  if (!res.ok) {
+    const data = await res.json().catch(() => null);
+    throw new Error(data?.error || `POST ${endpoint} failed`);
+  }
   return res.json();
-};
+}
 
-// ------------------- COMMUNITY POSTS -------------------
-export const fetchPosts = async (): Promise<Post[]> => {
-  const res = await fetch(`${import.meta.env.VITE_API_URL}/posts`);
-  if (!res.ok) throw new Error("Failed to fetch posts");
-  return res.json();
-};
+// --- Auth Helpers ---
+export async function login(email: string, password: string) {
+  return apiPost("/login", { email, password });
+}
 
-export const addPost = async (
-  content: string,
-  token: string
-): Promise<Post> => {
-  const res = await fetch(`${import.meta.env.VITE_API_URL}/posts`, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: token,
-    },
-    body: JSON.stringify({ content }),
-  });
-  if (!res.ok) throw new Error("Failed to add post");
-  return res.json();
-};
-
-// ------------------- AUTH -------------------
-export const login = async (email: string, password: string) => {
-  const res = await fetch(`${import.meta.env.VITE_API_URL}/auth/login`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ email, password }),
-  });
-  if (!res.ok) throw new Error("Login failed");
-  return res.json();
-};
-
-export const register = async (
+export async function register(
   email: string,
-  password: string,
-  name: string
-) => {
-  const res = await fetch(`${import.meta.env.VITE_API_URL}/auth/register`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ email, password, name }),
-  });
-  if (!res.ok) throw new Error("Registration failed");
-  return res.json();
-};
+  _name: string,
+  password?: string
+) {
+  return apiPost("/register", { email, password });
+}
+
+// --- Shop Helpers ---
+export async function fetchProducts() {
+  return apiGet("/products");
+}
+
+export async function checkout(cart: any[], token: string) {
+  return apiPost("/checkout", { cart }, token);
+}
+
+// --- Community Helpers ---
+export async function fetchPosts() {
+  return apiGet("/posts");
+}
+
+export async function addPost(content: string, token: string) {
+  return apiPost("/posts", { content }, token);
+}
