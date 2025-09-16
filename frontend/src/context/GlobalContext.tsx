@@ -1,22 +1,22 @@
 /* eslint-disable react-refresh/only-export-components */
+// frontend/src/context/GlobalContext.tsx
 import {
   createContext,
-  useState,
   useContext,
+  useState,
   type ReactNode,
   type Dispatch,
   type SetStateAction,
 } from "react";
 import type { Song } from "../lib/api";
 
-// Define a user type (can be expanded later)
+// Types
 export type User = {
   id: string;
   name: string;
   email: string;
 } | null;
 
-// Define notification type
 export type Notification = {
   id: string;
   message: string;
@@ -28,7 +28,7 @@ export type GlobalContextType = {
   cartOpen: boolean;
   setCartOpen: Dispatch<SetStateAction<boolean>>;
 
-  // Songs & player
+  // Songs/player (if using)
   queue: Song[];
   setQueue: Dispatch<SetStateAction<Song[]>>;
   currentSong: Song | null;
@@ -40,6 +40,10 @@ export type GlobalContextType = {
   user: User;
   setUser: Dispatch<SetStateAction<User>>;
 
+  // Token
+  token: string | null;
+  setToken: Dispatch<SetStateAction<string | null>>;
+
   // Theme
   theme: "light" | "dark";
   setTheme: Dispatch<SetStateAction<"light" | "dark">>;
@@ -48,18 +52,20 @@ export type GlobalContextType = {
   notifications: Notification[];
   addNotification: (message: string, type?: Notification["type"]) => void;
   removeNotification: (id: string) => void;
+
+  // Shortcut notify
+  notify: (message: string, type?: Notification["type"]) => void;
 };
 
 const GlobalContext = createContext<GlobalContextType | undefined>(undefined);
 
 export const GlobalProvider = ({ children }: { children: ReactNode }) => {
-  // Cart state
+  // Cart
   const [cartOpen, setCartOpen] = useState(false);
 
-  // Songs & player
+  // Player / Songs (optional)
   const [queue, setQueue] = useState<Song[]>([]);
   const [currentSong, setCurrentSong] = useState<Song | null>(null);
-
   const playNext = () => {
     if (!currentSong) return;
     const idx = queue.findIndex((s) => s.id === currentSong.id);
@@ -67,7 +73,6 @@ export const GlobalProvider = ({ children }: { children: ReactNode }) => {
       setCurrentSong(queue[idx + 1]);
     }
   };
-
   const playPrev = () => {
     if (!currentSong) return;
     const idx = queue.findIndex((s) => s.id === currentSong.id);
@@ -76,15 +81,15 @@ export const GlobalProvider = ({ children }: { children: ReactNode }) => {
     }
   };
 
-  // User state
+  // User + token
   const [user, setUser] = useState<User>(null);
+  const [token, setToken] = useState<string | null>(null);
 
-  // Theme state
+  // Theme
   const [theme, setTheme] = useState<"light" | "dark">("light");
 
-  // Notifications state
+  // Notifications
   const [notifications, setNotifications] = useState<Notification[]>([]);
-
   const addNotification = (
     message: string,
     type: Notification["type"] = "info"
@@ -92,10 +97,12 @@ export const GlobalProvider = ({ children }: { children: ReactNode }) => {
     const id = Date.now().toString();
     setNotifications((prev) => [...prev, { id, message, type }]);
   };
-
   const removeNotification = (id: string) => {
     setNotifications((prev) => prev.filter((n) => n.id !== id));
   };
+
+  const notify = (message: string, type: Notification["type"] = "info") =>
+    addNotification(message, type);
 
   return (
     <GlobalContext.Provider
@@ -110,11 +117,14 @@ export const GlobalProvider = ({ children }: { children: ReactNode }) => {
         playPrev,
         user,
         setUser,
+        token,
+        setToken,
         theme,
         setTheme,
         notifications,
         addNotification,
         removeNotification,
+        notify,
       }}
     >
       {children}
@@ -125,7 +135,7 @@ export const GlobalProvider = ({ children }: { children: ReactNode }) => {
 export const useGlobalContext = () => {
   const context = useContext(GlobalContext);
   if (!context) {
-    throw new Error("useGlobalContext must be used within a GlobalProvider");
+    throw new Error("useGlobalContext must be used within GlobalProvider");
   }
   return context;
 };

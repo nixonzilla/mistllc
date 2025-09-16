@@ -1,18 +1,27 @@
 import { useEffect, useState } from "react";
-import { fetchSongs } from "../lib/api";
 
-export function useFetchSongs() {
-  const [songs, setSongs] = useState<any[]>([]);
-  const [loading, setLoading] = useState(true);
+export function useFetch<T>(url: string) {
+  const [data, setData] = useState<T | null>(null);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    async function load() {
-      const data = await fetchSongs();
-      setSongs(data);
-      setLoading(false);
+    async function fetchData() {
+      try {
+        setLoading(true);
+        const res = await fetch(url);
+        if (!res.ok) throw new Error("Network error");
+        const json = await res.json();
+        setData(json);
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      } catch (err: any) {
+        setError(err.message || "Unknown error");
+      } finally {
+        setLoading(false);
+      }
     }
-    load();
-  }, []);
+    fetchData();
+  }, [url]);
 
-  return { songs, loading };
+  return { data, loading, error };
 }

@@ -1,30 +1,26 @@
-// frontend/src/pages/Player.tsx
-import { useEffect, useState } from "react";
-import { fetchSongs, type Song } from "../lib/api";
+import { useGlobalContext } from "../context/GlobalContext";
 
-export default function Player() {
-  const [songs, setSongs] = useState<Song[]>([]);
-  const [current, setCurrent] = useState<number>(0);
-
-  useEffect(() => {
-    fetchSongs().then(setSongs).catch(console.error);
-  }, []);
-
-  if (!songs.length) return <p>Loading songs...</p>;
-
-  const currentSong = songs[current];
+export default function PlayerPage() {
+  const { currentSong } = useGlobalContext();
 
   return (
-    <div className="p-6">
-      <h2 className="text-xl font-bold">{currentSong.title}</h2>
-      <p className="text-gray-500">by {currentSong.artist}</p>
-      <button
-        onClick={() => setCurrent((prev) => (prev + 1) % songs.length)}
-        className="mt-2 px-4 py-2 bg-blue-500 text-white rounded"
-      >
-        Next
-      </button>
+    <div className="max-w-3xl mx-auto p-6">
+      <h1 className="text-3xl font-bold mb-4">Now Playing</h1>
+
+      {currentSong ? (
+        <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-md">
+          <h2 className="text-xl font-bold">{currentSong.title}</h2>
+          <p className="text-gray-500">{currentSong.artist}</p>
+          <audio
+            src={currentSong.url}
+            controls
+            autoPlay
+            className="w-full mt-4"
+          />
+        </div>
+      ) : (
+        <p className="text-gray-500">No song selected.</p>
+      )}
     </div>
   );
 }
-// This is a simple music player component that fetches songs from an API and allows the user to play them.

@@ -1,4 +1,3 @@
-// frontend/src/pages/Player.tsx
 import { useEffect, useRef, useState } from "react";
 import { useGlobalContext } from "../context/GlobalContext";
 
@@ -7,11 +6,10 @@ export default function Player() {
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const [isPlaying, setIsPlaying] = useState(false);
 
-  // Update audio source whenever currentSong changes
   useEffect(() => {
     if (currentSong && audioRef.current) {
       audioRef.current.src = currentSong.url;
-      audioRef.current.play().catch(console.error);
+      audioRef.current.play();
       setIsPlaying(true);
     }
   }, [currentSong]);
@@ -22,7 +20,7 @@ export default function Player() {
       audioRef.current.pause();
       setIsPlaying(false);
     } else {
-      audioRef.current.play().catch(console.error);
+      audioRef.current.play();
       setIsPlaying(true);
     }
   };

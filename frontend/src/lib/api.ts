@@ -1,5 +1,7 @@
 // frontend/src/lib/api.ts
 
+import type { ReactNode } from "react";
+
 export type Song = {
   id: string;
   title: string;
@@ -9,6 +11,7 @@ export type Song = {
 };
 
 export type Product = {
+  description: ReactNode;
   id: string;
   name: string;
   price: number;

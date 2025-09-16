@@ -1,22 +1,22 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-import { useGlobalContext } from "../../context/GlobalContext";
+// frontend/src/components/ui/ProductCard.tsx
+import type { Product } from "../../lib/api";
 
-export default function ProductCard({ product }: { product: any }) {
-  const { queue, setQueue } = useGlobalContext();
+type Props = {
+  product: Product;
+  onAddToCart: () => void;
+};
 
-  const addToQueue = () => {
-    setQueue([...queue, product]);
-  };
-
+export default function ProductCard({ product, onAddToCart }: Props) {
   return (
-    <div className="p-4 bg-white rounded-xl shadow flex flex-col">
-      <p className="font-semibold">{product.name}</p>
-      <p className="text-gray-600">${product.price}</p>
+    <div className="border rounded-lg p-4 shadow-sm bg-white">
+      <h3 className="font-bold">{product.name}</h3>
+      <p className="text-sm text-gray-500 mb-2">{product.description}</p>
+      <p className="text-mist-gold font-semibold mb-3">${product.price}</p>
       <button
-        className="mt-auto bg-green-500 text-white px-4 py-2 rounded"
-        onClick={addToQueue}
+        onClick={onAddToCart}
+        className="bg-mist-gold px-4 py-2 rounded-lg text-black hover:bg-yellow-400"
       >
-        Add
+        Add to Cart
       </button>
     </div>
   );

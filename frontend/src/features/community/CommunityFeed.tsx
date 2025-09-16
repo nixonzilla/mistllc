@@ -1,31 +1,30 @@
-// frontend/src/pages/communityfeed.tsx
 import { useEffect, useState } from "react";
 import { useGlobalContext } from "../../context/GlobalContext";
 
-interface Post {
+type Post = {
   id: string;
   content: string;
   author: string;
   createdAt: string;
-}
+};
 
 export default function CommunityFeed() {
-  const { user, token, notify } = useGlobalContext();
+  const { user, notify, token } = useGlobalContext();
   const [posts, setPosts] = useState<Post[]>([]);
-  const [loading, setLoading] = useState(true);
   const [newPost, setNewPost] = useState("");
+  const [loading, setLoading] = useState(true);
 
-  // Fetch posts on mount
+  // Fetch posts
   useEffect(() => {
     async function fetchPosts() {
       try {
         const res = await fetch("/api/community/posts");
-        if (!res.ok) throw new Error("Failed to fetch posts");
-        const data: Post[] = await res.json();
+        if (!res.ok) throw new Error("Failed to load posts");
+        const data = (await res.json()) as Post[];
         setPosts(data);
       } catch (err) {
-        notify("Failed to fetch posts", "error");
-        console.error("Failed to fetch posts:", err);
+        notify("Could not fetch posts", "error");
+        console.error(err);
       } finally {
         setLoading(false);
       }
@@ -33,35 +32,30 @@ export default function CommunityFeed() {
     fetchPosts();
   }, [notify]);
 
-  // Handle new post
+  // Add a post
   const handleAddPost = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!newPost.trim()) return;
-
-    if (!token) {
-      notify("You must be logged in to post", "error");
-      return;
-    }
 
     try {
       const res = await fetch("/api/community/posts", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
+          ...(token ? { Authorization: `Bearer ${token}` } : {}),
         },
         body: JSON.stringify({ content: newPost }),
       });
 
       if (!res.ok) throw new Error("Failed to create post");
 
-      const created: Post = await res.json();
-      setPosts((prev) => [created, ...prev]);
+      const post = (await res.json()) as Post;
+      setPosts((prev) => [post, ...prev]);
       setNewPost("");
-      notify("Post added!", "success");
+      notify("Post created!", "success");
     } catch (err) {
-      notify("Failed to add post", "error");
-      console.error("Failed to add post:", err);
+      notify("Error creating post", "error");
+      console.error(err);
     }
   };
 
@@ -100,9 +94,9 @@ export default function CommunityFeed() {
           {posts.map((post) => (
             <div
               key={post.id}
-              className="border rounded-lg p-3 shadow-sm bg-white"
+              className="border rounded-lg p-3 shadow-sm bg-white dark:bg-gray-800"
             >
-              <p className="text-gray-800">{post.content}</p>
+              <p className="text-gray-800 dark:text-gray-200">{post.content}</p>
               <div className="text-sm text-gray-500 mt-1">
                 by {post.author} • {new Date(post.createdAt).toLocaleString()}
               </div>
