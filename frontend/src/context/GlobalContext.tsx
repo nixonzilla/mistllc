@@ -1,114 +1,110 @@
 /* eslint-disable react-refresh/only-export-components */
-// frontend/src/context/GlobalContext.tsx
 import {
   createContext,
-  useState,
   useContext,
+  useState,
+  useEffect,
   type ReactNode,
-  type Dispatch,
-  type SetStateAction,
 } from "react";
 
-// Define a user type (can be expanded later)
-export type User = {
+interface User {
   id: string;
   name: string;
   email: string;
-} | null;
+}
 
-// Define notification type
-export type Notification = {
-  id: string;
+interface Notification {
+  id: number;
   message: string;
   type: "success" | "error" | "info";
-};
+}
 
-export type GlobalContextType = {
-  // Cart
-  cartOpen: boolean;
-  setCartOpen: Dispatch<SetStateAction<boolean>>;
-
-  // User auth
-  user: User;
-  setUser: Dispatch<SetStateAction<User>>;
-
-  // Token (for API calls)
+interface GlobalContextType {
+  user: User | null;
+  setUser: (user: User | null) => void;
   token: string | null;
-  setToken: Dispatch<SetStateAction<string | null>>;
-
-  // Theme
-  theme: "light" | "dark";
-  setTheme: Dispatch<SetStateAction<"light" | "dark">>;
-
-  // Notifications
+  setToken: (token: string | null) => void;
   notifications: Notification[];
-  addNotification: (message: string, type?: Notification["type"]) => void;
-  removeNotification: (id: string) => void;
-
-  // Helper
-  notify: (message: string, type?: Notification["type"]) => void;
-};
+  addNotification: (
+    message: string,
+    type: "success" | "error" | "info"
+  ) => void;
+  removeNotification: (id: number) => void;
+  loading: boolean;
+  setLoading: (loading: boolean) => void;
+}
 
 const GlobalContext = createContext<GlobalContextType | undefined>(undefined);
 
-export const GlobalProvider = ({ children }: { children: ReactNode }) => {
-  // Cart state
-  const [cartOpen, setCartOpen] = useState(false);
-
-  // User + token state
-  const [user, setUser] = useState<User>(null);
-  const [token, setToken] = useState<string | null>(
-    localStorage.getItem("token")
-  );
-
-  // Theme state
-  const [theme, setTheme] = useState<"light" | "dark">("light");
-
-  // Notifications state
+export function GlobalProvider({ children }: { children: ReactNode }) {
+  const [user, setUser] = useState<User | null>(null);
+  const [token, setToken] = useState<string | null>(null);
   const [notifications, setNotifications] = useState<Notification[]>([]);
+  const [loading, setLoading] = useState(false);
 
-  const addNotification = (
+  // ✅ Load session from localStorage when app starts
+  useEffect(() => {
+    const storedToken = localStorage.getItem("token");
+    const storedUser = localStorage.getItem("user");
+
+    if (storedToken) setToken(storedToken);
+    if (storedUser) setUser(JSON.parse(storedUser));
+  }, []);
+
+  // ✅ Keep localStorage in sync when user or token changes
+  useEffect(() => {
+    if (token) {
+      localStorage.setItem("token", token);
+    } else {
+      localStorage.removeItem("token");
+    }
+
+    if (user) {
+      localStorage.setItem("user", JSON.stringify(user));
+    } else {
+      localStorage.removeItem("user");
+    }
+  }, [user, token]);
+
+  // ✅ Notifications
+  function addNotification(
     message: string,
-    type: Notification["type"] = "info"
-  ) => {
-    const id = Date.now().toString();
+    type: "success" | "error" | "info"
+  ) {
+    const id = Date.now();
     setNotifications((prev) => [...prev, { id, message, type }]);
-  };
+    setTimeout(() => {
+      removeNotification(id);
+    }, 4000);
+  }
 
-  const removeNotification = (id: string) => {
+  function removeNotification(id: number) {
     setNotifications((prev) => prev.filter((n) => n.id !== id));
-  };
-
-  // Simple alias for addNotification
-  const notify = (message: string, type: Notification["type"] = "info") =>
-    addNotification(message, type);
+  }
 
   return (
     <GlobalContext.Provider
       value={{
-        cartOpen,
-        setCartOpen,
         user,
         setUser,
         token,
         setToken,
-        theme,
-        setTheme,
         notifications,
         addNotification,
         removeNotification,
-        notify,
+        loading,
+        setLoading,
       }}
     >
       {children}
     </GlobalContext.Provider>
   );
-};
+}
 
-export const useGlobalContext = () => {
+export function useGlobalContext() {
   const context = useContext(GlobalContext);
   if (!context) {
-    throw new Error("useGlobalContext must be used within a GlobalProvider");
+    throw new Error("useGlobalContext must be used within GlobalProvider");
   }
   return context;
-};
+}
