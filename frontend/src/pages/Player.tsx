@@ -1,38 +1,30 @@
-import { useEffect, useState } from "react"
-import { useParams } from "react-router-dom"
-import { apiGet } from "../lib/api"
-
-interface Song {
-  id: string
-  title: string
-  artist: string
-  url: string
-}
+// frontend/src/pages/Player.tsx
+import { useEffect, useState } from "react";
+import { fetchSongs, type Song } from "../lib/api";
 
 export default function Player() {
-  const { id } = useParams<{ id: string }>()
-  const [song, setSong] = useState<Song | null>(null)
+  const [songs, setSongs] = useState<Song[]>([]);
+  const [current, setCurrent] = useState<number>(0);
 
   useEffect(() => {
-    async function fetchSong() {
-      if (!id) return
-      try {
-        const data = await apiGet<Song>(`/songs/${id}`)
-        setSong(data)
-      } catch (err) {
-        console.error("Failed to fetch song:", err)
-      }
-    }
-    fetchSong()
-  }, [id])
+    fetchSongs().then(setSongs).catch(console.error);
+  }, []);
 
-  if (!song) return <p className="text-center mt-10">Loading song...</p>
+  if (!songs.length) return <p>Loading songs...</p>;
+
+  const currentSong = songs[current];
 
   return (
-    <div className="max-w-xl mx-auto mt-10 p-4">
-      <h1 className="text-2xl font-bold">{song.title}</h1>
-      <p className="text-gray-600 mb-4">By {song.artist}</p>
-      <audio controls src={song.url} className="w-full rounded-lg shadow" />
+    <div className="p-6">
+      <h2 className="text-xl font-bold">{currentSong.title}</h2>
+      <p className="text-gray-500">by {currentSong.artist}</p>
+      <button
+        onClick={() => setCurrent((prev) => (prev + 1) % songs.length)}
+        className="mt-2 px-4 py-2 bg-blue-500 text-white rounded"
+      >
+        Next
+      </button>
     </div>
-  )
+  );
 }
+// This is a simple music player component that fetches songs from an API and allows the user to play them.

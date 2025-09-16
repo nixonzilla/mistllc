@@ -1,47 +1,43 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-// frontend/src/pages/ShopPage.tsx
+// frontend/src/pages/Shop.tsx
 import { useEffect, useState } from "react";
-import { fetchProducts, checkout } from "../lib/api";
+import { fetchProducts, checkout, type Product } from "../lib/api";
+import { useGlobalContext } from "../context/GlobalContext";
 
-export default function ShopPage() {
-  const [products, setProducts] = useState<any[]>([]);
-  const [cart, setCart] = useState<any[]>([]);
+export default function Shop() {
+  const [products, setProducts] = useState<Product[]>([]);
+  const { cartOpen, setCartOpen } = useGlobalContext();
+  const [cart, setCart] = useState<Product[]>([]);
 
   useEffect(() => {
     fetchProducts().then(setProducts).catch(console.error);
   }, []);
 
-  function addToCart(product: any) {
+  function addToCart(product: Product) {
     setCart([...cart, product]);
+    setCartOpen(true);
   }
 
   async function handleCheckout() {
     const token = localStorage.getItem("token") || "";
-    try {
-      const res = await checkout(cart, token);
-      alert(`Checkout successful: ${res.message || "Thank you!"}`);
-      setCart([]);
-    } catch (err) {
-      console.error("Checkout failed:", err);
-      alert("Checkout failed. Please try again.");
-    }
+    const res = await checkout(cart, token);
+    alert(`Checkout successful: ${res.message || "Thank you!"}`);
+    setCart([]);
+    setCartOpen(false);
   }
 
   return (
     <div className="p-6">
-      <h1 className="text-2xl font-bold mb-6">🛍️ Shop</h1>
-
-      {/* Product Grid */}
-      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+      <h1 className="text-2xl font-bold mb-6">Shop</h1>
+      <div className="grid grid-cols-2 gap-4">
         {products.map((p) => (
           <div
             key={p._id}
-            className="p-4 bg-white text-black rounded-xl shadow flex flex-col hover:shadow-lg transition"
+            className="p-4 bg-white rounded-xl shadow flex flex-col"
           >
             <p className="font-semibold">{p.name}</p>
             <p className="text-gray-600">${p.price}</p>
             <button
-              className="mt-auto bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-lg"
+              className="mt-auto bg-green-500 text-white px-4 py-2 rounded"
               onClick={() => addToCart(p)}
             >
               Add to Cart
@@ -50,20 +46,18 @@ export default function ShopPage() {
         ))}
       </div>
 
-      {/* Cart Section */}
-      {cart.length > 0 && (
-        <div className="mt-8 p-6 bg-gray-800 rounded-2xl shadow-lg text-white">
-          <h2 className="text-lg font-bold mb-4">🛒 Cart</h2>
-          <ul className="space-y-2">
+      {cart.length > 0 && cartOpen && (
+        <div className="mt-6 p-4 bg-gray-100 rounded-xl">
+          <h2 className="text-lg font-bold">Cart</h2>
+          <ul>
             {cart.map((c, i) => (
-              <li key={i} className="flex justify-between">
-                <span>{c.name}</span>
-                <span>${c.price}</span>
+              <li key={i}>
+                {c.name} - ${c.price}
               </li>
             ))}
           </ul>
           <button
-            className="mt-6 w-full bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded-lg"
+            className="mt-4 bg-black text-white px-4 py-2 rounded"
             onClick={handleCheckout}
           >
             Checkout

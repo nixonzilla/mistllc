@@ -9,14 +9,13 @@ import {
   type SetStateAction,
 } from "react";
 
-// Define a user type (can be expanded later)
+// ------------------- TYPES -------------------
 export type User = {
   id: string;
   name: string;
   email: string;
 } | null;
 
-// Define notification type
 export type Notification = {
   id: string;
   message: string;
@@ -42,8 +41,10 @@ export type GlobalContextType = {
   removeNotification: (id: string) => void;
 };
 
+// ------------------- CONTEXT -------------------
 const GlobalContext = createContext<GlobalContextType | undefined>(undefined);
 
+// ------------------- PROVIDER -------------------
 export const GlobalProvider = ({ children }: { children: ReactNode }) => {
   // Cart state
   const [cartOpen, setCartOpen] = useState(false);
@@ -88,6 +89,7 @@ export const GlobalProvider = ({ children }: { children: ReactNode }) => {
   );
 };
 
+// ------------------- HOOK -------------------
 export const useGlobalContext = () => {
   const context = useContext(GlobalContext);
   if (!context) {
