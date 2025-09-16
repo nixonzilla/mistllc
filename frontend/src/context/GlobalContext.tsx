@@ -1,47 +1,72 @@
-import { createContext, useContext, useState, ReactNode } from "react";
+/* eslint-disable react-refresh/only-export-components */
+// frontend/src/context/GlobalContext.tsx
+import {
+  createContext,
+  useState,
+  useContext,
+  type ReactNode,
+  type Dispatch,
+  type SetStateAction,
+} from "react";
 
-type Song = {
+// Define a user type (can be expanded later)
+export type User = {
   id: string;
-  title: string;
-  artist: string;
-  url: string;
+  name: string;
+  email: string;
+} | null;
+
+// Define notification type
+export type Notification = {
+  id: string;
+  message: string;
+  type: "success" | "error" | "info";
 };
 
-type GlobalContextType = {
+export type GlobalContextType = {
+  // Cart
   cartOpen: boolean;
-  setCartOpen: (open: boolean) => void;
-  user: string | null;
-  setUser: (u: string | null) => void;
-  currentSong: Song | null;
-  setCurrentSong: (s: Song | null) => void;
-  playNext: () => void;
-  playPrev: () => void;
-  queue: Song[];
-  setQueue: (songs: Song[]) => void;
+  setCartOpen: Dispatch<SetStateAction<boolean>>;
+
+  // User auth
+  user: User;
+  setUser: Dispatch<SetStateAction<User>>;
+
+  // Theme
+  theme: "light" | "dark";
+  setTheme: Dispatch<SetStateAction<"light" | "dark">>;
+
+  // Notifications
+  notifications: Notification[];
+  addNotification: (message: string, type?: Notification["type"]) => void;
+  removeNotification: (id: string) => void;
 };
 
 const GlobalContext = createContext<GlobalContextType | undefined>(undefined);
 
-export function GlobalProvider({ children }: { children: ReactNode }) {
+export const GlobalProvider = ({ children }: { children: ReactNode }) => {
+  // Cart state
   const [cartOpen, setCartOpen] = useState(false);
-  const [user, setUser] = useState<string | null>(null);
-  const [currentSong, setCurrentSong] = useState<Song | null>(null);
-  const [queue, setQueue] = useState<Song[]>([]);
 
-  const playNext = () => {
-    if (!currentSong || queue.length === 0) return;
-    const idx = queue.findIndex((s) => s.id === currentSong.id);
-    if (idx >= 0 && idx < queue.length - 1) {
-      setCurrentSong(queue[idx + 1]);
-    }
+  // User state
+  const [user, setUser] = useState<User>(null);
+
+  // Theme state
+  const [theme, setTheme] = useState<"light" | "dark">("light");
+
+  // Notifications state
+  const [notifications, setNotifications] = useState<Notification[]>([]);
+
+  const addNotification = (
+    message: string,
+    type: Notification["type"] = "info"
+  ) => {
+    const id = Date.now().toString();
+    setNotifications((prev) => [...prev, { id, message, type }]);
   };
 
-  const playPrev = () => {
-    if (!currentSong || queue.length === 0) return;
-    const idx = queue.findIndex((s) => s.id === currentSong.id);
-    if (idx > 0) {
-      setCurrentSong(queue[idx - 1]);
-    }
+  const removeNotification = (id: string) => {
+    setNotifications((prev) => prev.filter((n) => n.id !== id));
   };
 
   return (
@@ -51,21 +76,22 @@ export function GlobalProvider({ children }: { children: ReactNode }) {
         setCartOpen,
         user,
         setUser,
-        currentSong,
-        setCurrentSong,
-        playNext,
-        playPrev,
-        queue,
-        setQueue,
+        theme,
+        setTheme,
+        notifications,
+        addNotification,
+        removeNotification,
       }}
     >
       {children}
     </GlobalContext.Provider>
   );
-}
+};
 
-export function useGlobal() {
-  const ctx = useContext(GlobalContext);
-  if (!ctx) throw new Error("useGlobal must be used inside GlobalProvider");
-  return ctx;
-}
+export const useGlobalContext = () => {
+  const context = useContext(GlobalContext);
+  if (!context) {
+    throw new Error("useGlobalContext must be used within a GlobalProvider");
+  }
+  return context;
+};

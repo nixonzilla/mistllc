@@ -1,47 +1,79 @@
-import { useEffect, useState } from "react"
-import { apiGet } from "../lib/api"
+/* eslint-disable @typescript-eslint/no-explicit-any */
+// frontend/src/pages/SongsPage.tsx
+import { useEffect, useState } from "react";
 
-interface Song {
-  id: string
-  title: string
-  artist: string
-}
+type Song = {
+  id: number;
+  title: string;
+  artist: string;
+  created_at: string;
+};
 
-export default function Songs() {
-  const [songs, setSongs] = useState<Song[]>([])
-  const [loading, setLoading] = useState(true)
+export default function SongsPage() {
+  const [songs, setSongs] = useState<Song[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    async function fetchSongs() {
+    const fetchSongs = async () => {
       try {
-        const data = await apiGet<Song[]>("/songs")
-        setSongs(data)
-      } catch (err) {
-        console.error("Failed to fetch songs:", err)
+        const res = await fetch(`${import.meta.env.VITE_API_URL}/songs`);
+        if (!res.ok) throw new Error("Failed to fetch songs");
+        const data = await res.json();
+        setSongs(data);
+      } catch (err: any) {
+        setError(err.message);
       } finally {
-        setLoading(false)
+        setLoading(false);
       }
-    }
-    fetchSongs()
-  }, [])
-
-  if (loading) return <p className="text-center text-gray-500">Loading...</p>
-  if (!songs.length) return <p className="text-center">🎶 No songs available.</p>
+    };
+    fetchSongs();
+  }, []);
 
   return (
-    <div className="max-w-3xl mx-auto mt-10">
-      <h1 className="text-2xl font-bold mb-4">Songs</h1>
-      <ul className="space-y-3">
+    <div>
+      <header className="mb-10 text-center">
+        <h1 className="text-4xl font-extrabold tracking-tight">
+          🎶 MISTLLC Music Library
+        </h1>
+        <p className="text-gray-400 mt-2">Curated sounds for the community</p>
+      </header>
+
+      {loading && (
+        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+          {[1, 2, 3].map((i) => (
+            <div
+              key={i}
+              className="animate-pulse bg-gray-800 p-6 rounded-2xl shadow-lg"
+            >
+              <div className="h-6 w-3/4 bg-gray-700 rounded mb-4"></div>
+              <div className="h-4 w-1/2 bg-gray-700 rounded"></div>
+              <div className="h-4 w-2/3 bg-gray-700 rounded mt-2"></div>
+            </div>
+          ))}
+        </div>
+      )}
+
+      {error && <p className="text-center text-red-400">{error}</p>}
+
+      {!loading && !error && songs.length === 0 && (
+        <p className="text-center text-gray-400">No songs yet. 🎶</p>
+      )}
+
+      <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
         {songs.map((song) => (
-          <li
+          <div
             key={song.id}
-            className="p-4 rounded-lg bg-gray-100 shadow-sm hover:bg-gray-200 transition"
+            className="bg-gray-800 p-6 rounded-2xl shadow-lg hover:shadow-2xl transition"
           >
-            <p className="font-semibold">{song.title}</p>
-            <p className="text-sm text-gray-600">{song.artist}</p>
-          </li>
+            <h2 className="text-xl font-semibold">{song.title}</h2>
+            <p className="text-gray-400">by {song.artist}</p>
+            <p className="text-sm text-gray-500 mt-2">
+              Added {new Date(song.created_at).toLocaleDateString()}
+            </p>
+          </div>
         ))}
-      </ul>
+      </div>
     </div>
-  )
+  );
 }
