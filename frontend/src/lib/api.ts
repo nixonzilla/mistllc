@@ -27,6 +27,14 @@ export type RegisterPayload = UserCredentials & {
   name: string;
 };
 
+export type Post = {
+  id: string;
+  title: string;
+  content: string;
+  author: string;
+  created_at?: string;
+};
+
 const API_BASE = import.meta.env.VITE_API_URL || "http://localhost:8787";
 
 // -------- Songs --------
@@ -61,5 +69,22 @@ export async function register(payload: RegisterPayload) {
     body: JSON.stringify(payload),
   });
   if (!res.ok) throw new Error("Registration failed");
+  return res.json();
+}
+
+// -------- Community / Posts --------
+export async function fetchPosts(): Promise<Post[]> {
+  const res = await fetch(`${API_BASE}/posts`);
+  if (!res.ok) throw new Error("Failed to fetch posts");
+  return res.json();
+}
+
+export async function addPost(post: { title: string; content: string }) {
+  const res = await fetch(`${API_BASE}/posts`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(post),
+  });
+  if (!res.ok) throw new Error("Failed to add post");
   return res.json();
 }

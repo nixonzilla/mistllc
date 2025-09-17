@@ -12,6 +12,7 @@ import type { Song } from "../lib/api";
 
 // Types
 export type User = {
+  username: ReactNode;
   id: string;
   name: string;
   email: string;
@@ -23,10 +24,20 @@ export type Notification = {
   type: "success" | "error" | "info";
 };
 
+export type CartItem = {
+  id: string;
+  name: string;
+  price: number;
+  quantity: number;
+};
+
 export type GlobalContextType = {
   // Cart
   cartOpen: boolean;
   setCartOpen: Dispatch<SetStateAction<boolean>>;
+  cart: CartItem[];
+  addToCart: (item: CartItem) => void;
+  removeFromCart: (id: string) => void;
 
   // Songs/player (if using)
   queue: Song[];
@@ -62,8 +73,25 @@ const GlobalContext = createContext<GlobalContextType | undefined>(undefined);
 export const GlobalProvider = ({ children }: { children: ReactNode }) => {
   // Cart
   const [cartOpen, setCartOpen] = useState(false);
+  const [cart, setCart] = useState<CartItem[]>([]);
 
-  // Player / Songs (optional)
+  const addToCart = (item: CartItem) => {
+    setCart((prev) => {
+      const existing = prev.find((c) => c.id === item.id);
+      if (existing) {
+        return prev.map((c) =>
+          c.id === item.id ? { ...c, quantity: c.quantity + item.quantity } : c
+        );
+      }
+      return [...prev, item];
+    });
+  };
+
+  const removeFromCart = (id: string) => {
+    setCart((prev) => prev.filter((c) => c.id !== id));
+  };
+
+  // Player / Songs
   const [queue, setQueue] = useState<Song[]>([]);
   const [currentSong, setCurrentSong] = useState<Song | null>(null);
   const playNext = () => {
@@ -109,6 +137,9 @@ export const GlobalProvider = ({ children }: { children: ReactNode }) => {
       value={{
         cartOpen,
         setCartOpen,
+        cart,
+        addToCart,
+        removeFromCart,
         queue,
         setQueue,
         currentSong,

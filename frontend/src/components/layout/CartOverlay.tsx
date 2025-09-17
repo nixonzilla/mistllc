@@ -1,164 +1,64 @@
-/* eslint-disable react-refresh/only-export-components */
-// frontend/src/context/GlobalContext.tsx
-import {
-  createContext,
-  useContext,
-  useState,
-  type ReactNode,
-  type Dispatch,
-  type SetStateAction,
-} from "react";
-import type { Song, Product } from "../../lib/api";
+// frontend/src/components/layout/CartOverlay.tsx
+import { useGlobalContext } from "../../context/GlobalContext";
 
-// --- Types ---
-export type User = {
-  id: string;
-  name: string;
-  email: string;
-} | null;
+export default function CartOverlay() {
+  const { cartOpen, setCartOpen, cart, removeFromCart } = useGlobalContext();
 
-export type Notification = {
-  id: string;
-  message: string;
-  type: "success" | "error" | "info";
-};
-
-export type CartItem = Product & { quantity: number };
-
-export type GlobalContextType = {
-  // Cart overlay toggle
-  cartOpen: boolean;
-  setCartOpen: Dispatch<SetStateAction<boolean>>;
-
-  // Cart items + helpers
-  cart: CartItem[];
-  addToCart: (product: Product) => void;
-  removeFromCart: (id: string) => void;
-
-  // Player
-  queue: Song[];
-  setQueue: Dispatch<SetStateAction<Song[]>>;
-  currentSong: Song | null;
-  setCurrentSong: Dispatch<SetStateAction<Song | null>>;
-  playNext: () => void;
-  playPrev: () => void;
-
-  // User + auth
-  user: User;
-  setUser: Dispatch<SetStateAction<User>>;
-  token: string | null;
-  setToken: Dispatch<SetStateAction<string | null>>;
-
-  // Theme
-  theme: "light" | "dark";
-  setTheme: Dispatch<SetStateAction<"light" | "dark">>;
-
-  // Notifications
-  notifications: Notification[];
-  addNotification: (message: string, type?: Notification["type"]) => void;
-  removeNotification: (id: string) => void;
-  notify: (message: string, type?: Notification["type"]) => void;
-};
-
-// --- Context ---
-const GlobalContext = createContext<GlobalContextType | undefined>(undefined);
-
-export const GlobalProvider = ({ children }: { children: ReactNode }) => {
-  // Cart toggle
-  const [cartOpen, setCartOpen] = useState(false);
-
-  // Cart items
-  const [cart, setCart] = useState<CartItem[]>([]);
-
-  const addToCart = (product: Product) => {
-    setCart((prev) => {
-      const existing = prev.find((item) => item.id === product.id);
-      if (existing) {
-        return prev.map((item) =>
-          item.id === product.id
-            ? { ...item, quantity: item.quantity + 1 }
-            : item
-        );
-      }
-      return [...prev, { ...product, quantity: 1 }];
-    });
-  };
-
-  const removeFromCart = (id: string) => {
-    setCart((prev) => prev.filter((item) => item.id !== id));
-  };
-
-  // Player
-  const [queue, setQueue] = useState<Song[]>([]);
-  const [currentSong, setCurrentSong] = useState<Song | null>(null);
-  const playNext = () => {
-    if (!currentSong) return;
-    const idx = queue.findIndex((s) => s.id === currentSong.id);
-    if (idx >= 0 && idx < queue.length - 1) setCurrentSong(queue[idx + 1]);
-  };
-  const playPrev = () => {
-    if (!currentSong) return;
-    const idx = queue.findIndex((s) => s.id === currentSong.id);
-    if (idx > 0) setCurrentSong(queue[idx - 1]);
-  };
-
-  // User + auth
-  const [user, setUser] = useState<User>(null);
-  const [token, setToken] = useState<string | null>(null);
-
-  // Theme
-  const [theme, setTheme] = useState<"light" | "dark">("light");
-
-  // Notifications
-  const [notifications, setNotifications] = useState<Notification[]>([]);
-  const addNotification = (
-    message: string,
-    type: Notification["type"] = "info"
-  ) => {
-    const id = Date.now().toString();
-    setNotifications((prev) => [...prev, { id, message, type }]);
-  };
-  const removeNotification = (id: string) => {
-    setNotifications((prev) => prev.filter((n) => n.id !== id));
-  };
-  const notify = (message: string, type: Notification["type"] = "info") =>
-    addNotification(message, type);
+  if (!cartOpen) return null;
 
   return (
-    <GlobalContext.Provider
-      value={{
-        cartOpen,
-        setCartOpen,
-        cart,
-        addToCart,
-        removeFromCart,
-        queue,
-        setQueue,
-        currentSong,
-        setCurrentSong,
-        playNext,
-        playPrev,
-        user,
-        setUser,
-        token,
-        setToken,
-        theme,
-        setTheme,
-        notifications,
-        addNotification,
-        removeNotification,
-        notify,
-      }}
-    >
-      {children}
-    </GlobalContext.Provider>
-  );
-};
+    <div className="fixed inset-0 bg-black bg-opacity-40 flex justify-end z-50">
+      <div className="w-80 bg-white dark:bg-gray-800 p-4 shadow-lg h-full flex flex-col">
+        <div className="flex justify-between items-center border-b pb-2 mb-4">
+          <h2 className="text-lg font-semibold">Your Cart</h2>
+          <button
+            onClick={() => setCartOpen(false)}
+            className="text-gray-500 hover:text-gray-700"
+          >
+            ✕
+          </button>
+        </div>
 
-// --- Hook ---
-export const useGlobalContext = () => {
-  const ctx = useContext(GlobalContext);
-  if (!ctx)
-    throw new Error("useGlobalContext must be used inside GlobalProvider");
-  return ctx;
-};
+        {cart.length === 0 ? (
+          <p className="text-gray-500">Your cart is empty.</p>
+        ) : (
+          <ul className="flex-1 overflow-y-auto space-y-3">
+            {cart.map((item) => (
+              <li
+                key={item.id}
+                className="flex justify-between items-center border-b pb-2"
+              >
+                <div>
+                  <p className="font-medium">{item.name}</p>
+                  <p className="text-sm text-gray-500">
+                    ${item.price} × {item.quantity}
+                  </p>
+                </div>
+                <button
+                  onClick={() => removeFromCart(item.id)}
+                  className="text-red-500 hover:text-red-700 text-sm"
+                >
+                  Remove
+                </button>
+              </li>
+            ))}
+          </ul>
+        )}
+
+        {cart.length > 0 && (
+          <div className="mt-4 border-t pt-2">
+            <p className="font-semibold">
+              Total: $
+              {cart
+                .reduce((total, item) => total + item.price * item.quantity, 0)
+                .toFixed(2)}
+            </p>
+            <button className="mt-2 w-full bg-blue-600 text-white py-2 rounded hover:bg-blue-700">
+              Checkout
+            </button>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
