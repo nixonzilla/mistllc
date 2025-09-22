@@ -2,8 +2,8 @@
 
 import { useEffect, useState } from "react";
 import ProductCard from "../components/ui/ProductCard";
-import type { Product } from "../lib/api";
 import { fetchProducts } from "../lib/api";
+import { Product } from "../lib/types";
 
 export default function Shop() {
   const [products, setProducts] = useState<Product[]>([]);

@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useGlobalContext } from "../../context/GlobalContext";
+import { useGlobalContext } from "../../context/useGlobalContext";
 
 type Post = {
   id: string;

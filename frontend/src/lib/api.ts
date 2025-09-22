@@ -1,7 +1,5 @@
 // frontend/src/lib/api.ts
 
-import type { ReactNode } from "react";
-
 export type Song = {
   id: string;
   title: string;
@@ -11,11 +9,11 @@ export type Song = {
 };
 
 export type Product = {
-  description: ReactNode;
   id: string;
   name: string;
   price: number;
-  image: string;
+  description?: string; // ✅ make it match types.ts (string, not ReactNode)
+  imageUrl?: string;
 };
 
 export type UserCredentials = {
@@ -35,20 +33,23 @@ export type Post = {
   created_at?: string;
 };
 
-const API_BASE = import.meta.env.VITE_API_URL || "http://localhost:8787";
+const API_BASE = import.meta.env.VITE_API_URL || "http://127.0.0.1:8787";
+
+// ✅ Generic GET helper (fixes "apiGet not exported" error)
+export async function apiGet<T>(endpoint: string): Promise<T> {
+  const res = await fetch(`${API_BASE}${endpoint}`);
+  if (!res.ok) throw new Error(`Failed to fetch ${endpoint}`);
+  return res.json();
+}
 
 // -------- Songs --------
 export async function fetchSongs(): Promise<Song[]> {
-  const res = await fetch(`${API_BASE}/songs`);
-  if (!res.ok) throw new Error("Failed to fetch songs");
-  return res.json();
+  return apiGet<Song[]>("/songs");
 }
 
 // -------- Products --------
 export async function fetchProducts(): Promise<Product[]> {
-  const res = await fetch(`${API_BASE}/products`);
-  if (!res.ok) throw new Error("Failed to fetch products");
-  return res.json();
+  return apiGet<Product[]>("/products");
 }
 
 // -------- Auth --------
@@ -74,9 +75,7 @@ export async function register(payload: RegisterPayload) {
 
 // -------- Community / Posts --------
 export async function fetchPosts(): Promise<Post[]> {
-  const res = await fetch(`${API_BASE}/posts`);
-  if (!res.ok) throw new Error("Failed to fetch posts");
-  return res.json();
+  return apiGet<Post[]>("/posts");
 }
 
 export async function addPost(post: { title: string; content: string }) {
