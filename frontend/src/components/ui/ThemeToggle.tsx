@@ -1,4 +1,4 @@
-import { useGlobalContext } from "../../context/GlobalContext";
+import { useGlobalContext } from "../../context/useGlobalContext";
 
 export default function ThemeToggle() {
   const { theme, setTheme } = useGlobalContext();

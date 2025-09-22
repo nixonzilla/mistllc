@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { useGlobalContext } from "../context/GlobalContext";
+import { useGlobalContext } from "../context/useGlobalContext";
 
 export default function Player() {
   const { currentSong, playNext, playPrev } = useGlobalContext();
@@ -8,7 +8,7 @@ export default function Player() {
 
   useEffect(() => {
     if (currentSong && audioRef.current) {
-      audioRef.current.src = currentSong.url;
+      audioRef.current.src = currentSong.audioUrl;
       audioRef.current.play();
       setIsPlaying(true);
     }

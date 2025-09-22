@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import { useGlobalContext } from "../context/GlobalContext";
+import { useGlobalContext } from "../context/useGlobalContext";
 
 export default function Home() {
   const { user } = useGlobalContext();
@@ -30,7 +30,7 @@ export default function Home() {
 
       {user && (
         <p className="mt-6 text-gray-500">
-          Logged in as <span className="font-semibold">{user.username}</span>
+          Logged in as <span className="font-semibold">{user.id}</span>
         </p>
       )}
     </div>

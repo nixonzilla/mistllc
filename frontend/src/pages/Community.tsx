@@ -2,7 +2,7 @@
 // frontend/src/pages/Community.tsx
 import { useEffect, useState } from "react";
 import { fetchPosts, addPost, type Post } from "../lib/api";
-import { useGlobalContext } from "../context/GlobalContext";
+import { useGlobalContext } from "../context/useGlobalContext";
 
 export default function Community() {
   const { notify } = useGlobalContext();

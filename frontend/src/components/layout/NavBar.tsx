@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import { useGlobalContext } from "../../context/GlobalContext";
+import { useGlobalContext } from "../../context/useGlobalContext";
 import ThemeToggle from "../ui/ThemeToggle";
 
 export default function Navbar() {
@@ -42,7 +42,7 @@ export default function Navbar() {
           {/* User */}
           {user ? (
             <span className="text-sm text-gray-600 dark:text-gray-300">
-              {user.username}
+              {user.id}
             </span>
           ) : (
             <Link to="/login" className="hover:text-mist-gold">

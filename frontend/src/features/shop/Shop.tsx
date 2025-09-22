@@ -1,26 +1,26 @@
-import { useEffect, useState } from "react"
-import { apiGet } from "../../lib/api"
+import { useEffect, useState } from "react";
+import { apiGet } from "../../lib/api";
 
 interface Item {
-  id: string
-  name: string
-  price: number
+  id: string;
+  name: string;
+  price: number;
 }
 
 export default function Shop() {
-  const [items, setItems] = useState<Item[]>([])
+  const [items, setItems] = useState<Item[]>([]);
 
   useEffect(() => {
     async function fetchItems() {
       try {
-        const data = await apiGet<Item[]>("/shop/items")
-        setItems(data)
+        const data = await apiGet<Item[]>("/shop/items");
+        setItems(data);
       } catch (err) {
-        console.error("Failed to fetch items:", err)
+        console.error("Failed to fetch items:", err);
       }
     }
-    fetchItems()
-  }, [])
+    fetchItems();
+  }, []);
 
   return (
     <div className="grid grid-cols-2 gap-4 p-4">
@@ -34,5 +34,5 @@ export default function Shop() {
         </div>
       ))}
     </div>
-  )
+  );
 }

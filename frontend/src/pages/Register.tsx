@@ -1,77 +1,96 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
+// frontend/src/pages/Register.tsx
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { useGlobalContext } from "../context/GlobalContext";
-import { register } from "../lib/api";
+import { useGlobalContext } from "../context/useGlobalContext";
+import * as api from "../lib/api"; // Ensure api.register exists
 
-export default function Register() {
-  const { setUser, setToken, addNotification } = useGlobalContext();
+const Register = () => {
+  const { setUser, setToken, notify } = useGlobalContext();
+  const navigate = useNavigate();
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
-  const navigate = useNavigate();
 
-  async function handleSubmit(e: React.FormEvent) {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setLoading(true);
 
     try {
-      const { user, token } = await register(name, email, password);
+      const response = await api.register({ name, email, password });
+      if (!response || !response.user || !response.token) {
+        throw new Error("Invalid registration response");
+      }
 
-      // Save user + token in global state
-      setUser(user);
-      setToken(token);
+      setUser(response.user);
+      setToken(response.token);
+      notify("Registration successful!", "success");
 
-      // Persist to localStorage
-      localStorage.setItem("token", token);
-      localStorage.setItem("user", JSON.stringify(user));
-
-      addNotification("Account created successfully!", "success");
       navigate("/");
-    } catch (err: any) {
-      addNotification(err.message || "Registration failed", "error");
+    } catch (err: unknown) {
+      // Narrow error type safely
+      const message =
+        err instanceof Error ? err.message : "Registration failed";
+      console.error("Registration error:", message);
+      notify(message, "error");
     } finally {
       setLoading(false);
     }
-  }
+  };
 
   return (
-    <div className="max-w-md mx-auto p-6 bg-white rounded-xl shadow">
-      <h1 className="text-2xl font-bold mb-4">Register</h1>
-      <form onSubmit={handleSubmit} className="space-y-4">
-        <input
-          type="text"
-          placeholder="Name"
-          className="w-full border rounded-lg p-2"
-          value={name}
-          onChange={(e) => setName(e.target.value)}
-          required
-        />
-        <input
-          type="email"
-          placeholder="Email"
-          className="w-full border rounded-lg p-2"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          required
-        />
-        <input
-          type="password"
-          placeholder="Password"
-          className="w-full border rounded-lg p-2"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          required
-        />
+    <div className="min-h-screen flex items-center justify-center bg-gray-100">
+      <form
+        onSubmit={handleSubmit}
+        className="bg-white p-8 rounded-lg shadow-md w-full max-w-md"
+      >
+        <h2 className="text-2xl font-bold mb-6 text-center">Register</h2>
+
+        <label className="block mb-4">
+          <span className="text-gray-700">Name</span>
+          <input
+            type="text"
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+            required
+            className="mt-1 block w-full px-4 py-2 border rounded-md focus:ring focus:ring-blue-400"
+          />
+        </label>
+
+        <label className="block mb-4">
+          <span className="text-gray-700">Email</span>
+          <input
+            type="email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            required
+            className="mt-1 block w-full px-4 py-2 border rounded-md focus:ring focus:ring-blue-400"
+          />
+        </label>
+
+        <label className="block mb-6">
+          <span className="text-gray-700">Password</span>
+          <input
+            type="password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            required
+            className="mt-1 block w-full px-4 py-2 border rounded-md focus:ring focus:ring-blue-400"
+          />
+        </label>
+
         <button
           type="submit"
           disabled={loading}
-          className="w-full bg-mist-gold py-2 rounded-lg font-bold text-black hover:bg-yellow-400"
+          className={`w-full py-2 px-4 rounded-md text-white ${
+            loading ? "bg-gray-400" : "bg-green-600 hover:bg-green-700"
+          }`}
         >
           {loading ? "Registering..." : "Register"}
         </button>
       </form>
     </div>
   );
-}
+};
+
+export default Register;

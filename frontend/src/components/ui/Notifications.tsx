@@ -1,5 +1,5 @@
 // frontend/src/components/ui/Notifications.tsx
-import { useGlobalContext } from "../../context/GlobalContext";
+import { useGlobalContext } from "../../context/useGlobalContext";
 
 const Notifications = () => {
   const { notifications, removeNotification } = useGlobalContext();

@@ -1,5 +1,5 @@
 // frontend/src/components/layout/CartOverlay.tsx
-import { useGlobalContext } from "../../context/GlobalContext";
+import { useGlobalContext } from "../../context/useGlobalContext";
 
 export default function CartOverlay() {
   const { cartOpen, setCartOpen, cart, removeFromCart } = useGlobalContext();

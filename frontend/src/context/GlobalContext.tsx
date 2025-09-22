@@ -1,81 +1,30 @@
-/* eslint-disable react-refresh/only-export-components */
-// frontend/src/context/GlobalContext.tsx
-import {
-  createContext,
-  useContext,
-  useState,
-  type ReactNode,
-  type Dispatch,
-  type SetStateAction,
-} from "react";
-import type { Song } from "../lib/api";
+/* src/context/GlobalContext.tsx */
+import { createContext, useState, useCallback, type ReactNode } from "react";
+import type {
+  GlobalContextType,
+  CartItem,
+  Notification,
+  Song,
+  User,
+} from "../lib/types";
 
-// Types
-export type User = {
-  username: ReactNode;
-  id: string;
-  name: string;
-  email: string;
-} | null;
-
-export type Notification = {
-  id: string;
-  message: string;
-  type: "success" | "error" | "info";
-};
-
-export type CartItem = {
-  id: string;
-  name: string;
-  price: number;
-  quantity: number;
-};
-
-export type GlobalContextType = {
-  // Cart
-  cartOpen: boolean;
-  setCartOpen: Dispatch<SetStateAction<boolean>>;
-  cart: CartItem[];
-  addToCart: (item: CartItem) => void;
-  removeFromCart: (id: string) => void;
-
-  // Songs/player (if using)
-  queue: Song[];
-  setQueue: Dispatch<SetStateAction<Song[]>>;
-  currentSong: Song | null;
-  setCurrentSong: Dispatch<SetStateAction<Song | null>>;
-  playNext: () => void;
-  playPrev: () => void;
-
-  // User auth
-  user: User;
-  setUser: Dispatch<SetStateAction<User>>;
-
-  // Token
-  token: string | null;
-  setToken: Dispatch<SetStateAction<string | null>>;
-
-  // Theme
-  theme: "light" | "dark";
-  setTheme: Dispatch<SetStateAction<"light" | "dark">>;
-
-  // Notifications
-  notifications: Notification[];
-  addNotification: (message: string, type?: Notification["type"]) => void;
-  removeNotification: (id: string) => void;
-
-  // Shortcut notify
-  notify: (message: string, type?: Notification["type"]) => void;
-};
-
-const GlobalContext = createContext<GlobalContextType | undefined>(undefined);
+/**
+ * Named export: GlobalContext
+ * - intentionally uses `undefined` as the default so the hook can check at runtime
+ */
+// eslint-disable-next-line react-refresh/only-export-components
+export const GlobalContext = createContext<GlobalContextType | undefined>(
+  undefined
+);
 
 export const GlobalProvider = ({ children }: { children: ReactNode }) => {
+  // -------------------------
   // Cart
-  const [cartOpen, setCartOpen] = useState(false);
+  // -------------------------
+  const [cartOpen, setCartOpen] = useState<boolean>(false);
   const [cart, setCart] = useState<CartItem[]>([]);
 
-  const addToCart = (item: CartItem) => {
+  const addToCart = useCallback((item: CartItem) => {
     setCart((prev) => {
       const existing = prev.find((c) => c.id === item.id);
       if (existing) {
@@ -85,88 +34,121 @@ export const GlobalProvider = ({ children }: { children: ReactNode }) => {
       }
       return [...prev, item];
     });
-  };
+  }, []);
 
-  const removeFromCart = (id: string) => {
+  const removeFromCart = useCallback((id: string) => {
     setCart((prev) => prev.filter((c) => c.id !== id));
-  };
+  }, []);
 
+  // -------------------------
   // Player / Songs
+  // -------------------------
   const [queue, setQueue] = useState<Song[]>([]);
   const [currentSong, setCurrentSong] = useState<Song | null>(null);
-  const playNext = () => {
-    if (!currentSong) return;
-    const idx = queue.findIndex((s) => s.id === currentSong.id);
-    if (idx >= 0 && idx < queue.length - 1) {
-      setCurrentSong(queue[idx + 1]);
-    }
-  };
-  const playPrev = () => {
-    if (!currentSong) return;
-    const idx = queue.findIndex((s) => s.id === currentSong.id);
-    if (idx > 0) {
-      setCurrentSong(queue[idx - 1]);
-    }
-  };
 
-  // User + token
+  const playNext = useCallback(() => {
+    setQueue((prev) => {
+      if (!currentSong) return prev;
+      const idx = prev.findIndex((s) => s.id === currentSong.id);
+      if (idx >= 0 && idx < prev.length - 1) {
+        const next = prev[idx + 1];
+        setCurrentSong(next);
+      }
+      return prev;
+    });
+  }, [currentSong]);
+
+  const playPrev = useCallback(() => {
+    setQueue((prev) => {
+      if (!currentSong) return prev;
+      const idx = prev.findIndex((s) => s.id === currentSong.id);
+      if (idx > 0) {
+        const prevSong = prev[idx - 1];
+        setCurrentSong(prevSong);
+      }
+      return prev;
+    });
+  }, [currentSong]);
+
+  // -------------------------
+  // Auth
+  // -------------------------
   const [user, setUser] = useState<User>(null);
   const [token, setToken] = useState<string | null>(null);
 
+  // -------------------------
   // Theme
+  // -------------------------
   const [theme, setTheme] = useState<"light" | "dark">("light");
 
+  // -------------------------
   // Notifications
+  // -------------------------
   const [notifications, setNotifications] = useState<Notification[]>([]);
-  const addNotification = (
-    message: string,
-    type: Notification["type"] = "info"
-  ) => {
-    const id = Date.now().toString();
-    setNotifications((prev) => [...prev, { id, message, type }]);
-  };
-  const removeNotification = (id: string) => {
-    setNotifications((prev) => prev.filter((n) => n.id !== id));
-  };
 
-  const notify = (message: string, type: Notification["type"] = "info") =>
-    addNotification(message, type);
+  const addNotification = useCallback(
+    (message: string, type: Notification["type"] = "info") => {
+      const id = Date.now().toString();
+      const n: Notification = { id, message, type };
+      setNotifications((prev) => [...prev, n]);
+
+      // auto-remove after 5s
+      setTimeout(() => {
+        setNotifications((prev) => prev.filter((x) => x.id !== id));
+      }, 5000);
+    },
+    []
+  );
+
+  const removeNotification = useCallback((id: string) => {
+    setNotifications((prev) => prev.filter((x) => x.id !== id));
+  }, []);
+
+  const notify = useCallback(
+    (message: string, type: Notification["type"] = "info") => {
+      addNotification(message, type);
+    },
+    [addNotification]
+  );
+
+  // -------------------------
+  // Build the context value (fully typed)
+  // -------------------------
+  const ctxValue: GlobalContextType = {
+    // Cart
+    cartOpen,
+    setCartOpen,
+    cart,
+    addToCart,
+    removeFromCart,
+
+    // Player
+    queue,
+    setQueue,
+    currentSong,
+    setCurrentSong,
+    playNext,
+    playPrev,
+
+    // Auth
+    user,
+    setUser,
+    token,
+    setToken,
+
+    // Theme
+    theme,
+    setTheme,
+
+    // Notifications
+    notifications,
+    addNotification,
+    removeNotification,
+    notify,
+  };
 
   return (
-    <GlobalContext.Provider
-      value={{
-        cartOpen,
-        setCartOpen,
-        cart,
-        addToCart,
-        removeFromCart,
-        queue,
-        setQueue,
-        currentSong,
-        setCurrentSong,
-        playNext,
-        playPrev,
-        user,
-        setUser,
-        token,
-        setToken,
-        theme,
-        setTheme,
-        notifications,
-        addNotification,
-        removeNotification,
-        notify,
-      }}
-    >
-      {children}
-    </GlobalContext.Provider>
+    <GlobalContext.Provider value={ctxValue}>{children}</GlobalContext.Provider>
   );
 };
-
-export const useGlobalContext = () => {
-  const context = useContext(GlobalContext);
-  if (!context) {
-    throw new Error("useGlobalContext must be used within GlobalProvider");
-  }
-  return context;
-};
+export default GlobalContext;

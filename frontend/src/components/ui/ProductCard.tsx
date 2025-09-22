@@ -1,9 +1,9 @@
 // frontend/src/components/ui/ProductCard.tsx
-import type { Product } from "../../lib/api";
+import * as types from "../../lib/types";
 
 type Props = {
-  product: Product;
-  onAddToCart: () => void;
+  product: types.Product;
+  onAddToCart: (product: types.Product) => void;
 };
 
 export default function ProductCard({ product, onAddToCart }: Props) {
@@ -13,7 +13,7 @@ export default function ProductCard({ product, onAddToCart }: Props) {
       <p className="text-sm text-gray-500 mb-2">{product.description}</p>
       <p className="text-mist-gold font-semibold mb-3">${product.price}</p>
       <button
-        onClick={onAddToCart}
+        onClick={() => onAddToCart(product)}
         className="bg-mist-gold px-4 py-2 rounded-lg text-black hover:bg-yellow-400"
       >
         Add to Cart

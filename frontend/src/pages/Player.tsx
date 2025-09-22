@@ -1,4 +1,4 @@
-import { useGlobalContext } from "../context/GlobalContext";
+import { useGlobalContext } from "../context/useGlobalContext";
 
 export default function PlayerPage() {
   const { currentSong } = useGlobalContext();
@@ -12,7 +12,7 @@ export default function PlayerPage() {
           <h2 className="text-xl font-bold">{currentSong.title}</h2>
           <p className="text-gray-500">{currentSong.artist}</p>
           <audio
-            src={currentSong.url}
+            src={currentSong.audioUrl}
             controls
             autoPlay
             className="w-full mt-4"
