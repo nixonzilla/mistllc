@@ -1,77 +1,41 @@
-// frontend/src/components/ui/ProductsCard.tsx
-
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-} from "../../components/ui/Card";
-import { Button } from "../../components/ui/Button";
-import type { Product } from "../../lib/api";
+// src/components/ui/ProductsCard.tsx
+import React from "react";
+import type { Product } from "../../lib/types";
 
 type ProductsCardProps = {
   products: Product[];
-  onAddToCart?: (product: Product) => void;
 };
 
-export default function ProductsCard({
-  products,
-  onAddToCart,
-}: ProductsCardProps) {
-  if (!products || products.length === 0) {
-    return (
-      <p className="text-center text-muted-foreground py-6">
-        No products available.
-      </p>
-    );
-  }
+const ProductsCard: React.FC<ProductsCardProps> = ({ products }) => {
+  if (!products.length)
+    return <p className="text-gray-400">No products available</p>;
 
   return (
-    <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mt-4">
       {products.map((product) => (
-        <Card
+        <div
           key={product.id}
-          className="flex flex-col overflow-hidden rounded-2xl shadow-md hover:shadow-lg transition-shadow"
+          className="bg-gray-800 p-4 rounded-xl shadow-md hover:shadow-lg transition-shadow flex flex-col"
         >
-          {product.imageUrl ? (
-            <img
-              src={product.imageUrl}
-              alt={product.name}
-              className="h-48 w-full object-cover"
-              loading="lazy"
-            />
-          ) : (
-            <div className="h-48 w-full bg-muted flex items-center justify-center text-sm text-muted-foreground">
-              No Image
-            </div>
-          )}
-
-          <CardHeader className="pb-2">
-            <CardTitle className="text-lg font-semibold truncate">
-              {product.name}
-            </CardTitle>
-          </CardHeader>
-
-          <CardContent className="flex flex-col flex-1 justify-between">
-            <p className="text-sm text-muted-foreground line-clamp-2 mb-3">
-              {product.description ?? "No description provided."}
-            </p>
-
-            <div className="mt-auto flex items-center justify-between">
-              <span className="font-bold text-primary">
-                ${product.price.toFixed(2)}
-              </span>
-              <Button
-                size="sm"
-                onClick={() => onAddToCart?.(product)}
-                className="ml-2"
-              >
-                Add to Cart
-              </Button>
-            </div>
-          </CardContent>
-        </Card>
+          <img
+            src={product.imageUrl || "/placeholder.png"}
+            alt={product.name}
+            className="w-full h-40 object-cover rounded-lg mb-4"
+          />
+          <h3 className="text-lg font-semibold text-white">{product.name}</h3>
+          <p className="text-gray-400">
+            {product.description || "No description provided."}
+          </p>
+          <p className="text-gray-200 font-bold mt-2">
+            ${product.price.toFixed(2)}
+          </p>
+          <button className="mt-auto bg-blue-600 hover:bg-blue-500 text-white py-2 px-4 rounded-lg transition">
+            Add to Cart
+          </button>
+        </div>
       ))}
     </div>
   );
-}
+};
+
+export default ProductsCard;

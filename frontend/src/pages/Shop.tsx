@@ -1,22 +1,23 @@
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
+import { fetchProducts, Product } from "../lib/api";
 import ProductsCard from "../components/ui/ProductCard";
-import { fetchProducts, type Product } from "../lib/api";
-import { Loader2 } from "lucide-react";
 
-export default function Shop() {
+const Shop: React.FC = () => {
   const [products, setProducts] = useState<Product[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     const loadProducts = async () => {
+      setLoading(true);
+      setError(null);
+
       try {
-        setLoading(true);
         const data = await fetchProducts();
         setProducts(data);
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
       } catch (err) {
-        setError("Failed to load products. Please try again later.");
+        console.error("Error fetching products:", err);
+        setError("Failed to load products");
       } finally {
         setLoading(false);
       }
@@ -25,28 +26,21 @@ export default function Shop() {
     loadProducts();
   }, []);
 
-  const handleAddToCart = (product: Product) => {
-    // TODO: integrate cart logic (global state, context, etc.)
-    console.log("Add to cart:", product);
-  };
-
   return (
-    <div className="container mx-auto px-4 py-10">
-      <h1 className="mb-8 text-3xl font-bold tracking-tight">Shop</h1>
+    <div className="min-h-screen bg-gray-50 p-6">
+      <h1 className="text-3xl font-bold text-gray-800 mb-6">Shop</h1>
 
       {loading && (
-        <div className="flex justify-center items-center py-12">
-          <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
+        <div className="text-center py-20 text-gray-500">
+          Loading products...
         </div>
       )}
 
-      {error && (
-        <p className="text-center text-red-500 font-medium py-6">{error}</p>
-      )}
+      {error && <div className="text-center py-20 text-red-500">{error}</div>}
 
-      {!loading && !error && (
-        <ProductsCard products={products} onAddToCart={handleAddToCart} />
-      )}
+      {!loading && !error && <ProductsCard products={products} />}
     </div>
   );
-}
+};
+
+export default Shop;

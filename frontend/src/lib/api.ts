@@ -1,41 +1,15 @@
 // frontend/src/lib/api.ts
-
-export type Song = {
-  id: string;
-  title: string;
-  artist: string;
-  url: string;
-  created_at?: string;
-};
-
-export type Product = {
-  id: string;
-  name: string;
-  price: number;
-  description?: string; // ✅ make it match types.ts (string, not ReactNode)
-  imageUrl?: string;
-};
-
-export type UserCredentials = {
-  email: string;
-  password: string;
-};
-
-export type RegisterPayload = UserCredentials & {
-  name: string;
-};
-
-export type Post = {
-  id: string;
-  title: string;
-  content: string;
-  author: string;
-  created_at?: string;
-};
+import type {
+  Song,
+  Product,
+  UserCredentials,
+  RegisterPayload,
+  Post,
+} from "./types";
 
 const API_BASE = import.meta.env.VITE_API_URL || "http://127.0.0.1:8787";
 
-// ✅ Generic GET helper (fixes "apiGet not exported" error)
+// Generic GET helper
 export async function apiGet<T>(endpoint: string): Promise<T> {
   const res = await fetch(`${API_BASE}${endpoint}`);
   if (!res.ok) throw new Error(`Failed to fetch ${endpoint}`);
@@ -44,12 +18,55 @@ export async function apiGet<T>(endpoint: string): Promise<T> {
 
 // -------- Songs --------
 export async function fetchSongs(): Promise<Song[]> {
-  return apiGet<Song[]>("/songs");
+  const res = await fetch(`${API_BASE}/songs`);
+  if (!res.ok) throw new Error("Failed to fetch songs");
+
+  const data = (await res.json()) as Array<Partial<Song>>;
+
+  // Map to full Song type with defaults for missing fields
+  return data.map((item) => ({
+    id: String(item.id),
+    title: item.title || "Unknown Title",
+    artist: item.artist || "Unknown Artist",
+    album: item.album || "",
+    created_at: item.created_at || new Date().toISOString(),
+    coverUrl: item.coverUrl || "/placeholder.png",
+    audioUrl: item.audioUrl || "/placeholder.mp3", // required
+    duration: item.duration || 0,
+    releaseDate: item.releaseDate || "",
+    genre: item.genre || "",
+  }));
 }
 
 // -------- Products --------
 export async function fetchProducts(): Promise<Product[]> {
-  return apiGet<Product[]>("/products");
+  try {
+    const res = await fetch(`${API_BASE}/products`);
+    if (!res.ok) throw new Error("Failed to fetch products");
+    return res.json();
+  } catch (err) {
+    console.warn("Products fetch failed, using fallback mock data:", err);
+    return [
+      {
+        id: "1",
+        name: "Mist Vinyl",
+        price: 29.99,
+        imageUrl: "/placeholder.png",
+      },
+      {
+        id: "2",
+        name: "Mist Cassette",
+        price: 9.99,
+        imageUrl: "/placeholder.png",
+      },
+      {
+        id: "3",
+        name: "Mist T-Shirt",
+        price: 19.99,
+        imageUrl: "/placeholder.png",
+      },
+    ];
+  }
 }
 
 // -------- Auth --------
@@ -75,7 +92,9 @@ export async function register(payload: RegisterPayload) {
 
 // -------- Community / Posts --------
 export async function fetchPosts(): Promise<Post[]> {
-  return apiGet<Post[]>("/posts");
+  const res = await fetch(`${API_BASE}/posts`);
+  if (!res.ok) throw new Error("Failed to fetch posts");
+  return res.json();
 }
 
 export async function addPost(post: { title: string; content: string }) {
@@ -85,5 +104,26 @@ export async function addPost(post: { title: string; content: string }) {
     body: JSON.stringify(post),
   });
   if (!res.ok) throw new Error("Failed to add post");
+  return res.json();
+}
+export async function deletePost(postId: string) {
+  const res = await fetch(`${API_BASE}/posts/${postId}`, {
+    method: "DELETE",
+  });
+  if (!res.ok) throw new Error("Failed to delete post");
+  return res.json();
+}
+// -------- Contact Form --------
+export async function submitContactForm(formData: {
+  name: string;
+  email: string;
+  message: string;
+}) {
+  const res = await fetch(`${API_BASE}/contact`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(formData),
+  });
+  if (!res.ok) throw new Error("Failed to submit contact form");
   return res.json();
 }
