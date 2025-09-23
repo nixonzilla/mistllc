@@ -1,8 +1,9 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 // frontend/src/pages/Community.tsx
 import { useEffect, useState } from "react";
-import { fetchPosts, addPost, type Post } from "../lib/api";
+import { fetchPosts, addPost } from "../lib/api";
 import { useGlobalContext } from "../context/useGlobalContext";
+import { Post } from "../lib/types";
 
 export default function Community() {
   const { notify } = useGlobalContext();

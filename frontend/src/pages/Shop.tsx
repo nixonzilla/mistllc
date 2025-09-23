@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
-import { fetchProducts, Product } from "../lib/api";
+import { fetchProducts } from "../lib/api";
 import ProductsCard from "../components/ui/ProductCard";
+import { Product } from "../lib/types";
 
 const Shop: React.FC = () => {
   const [products, setProducts] = useState<Product[]>([]);
