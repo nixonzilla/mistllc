@@ -1,11 +1,8 @@
-import "./tailwind.config.js";
-
 // postcss.config.js
 export default {
   plugins: {
-    "@tailwindcss/postcss": {}, // ✅ use this instead of "tailwindcss"
+    "@tailwindcss/postcss": {}, // ✅ Tailwind v4 plugin
     autoprefixer: {},
-    // Optionally, you can add cssnano for minification in production
     ...(process.env.NODE_ENV === "production" ? { cssnano: {} } : {}),
   },
 };

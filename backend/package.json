@@ -4,9 +4,10 @@
   "private": true,
   "type": "module",
   "scripts": {
+    "build": "npm ci && npm run bundle",
+    "bundle": "esbuild src/index.ts --bundle --outdir=dist",
     "dev": "wrangler dev",
-    "deploy": "wrangler deploy",
-    "build": "wrangler deploy --dry-run"
+    "deploy": "wrangler deploy"
   },
   "dependencies": {
     "@cloudflare/types": "^7.0.0",
