@@ -4,6 +4,7 @@
   "private": true,
   "type": "module",
   "scripts": {
+     "clean-install": "rm -rf node_modules package-lock.json && npm install",
     "build": "npm ci && npm run bundle",
     "bundle": "esbuild src/index.ts --bundle --outdir=dist",
     "dev": "wrangler dev",

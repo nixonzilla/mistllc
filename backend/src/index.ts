@@ -2,8 +2,10 @@
 import { Hono } from "hono";
 import { cors } from "hono/cors";
 import { D1Database } from "@cloudflare/workers-types";
+import { productRoutes } from "./products/product.routes";
 
 const app = new Hono<{ Bindings: { DB: D1Database } }>();
+app.route("/products", productRoutes);
 
 // Enable CORS for frontend
 app.use("*", cors());

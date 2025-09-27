@@ -1,10 +1,11 @@
 import { Context } from "hono";
-import { getProducts, getProductById, createProduct, updateProduct, deleteProduct } from "./product.model";
+import { createProduct, deleteProduct, getProductById, getProducts, updateProduct } from "./product.model";
+import { CreateProductInput, UpdateProductInput } from "../shared/types/product";
 
 export const productController = {
   list: async (c: Context) => {
-    const result = await getProducts(c.env);
-    return c.json(result);
+    const products = await getProducts(c.env);
+    return c.json(products);
   },
 
   get: async (c: Context) => {
@@ -15,15 +16,14 @@ export const productController = {
   },
 
   create: async (c: Context) => {
-    const body = await c.req.json();
-    const { name, description, price, image_url } = body;
-    await createProduct(c.env, { name, description, price, image_url });
+    const body = (await c.req.json()) as CreateProductInput;
+    await createProduct(c.env, body);
     return c.text("Created", 201);
   },
 
   update: async (c: Context) => {
     const id = Number(c.req.param("id"));
-    const body = await c.req.json();
+    const body = (await c.req.json()) as UpdateProductInput;
     try {
       const product = await updateProduct(c.env, id, body);
       return c.json(product);
