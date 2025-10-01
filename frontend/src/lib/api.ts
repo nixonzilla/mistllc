@@ -127,3 +127,5 @@ export async function submitContactForm(formData: {
   if (!res.ok) throw new Error("Failed to submit contact form");
   return res.json();
 }
+export { Song, Product, UserCredentials, RegisterPayload, Post };
+// Re-export types for convenience

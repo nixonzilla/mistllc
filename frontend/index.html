@@ -1,38 +1,52 @@
 <!doctype html>
-<html lang="en">
+<html lang="en" class="scroll-smooth">
   <head>
     <meta charset="UTF-8" />
+    <link rel="icon" href="/favicon.ico" />
+    <link rel="apple-touch-icon" href="/logo192.png" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>MISTLLC – Music • Innovation • Style</title>
+
+    <!-- SEO -->
+    <title>MISTLLC 🌙 | Authentic Music & Creative Vibes</title>
     <meta
       name="description"
-      content="MISTLLC – A creative hub for authentic music, community, and style. Explore our latest releases, community space, and shop."
+      content="MISTLLC is a hub for authentic music, community vibes, and creative expression. Explore releases, connect with others, and shop exclusive merch."
     />
-    <meta name="theme-color" content="#111827" />
+    <meta name="theme-color" content="#6b21a8" />
 
-    <!-- Open Graph -->
-    <meta property="og:title" content="MISTLLC – Music • Innovation • Style" />
+    <!-- Open Graph (Social Previews) -->
+    <meta property="og:title" content="MISTLLC 🌙 | Authentic Music & Creative Vibes" />
     <meta
       property="og:description"
-      content="Dive into MISTLLC: Authentic music, vibrant community, and fresh style."
+      content="Authentic music, community vibes, and creative expression."
     />
     <meta property="og:type" content="website" />
-    <meta property="og:image" content="/assets/mistllc-preview.png" />
+    <meta property="og:url" content="https://mistllc.org" />
+    <meta property="og:image" content="/social-preview.png" />
 
-    <!-- Favicon -->
-    <link rel="icon" type="image/svg+xml" href="/assets/favicon.svg" />
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="MISTLLC 🌙 | Authentic Music & Creative Vibes" />
+    <meta
+      name="twitter:description"
+      content="Authentic music, community vibes, and creative expression."
+    />
+    <meta name="twitter:image" content="/social-preview.png" />
 
-    <!-- Google Fonts -->
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
       href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap"
       rel="stylesheet"
     />
 
-    <!-- Tailwind CSS -->
-    <link rel="stylesheet" href="./src/index.css" />
+    <!-- Tailwind (Vite injects CSS/JS) -->
   </head>
-  <body class="bg-gradient-dark text-white font-sans antialiased min-h-screen">
-    <div id="root" class="w-full h-full flex flex-col"></div>
-    <script type="module" src="./src/main.tsx"></script>
+  <body
+    class="font-inter antialiased bg-gradient-to-br from-purple-900 via-black to-gray-900 text-white"
+  >
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>

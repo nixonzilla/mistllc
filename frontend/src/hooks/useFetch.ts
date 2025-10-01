@@ -25,3 +25,4 @@ export function useFetch<T>(url: string) {
 
   return { data, loading, error };
 }
+export default useFetch;

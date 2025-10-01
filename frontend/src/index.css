@@ -2,8 +2,12 @@
 @tailwind components;
 @tailwind utilities;
 
-html,
-body,
-#root {
-  height: 100%;
+/* Add custom gradients for light/dark backgrounds */
+@layer utilities {
+  .bg-gradient-light {
+    @apply bg-gradient-to-br from-gray-100 via-white to-gray-200;
+  }
+  .bg-gradient-dark {
+    @apply bg-gradient-to-br from-purple-900 via-gray-900 to-black;
+  }
 }

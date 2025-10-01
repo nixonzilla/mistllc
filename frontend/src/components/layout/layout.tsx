@@ -1,54 +1,28 @@
-// src/components/layout/Layout.tsx
-import React from "react";
-import { Link } from "react-router-dom";
+// frontend/src/components/Layout.tsx
+import { ReactNode } from "react";
+import Header from "../ui/header";
+import Footer from "../ui/Footer";
 
 type LayoutProps = {
-  children: React.ReactNode;
+  children: ReactNode;
 };
 
-const Layout: React.FC<LayoutProps> = ({ children }) => {
+export default function Layout({ children }: LayoutProps) {
   return (
-    <div className="min-h-screen flex flex-col bg-gradient-to-b from-black via-gray-900 to-gray-950 text-white font-sans">
-      {/* Navbar */}
-      <header className="bg-gray-900 bg-opacity-90 backdrop-blur-sm shadow-md">
-        <nav className="container mx-auto flex items-center justify-between py-4 px-6">
-          <Link to="/" className="text-2xl font-bold">
-            MISTLLC
-          </Link>
-          <div className="flex space-x-6">
-            <Link to="/" className="hover:text-blue-400 transition">
-              Home
-            </Link>
-            <Link to="/community" className="hover:text-blue-400 transition">
-              Community
-            </Link>
-            <Link to="/shop" className="hover:text-blue-400 transition">
-              Shop
-            </Link>
-          </div>
-          <div>
-            <button className="bg-blue-600 hover:bg-blue-500 px-4 py-2 rounded-lg transition">
-              Sign In
-            </button>
-          </div>
-        </nav>
-      </header>
+    <div className="flex flex-col min-h-screen bg-gradient-to-br from-purple-900 via-gray-900 to-black text-white">
+      {/* Sticky Glassy Header */}
+      <Header />
 
-      {/* Main content */}
-      <main className="flex-1">{children}</main>
+      {/* Main Content */}
+      <main className="flex-1 container mx-auto px-6 py-12 relative z-10">
+        {children}
+      </main>
 
-      {/* Footer */}
-      <footer className="bg-gray-900 bg-opacity-90 backdrop-blur-sm mt-12 py-6 text-center text-gray-400 text-sm">
-        © 2025 MISTLLC. All rights reserved. <br />
-        <Link to="/privacy" className="hover:text-white mx-2">
-          Privacy Policy
-        </Link>
-        <Link to="/terms" className="hover:text-white mx-2">
-          Terms
-        </Link>
-      </footer>
+      {/* Glassy Footer */}
+      <Footer />
+
+      {/* Subtle Gradient Overlay for extra depth */}
+      <div className="absolute inset-0 pointer-events-none bg-gradient-to-t from-black/40 via-transparent to-black/30"></div>
     </div>
   );
-};
-
-export default Layout;
+}
