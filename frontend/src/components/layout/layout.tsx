@@ -1,6 +1,6 @@
 // frontend/src/components/Layout.tsx
 import { ReactNode } from "react";
-import Header from "../ui/header";
+import { Header } from "../ui/header";
 import Footer from "../ui/Footer";
 
 type LayoutProps = {

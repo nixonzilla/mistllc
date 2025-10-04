@@ -1,61 +1,65 @@
 // frontend/src/pages/Home.tsx
-function Home() {
+import { Link } from "react-router-dom";
+import SongsGrid from "../components/ui/SongsGrid";
+import { useSongs } from "../hooks/useSongs";
+
+export default function Home() {
+  const { songs, loading, error } = useSongs();
+
   return (
-    <main className="flex-1 px-6 py-12 text-center">
+    <div className="px-6 py-12 text-center">
       {/* Hero Section */}
       <section className="mb-16">
-        <h2 className="text-5xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-purple-400 via-pink-500 to-red-500 dark:from-purple-300 dark:via-pink-400 dark:to-red-400 mb-6">
-          Welcome to MISTLLC
+        <h2 className="text-4xl md:text-5xl font-extrabold text-purple-300 drop-shadow mb-4">
+          Welcome to MISTLLC 🌙
         </h2>
-        <p className="text-lg text-secondary dark:text-gray-300 max-w-2xl mx-auto leading-relaxed">
-          A hub for authentic music, community vibes, and creative expression.
-          Explore our latest releases, connect with like-minded listeners, and
-          shop exclusive merch.
+        <p className="text-lg text-gray-300 max-w-2xl mx-auto">
+          A hub for authentic music, community vibes, and creative expression.  
+          Explore our latest releases, connect with like-minded listeners, and shop exclusive merch.
         </p>
-        <div className="mt-10 flex justify-center gap-6 flex-wrap">
-          <a
-            href="/releases"
-            className="px-6 py-3 rounded-xl bg-accent text-white font-semibold hover:scale-105 transition transform"
+        <div className="mt-8 flex justify-center gap-4 flex-wrap">
+          <Link
+            to="/releases"
+            className="px-6 py-3 rounded-xl bg-purple-600 text-white font-semibold hover:scale-105 hover:bg-purple-700 transition"
           >
             Explore Releases
-          </a>
-          <a
-            href="/community"
-            className="px-6 py-3 rounded-xl border border-accent text-accent font-semibold hover:bg-accent hover:text-white transition"
+          </Link>
+          <Link
+            to="/community"
+            className="px-6 py-3 rounded-xl border border-purple-500 text-purple-400 font-semibold hover:bg-purple-600 hover:text-white transition"
           >
             Join Community
-          </a>
+          </Link>
         </div>
       </section>
 
-      {/* Featured Songs Section */}
+      {/* Featured Songs */}
       <section className="mb-16">
-        <h3 className="text-3xl font-bold text-primary dark:text-white mb-8">
-          Featured Songs
-        </h3>
-        <p className="text-secondary dark:text-gray-300">
-          🎶 Songs will load here…
-        </p>
+        <h3 className="text-2xl font-bold text-white mb-6">🎶 Featured Songs</h3>
+        {error ? (
+          <p className="text-red-500">{error}</p>
+        ) : (
+          <SongsGrid songs={songs} loading={loading} onPlay={function (): void {
+              throw new Error("Function not implemented.");
+            } } />
+        )}
       </section>
 
-      {/* Community CTA */}
-      <section className="bg-white/10 dark:bg-black/20 backdrop-blur-md rounded-2xl py-12 px-6 shadow-lg">
-        <h3 className="text-3xl font-bold text-primary dark:text-white mb-4">
+      {/* Community Call-to-Action */}
+      <section className="bg-black/40 backdrop-blur-md rounded-2xl p-10 max-w-3xl mx-auto shadow-lg">
+        <h3 className="text-2xl font-bold text-purple-300 mb-4">
           Be Part of Our Creative Community
         </h3>
-        <p className="text-secondary dark:text-gray-300 mb-6">
-          Share feedback, discover new sounds, and grow with like-minded
-          listeners & creators.
+        <p className="text-gray-300 mb-6">
+          Share feedback, discover new sounds, and grow with like-minded listeners & creators.
         </p>
-        <a
-          href="/community"
-          className="px-6 py-3 rounded-xl bg-gradient-to-r from-purple-500 to-pink-500 text-white font-semibold hover:opacity-90 transition"
+        <Link
+          to="/community"
+          className="px-6 py-3 rounded-xl bg-gradient-to-r from-purple-600 to-indigo-600 text-white font-semibold hover:scale-105 transition"
         >
           Join Now
-        </a>
+        </Link>
       </section>
-    </main>
+    </div>
   );
 }
-
-export default Home;

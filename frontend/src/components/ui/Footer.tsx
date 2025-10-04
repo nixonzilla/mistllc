@@ -35,15 +35,7 @@ export default function Footer() {
           </div>
 
           {/* Socials */}
-          <div className="flex gap-4">
-            <a
-              href="https://twitter.com"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-gray-300 hover:text-purple-400 transition"
-            >
-              🐦
-            </a>
+          <div className="flex gap-4 text-2xl">
             <a
   href="https://twitter.com/mistllc"
   target="_blank"
@@ -54,7 +46,7 @@ export default function Footer() {
   🐦
 </a>
 <a
-  href="https://instagram.com/mistllc"
+  href="https://instagram.com/llc.mist"
   target="_blank"
   rel="noopener noreferrer"
   aria-label="Instagram"

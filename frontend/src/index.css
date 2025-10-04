@@ -1,13 +1,18 @@
+/* frontend/src/index.css */
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap");
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+/* Custom global styles */
+* {
+  box-sizing: border-box;
+}
 
-/* Add custom gradients for light/dark backgrounds */
-@layer utilities {
-  .bg-gradient-light {
-    @apply bg-gradient-to-br from-gray-100 via-white to-gray-200;
-  }
-  .bg-gradient-dark {
-    @apply bg-gradient-to-br from-purple-900 via-gray-900 to-black;
-  }
+body {
+  margin: 050;
+  font-family: "Inter", sans-serif;
+}
+a {
+  text-decoration: rgb(95, 7, 182);
+  color: rgb(25, 5, 44);
 }
