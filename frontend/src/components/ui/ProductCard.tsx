@@ -1,54 +1,41 @@
-import { useGlobal } from "../../context/GlobalContext";
+// src/components/ui/ProductsCard.tsx
+import React from "react";
+import type { Product } from "../../lib/types";
 
-type Product = {
-  id: string;
-  name: string;
-  price: number;
-  image: string;
-  previewUrl?: string;
+type ProductsCardProps = {
+  products: Product[];
 };
 
-export default function ProductCard({ product }: { product: Product }) {
-  const { setCartOpen, setQueue, setCurrentSong } = useGlobal();
-
-  const addToCart = () => {
-    setCartOpen(true); // future: expand cart system
-  };
-
-  const playPreview = () => {
-    if (!product.previewUrl) return;
-    const previewSong = {
-      id: product.id,
-      title: product.name + " (Preview)",
-      artist: "MISTLLC",
-      url: product.previewUrl,
-    };
-    setQueue([previewSong]);
-    setCurrentSong(previewSong);
-  };
+const ProductsCard: React.FC<ProductsCardProps> = ({ products }) => {
+  if (!products.length)
+    return <p className="text-gray-400">No products available</p>;
 
   return (
-    <div className="bg-mist-gray rounded-2xl p-4 shadow-lg">
-      <img src={product.image} alt={product.name} className="rounded-xl mb-3" />
-      <h3 className="font-bold text-lg">{product.name}</h3>
-      <p className="text-mist-gold font-semibold">${product.price}</p>
-
-      <div className="flex gap-3 mt-3">
-        <button
-          onClick={addToCart}
-          className="bg-mist-pink px-4 py-2 rounded-lg hover:bg-mist-coral transition"
+    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mt-4">
+      {products.map((product) => (
+        <div
+          key={product.id}
+          className="bg-gray-800 p-4 rounded-xl shadow-md hover:shadow-lg transition-shadow flex flex-col"
         >
-          Add to Cart
-        </button>
-        {product.previewUrl && (
-          <button
-            onClick={playPreview}
-            className="bg-mist-gold px-4 py-2 rounded-lg hover:bg-yellow-400 transition"
-          >
-            ▶ Preview
+          <img
+            src={product.imageUrl || "/placeholder.png"}
+            alt={product.name}
+            className="w-full h-40 object-cover rounded-lg mb-4"
+          />
+          <h3 className="text-lg font-semibold text-white">{product.name}</h3>
+          <p className="text-gray-400">
+            {product.description || "No description provided."}
+          </p>
+          <p className="text-gray-200 font-bold mt-2">
+            ${product.price.toFixed(2)}
+          </p>
+          <button className="mt-auto bg-blue-600 hover:bg-blue-500 text-white py-2 px-4 rounded-lg transition">
+            Add to Cart
           </button>
-        )}
-      </div>
+        </div>
+      ))}
     </div>
   );
-}
+};
+
+export default ProductsCard;

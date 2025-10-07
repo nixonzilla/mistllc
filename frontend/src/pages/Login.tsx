@@ -1,31 +1,85 @@
-import { useGlobal } from "../context/GlobalContext";
+// frontend/src/pages/Login.tsx
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { useGlobalContext } from "../context/useGlobalContext";
+import * as api from "../lib/api"; // Ensure api.login exists
 
-export default function Login() {
-  const { setUser } = useGlobal();
+const Login = () => {
+  const { setUser, setToken, notify } = useGlobalContext();
+  const navigate = useNavigate();
 
-  const handleLogin = () => {
-    setUser("demo-user");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [loading, setLoading] = useState(false);
+
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    setLoading(true);
+
+    try {
+      const response = await api.login({ email, password });
+      if (!response || !response.user || !response.token) {
+        throw new Error("Invalid login response");
+      }
+
+      setUser(response.user);
+      setToken(response.token);
+      notify("Login successful!", "success");
+
+      navigate("/"); // Redirect to home or dashboard
+    } catch (err: unknown) {
+      // Type-safe error handling
+      const message =
+        err instanceof Error ? err.message : "Login failed. Try again.";
+      console.error("Login error:", message);
+      notify(message, "error");
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
-    <div className="max-w-md mx-auto bg-mist-gray p-6 rounded-2xl">
-      <h1 className="text-2xl font-bold mb-4">🔑 Login</h1>
-      <input
-        type="email"
-        placeholder="Email"
-        className="w-full p-3 mb-3 rounded-lg bg-black text-white"
-      />
-      <input
-        type="password"
-        placeholder="Password"
-        className="w-full p-3 mb-3 rounded-lg bg-black text-white"
-      />
-      <button
-        onClick={handleLogin}
-        className="bg-mist-pink px-6 py-3 rounded-lg w-full"
+    <div className="min-h-screen flex items-center justify-center bg-gray-100">
+      <form
+        onSubmit={handleSubmit}
+        className="bg-white p-8 rounded-lg shadow-md w-full max-w-md"
       >
-        Login
-      </button>
+        <h2 className="text-2xl font-bold mb-6 text-center">Login</h2>
+
+        <label className="block mb-4">
+          <span className="text-gray-700">Email</span>
+          <input
+            type="email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            required
+            className="mt-1 block w-full px-4 py-2 border rounded-md focus:ring focus:ring-blue-400"
+          />
+        </label>
+
+        <label className="block mb-6">
+          <span className="text-gray-700">Password</span>
+          <input
+            type="password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            required
+            className="mt-1 block w-full px-4 py-2 border rounded-md focus:ring focus:ring-blue-400"
+          />
+        </label>
+
+        <button
+          type="submit"
+          disabled={loading}
+          className={`w-full py-2 px-4 rounded-md text-white ${
+            loading ? "bg-gray-400" : "bg-blue-600 hover:bg-blue-700"
+          }`}
+        >
+          {loading ? "Logging in..." : "Login"}
+        </button>
+      </form>
     </div>
   );
-}
+};
+
+export default Login;

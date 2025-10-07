@@ -1,62 +1,47 @@
-import { useEffect, useState } from "react";
-import { fetchProducts, checkout } from "../lib/api";
+import React, { useEffect, useState } from "react";
+import { fetchProducts } from "../lib/api";
+import ProductsCard from "../components/ui/ProductCard";
+import { Product } from "../lib/types";
 
-export default function Shop() {
-  const [products, setProducts] = useState<any[]>([]);
-  const [cart, setCart] = useState<any[]>([]);
+const Shop: React.FC = () => {
+  const [products, setProducts] = useState<Product[]>([]);
+  const [loading, setLoading] = useState<boolean>(true);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    fetchProducts().then(setProducts).catch(console.error);
+    const loadProducts = async () => {
+      setLoading(true);
+      setError(null);
+
+      try {
+        const data = await fetchProducts();
+        setProducts(data);
+      } catch (err) {
+        console.error("Error fetching products:", err);
+        setError("Failed to load products");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadProducts();
   }, []);
 
-  function addToCart(product: any) {
-    setCart([...cart, product]);
-  }
-
-  async function handleCheckout() {
-    const token = localStorage.getItem("token") || "";
-    const res = await checkout(cart, token);
-    alert(`Checkout successful: ${res.message || "Thank you!"}`);
-    setCart([]);
-  }
-
   return (
-    <div className="p-6">
-      <h1 className="text-2xl font-bold mb-6">Shop</h1>
-      <div className="grid grid-cols-2 gap-4">
-        {products.map((p) => (
-          <div
-            key={p._id}
-            className="p-4 bg-white rounded-xl shadow flex flex-col"
-          >
-            <p className="font-semibold">{p.name}</p>
-            <p className="text-gray-600">${p.price}</p>
-            <button
-              className="mt-auto bg-green-500 text-white px-4 py-2 rounded"
-              onClick={() => addToCart(p)}
-            >
-              Add to Cart
-            </button>
-          </div>
-        ))}
-      </div>
+    <div className="min-h-screen bg-gray-50 p-6">
+      <h1 className="text-3xl font-bold text-gray-800 mb-6">Shop</h1>
 
-      {cart.length > 0 && (
-        <div className="mt-6 p-4 bg-gray-100 rounded-xl">
-          <h2 className="text-lg font-bold">Cart</h2>
-          <ul>
-            {cart.map((c, i) => (
-              <li key={i}>{c.name} - ${c.price}</li>
-            ))}
-          </ul>
-          <button
-            className="mt-4 bg-black text-white px-4 py-2 rounded"
-            onClick={handleCheckout}
-          >
-            Checkout
-          </button>
+      {loading && (
+        <div className="text-center py-20 text-gray-500">
+          Loading products...
         </div>
       )}
+
+      {error && <div className="text-center py-20 text-red-500">{error}</div>}
+
+      {!loading && !error && <ProductsCard products={products} />}
     </div>
   );
-}
+};
+
+export default Shop;

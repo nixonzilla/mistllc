@@ -5,45 +5,60 @@ export interface Song {
   id: number;
   title: string;
   artist: string;
+  created_at: string; // ISO date string
+  coverUrl?: string; // optional album art
+  audioUrl?: string; // optional streaming URL
 }
 
 export function useSongs() {
   const [songs, setSongs] = useState<Song[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
 
-  // fetch songs
+  // Fetch songs
   const fetchSongs = async () => {
     try {
       setLoading(true);
       setError(null);
 
       const res = await fetch("/api/songs");
-      if (!res.ok) throw new Error("Failed to fetch songs");
+      if (!res.ok) {
+        throw new Error(`Failed to fetch songs (status ${res.status})`);
+      }
 
-      const data = await res.json();
+      const data: Song[] = await res.json();
       setSongs(data);
-    } catch (err: any) {
-      setError(err.message);
+    } catch (err: unknown) {
+      if (err instanceof Error) {
+        setError(err.message);
+      } else {
+        setError("An unknown error occurred");
+      }
     } finally {
       setLoading(false);
     }
   };
 
-  // add song
-  const addSong = async (title: string, artist: string) => {
+  // Add new song
+  const addSong = async (song: Omit<Song, "id">) => {
     try {
       const res = await fetch("/api/songs", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ title, artist }),
+        body: JSON.stringify(song),
       });
 
-      if (!res.ok) throw new Error("Failed to add song");
+      if (!res.ok) {
+        throw new Error(`Failed to add song (status ${res.status})`);
+      }
 
       await fetchSongs(); // refresh list
-    } catch (err: any) {
-      setError(err.message);
+    } catch (err: unknown) {
+      if (err instanceof Error) {
+        setError(err.message);
+      } else {
+        setError("An unknown error occurred");
+      }
     }
   };
 
@@ -53,3 +68,4 @@ export function useSongs() {
 
   return { songs, loading, error, fetchSongs, addSong };
 }
+export default useSongs;

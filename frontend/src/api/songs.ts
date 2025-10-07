@@ -1,9 +1,14 @@
-const API_URL = import.meta.env.VITE_API_URL;
-
+// frontend/src/api/songs.ts
+const API_URL = import.meta.env.VITE_API_URL || "http://127.0.0.1:8787";
 export type Song = {
+  coverUrl: unknown;
+  releaseDate: unknown;
+  audioUrl: string | undefined;
   id: number;
   title: string;
   artist: string;
+  url?: string;
+  created_at?: string;
 };
 
 export async function fetchSongs(): Promise<Song[]> {
@@ -22,7 +27,10 @@ export async function addSong(song: Omit<Song, "id">): Promise<Song> {
   return res.json();
 }
 
-export async function updateSong(id: number, song: Partial<Omit<Song, "id">>): Promise<Song> {
+export async function updateSong(
+  id: number,
+  song: Partial<Omit<Song, "id">>
+): Promise<Song> {
   const res = await fetch(`${API_URL}/songs/${id}`, {
     method: "PUT",
     headers: { "Content-Type": "application/json" },

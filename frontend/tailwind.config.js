@@ -1,20 +1,20 @@
 /** @type {import('tailwindcss').Config} */
 export default {
-  content: [
-    "./index.html",
-    "./src/**/*.{js,ts,jsx,tsx}",
-  ],
+  content: ["./index.html", "./src/**/*.{js,ts,jsx,tsx}"],
+  darkMode: "class",
   theme: {
     extend: {
-      fontFamily: {
-        inter: ["Inter", "sans-serif"],
+      backgroundImage: {
+        "gradient-light": "linear-gradient(to bottom right, #f9fafb, #e5e7eb)",
+        "gradient-dark": "linear-gradient(to bottom right, #1f2937, #111827)",
       },
       colors: {
-        "mist-pink": "#FF61A6",
-        "mist-red": "#FF3D00",
-        "mist-yellow": "#FFD600",
+        primary: "#1f2937",
+        secondary: "#4b5563",
+        accent: "#ef4444",
       },
     },
   },
   plugins: [],
-}
+};
+

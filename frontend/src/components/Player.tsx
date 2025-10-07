@@ -1,14 +1,14 @@
 import { useEffect, useRef, useState } from "react";
-import { useGlobal } from "../context/GlobalContext";
+import { useGlobalContext } from "../context/useGlobalContext";
 
 export default function Player() {
-  const { currentSong, playNext, playPrev } = useGlobal();
+  const { currentSong, playNext, playPrev } = useGlobalContext();
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const [isPlaying, setIsPlaying] = useState(false);
 
   useEffect(() => {
     if (currentSong && audioRef.current) {
-      audioRef.current.src = currentSong.url;
+      audioRef.current.src = currentSong.audioUrl;
       audioRef.current.play();
       setIsPlaying(true);
     }
@@ -27,9 +27,7 @@ export default function Player() {
 
   if (!currentSong) {
     return (
-      <div className="bg-mist-gray text-center py-3">
-        🎶 No song playing
-      </div>
+      <div className="bg-mist-gray text-center py-3">🎶 No song playing</div>
     );
   }
 
@@ -43,11 +41,15 @@ export default function Player() {
 
       {/* Controls */}
       <div className="flex gap-4 items-center">
-        <button onClick={playPrev} className="hover:text-mist-pink">⏮</button>
+        <button onClick={playPrev} className="hover:text-mist-pink">
+          ⏮
+        </button>
         <button onClick={togglePlay} className="hover:text-mist-gold">
           {isPlaying ? "⏸" : "▶"}
         </button>
-        <button onClick={playNext} className="hover:text-mist-pink">⏭</button>
+        <button onClick={playNext} className="hover:text-mist-pink">
+          ⏭
+        </button>
       </div>
 
       {/* Hidden Audio */}

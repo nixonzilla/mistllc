@@ -1,0 +1,18 @@
+/* frontend/src/index.css */
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap");
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+/* Custom global styles */
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 050;
+  font-family: "Inter", sans-serif;
+}
+a {
+  text-decoration: rgb(95, 7, 182);
+  color: rgb(25, 5, 44);
+}

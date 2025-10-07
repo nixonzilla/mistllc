@@ -1,18 +1,113 @@
 version: "3.9"
 
 services:
-  backend:
-    build:
-      context: .
-      dockerfile: backend/Dockerfile
-    ports:
-      - "8787:8787"
-
+  # ===========================
+  # FRONTEND (Vite + React)
+  # ===========================
   frontend:
     build:
-      context: .
-      dockerfile: frontend/Dockerfile
-      args:
-        VITE_API_URL: "http://127.0.0.1:8787"
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: mistllc_frontend
     ports:
-      - "5173:80"
+      - "5173:5173"
+    environment:
+      - NODE_ENV=development
+      - VITE_API_URL=http://127.0.0.1:8787
+    depends_on:
+      - backend
+    networks:
+      - mistllc-net
+
+  # ===========================
+  # BACKEND (Node.js + API Gateway)
+  # ===========================
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: mistllc_backend
+    ports:
+      - "3001:3001"
+    environment:
+      - NODE_ENV=development
+      - PORT=3001
+      - REDIS_URL=redis://redis:6379
+      - AUDIO_SERVICE_URL=http://audio_service:8000
+      - RECOMMENDER_URL=http://recommender:8001
+      - ANALYTICS_URL=http://analytics:8002
+      - AUTO_ART_URL=http://auto_art_service:8003
+    depends_on:
+      - redis
+      - audio_service
+      - recommender
+      - analytics
+      - auto_art_service
+    networks:
+      - mistllc-net
+
+  # ===========================
+  # REDIS (Queue + Caching)
+  # ===========================
+  redis:
+    image: redis:7-alpine
+    container_name: mistllc_redis
+    ports:
+      - "6379:6379"
+    networks:
+      - mistllc-net
+
+  # ===========================
+  # PYTHON SERVICES
+  # ===========================
+
+  # 1️⃣ Audio Analysis
+  audio_service:
+    build:
+      context: ./services/audio_service
+      dockerfile: Dockerfile
+    container_name: mistllc_audio_service
+    ports:
+      - "8000:8000"
+    networks:
+      - mistllc-net
+
+  # 2️⃣ Song Recommender
+  recommender:
+    build:
+      context: ./services/ai
+      dockerfile: Dockerfile
+    container_name: mistllc_recommender
+    ports:
+      - "8001:8001"
+    networks:
+      - mistllc-net
+
+  # 3️⃣ Analytics + Reports
+  analytics:
+    build:
+      context: ./services/analytics
+      dockerfile: Dockerfile
+    container_name: mistllc_analytics
+    ports:
+      - "8002:8002"
+    networks:
+      - mistllc-net
+
+  # 4️⃣ Auto Art Generator (with Celery)
+  auto_art_service:
+    build:
+      context: ./services/auto_art_service
+      dockerfile: Dockerfile
+    container_name: mistllc_auto_art
+    command: ["sh", "-c", "rq worker auto_art_queue"]
+    depends_on:
+      - redis
+    ports:
+      - "8003:8003"
+    networks:
+      - mistllc-net
+
+networks:
+  mistllc-net:
+    driver: bridge
