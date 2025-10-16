@@ -1,113 +1,128 @@
-version: "3.9"
+# --- MISTLLC Full Stack Compose ---
+# Professional setup for Node.js backend + Vite frontend + FastAPI microservices + Redis + Nginx
 
 services:
-  # ===========================
-  # FRONTEND (Vite + React)
-  # ===========================
-  frontend:
-    build:
-      context: ./frontend
-      dockerfile: Dockerfile
-    container_name: mistllc_frontend
-    ports:
-      - "5173:5173"
-    environment:
-      - NODE_ENV=development
-      - VITE_API_URL=http://127.0.0.1:8787
-    depends_on:
-      - backend
-    networks:
-      - mistllc-net
-
-  # ===========================
-  # BACKEND (Node.js + API Gateway)
-  # ===========================
+  # 🧠 Backend API (Node.js + Express / Cloudflare Worker adapter)
   backend:
     build:
       context: ./backend
       dockerfile: Dockerfile
-    container_name: mistllc_backend
+    container_name: mistllc-backend
     ports:
-      - "3001:3001"
-    environment:
-      - NODE_ENV=development
-      - PORT=3001
-      - REDIS_URL=redis://redis:6379
-      - AUDIO_SERVICE_URL=http://audio_service:8000
-      - RECOMMENDER_URL=http://recommender:8001
-      - ANALYTICS_URL=http://analytics:8002
-      - AUTO_ART_URL=http://auto_art_service:8003
+      - "5000:5000"
+    env_file:
+      - .env
     depends_on:
       - redis
       - audio_service
-      - recommender
-      - analytics
-      - auto_art_service
+      - ai_service
+      - analytics_service
+      - art_service
     networks:
-      - mistllc-net
+      - mistllc_net
 
-  # ===========================
-  # REDIS (Queue + Caching)
-  # ===========================
-  redis:
-    image: redis:7-alpine
-    container_name: mistllc_redis
+  # 🎨 Frontend (Vite + React/TypeScript)
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: mistllc-frontend
     ports:
-      - "6379:6379"
+      - "5173:5173"
+    environment:
+      - NODE_ENV=development
+    depends_on:
+      - backend
     networks:
-      - mistllc-net
+      - mistllc_net
 
-  # ===========================
-  # PYTHON SERVICES
-  # ===========================
-
-  # 1️⃣ Audio Analysis
+  # 🎧 Phase 1 — Audio Analysis Service
   audio_service:
     build:
       context: ./services/audio_service
       dockerfile: Dockerfile
-    container_name: mistllc_audio_service
+    container_name: mistllc-audio
+    command: ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8001"]
     ports:
-      - "8000:8000"
+      - "8001:8001"
+    environment:
+      - SERVICE_NAME=audio_service
+      - API_KEY=${API_KEY}
     networks:
-      - mistllc-net
+      - mistllc_net
 
-  # 2️⃣ Song Recommender
-  recommender:
+  # 🤖 Phase 2 — AI Recommender
+  ai_service:
     build:
       context: ./services/ai
       dockerfile: Dockerfile
-    container_name: mistllc_recommender
+    container_name: mistllc-ai
+    command:
+      ["uvicorn", "recommender:app", "--host", "0.0.0.0", "--port", "8002"]
     ports:
-      - "8001:8001"
+      - "8002:8002"
+    environment:
+      - SERVICE_NAME=ai_service
+      - API_KEY=${API_KEY}
     networks:
-      - mistllc-net
+      - mistllc_net
 
-  # 3️⃣ Analytics + Reports
-  analytics:
+  # 📊 Phase 3 — Analytics / Reports
+  analytics_service:
     build:
       context: ./services/analytics
       dockerfile: Dockerfile
-    container_name: mistllc_analytics
+    container_name: mistllc-analytics
+    command: ["uvicorn", "report:app", "--host", "0.0.0.0", "--port", "8003"]
     ports:
-      - "8002:8002"
+      - "8003:8003"
+    environment:
+      - SERVICE_NAME=analytics_service
+      - API_KEY=${API_KEY}
     networks:
-      - mistllc-net
+      - mistllc_net
 
-  # 4️⃣ Auto Art Generator (with Celery)
-  auto_art_service:
+  # 🖼️ Phase 4 — Auto Art Generator (with Redis Worker)
+  art_service:
     build:
       context: ./services/auto_art_service
       dockerfile: Dockerfile
-    container_name: mistllc_auto_art
-    command: ["sh", "-c", "rq worker auto_art_queue"]
+    container_name: mistllc-art
+    command: ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8004"]
+    ports:
+      - "8004:8004"
+    environment:
+      - SERVICE_NAME=art_service
+      - REDIS_URL=redis://redis:6379/0
+      - API_KEY=${API_KEY}
     depends_on:
       - redis
-    ports:
-      - "8003:8003"
     networks:
-      - mistllc-net
+      - mistllc_net
+
+  # 🔴 Redis (queue broker for background jobs)
+  redis:
+    image: redis:7-alpine
+    container_name: mistllc-redis
+    ports:
+      - "6379:6379"
+    networks:
+      - mistllc_net
+
+  # 🌐 Nginx Reverse Proxy (optional, can route frontend/backend)
+  nginx:
+    image: nginx:stable-alpine
+    container_name: mistllc-nginx
+    depends_on:
+      - frontend
+      - backend
+    ports:
+      - "80:80"
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf:ro
+    networks:
+      - mistllc_net
 
 networks:
-  mistllc-net:
+  mistllc_net:
     driver: bridge

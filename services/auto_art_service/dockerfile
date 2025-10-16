@@ -1,5 +1,5 @@
 # check=skip=SecretsUsedInArgOrEnv
-FROM python:3.1-slim
+FROM python:3.11-slim-buster
 
 ARG SERVICE_API_KEY
 ENV SERVICE_API_KEY=${SERVICE_API_KEY:-}
